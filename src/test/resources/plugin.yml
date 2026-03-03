@@ -1,0 +1,4 @@
+name: CommonLibTestPlugin
+version: 1.0.0
+main: dev.patric.commonlib.testsupport.TestPlugin
+api-version: '1.21'
