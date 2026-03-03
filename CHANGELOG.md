@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.2.0] - 2026-03-03
+### Added
+- Nuove porte plugin-generic ricche: `NpcPort`, `HologramPort`, `ClaimsPort`, `SchematicPort`.
+- Nuovo modello capability tipizzato: `CapabilityKey`, `CapabilityStatus`, `CapabilityRegistry`, `StandardCapabilities`.
+- Implementazioni no-op ufficiali per le nuove porte (`api.port.noop`).
+- Nuova policy licenze adapter: `docs/policy/ADAPTER-LICENSE-POLICY.md`.
+- Release notes `0.2.0`: `docs/releases/0.2.0.md`.
+
+### Changed
+- Runtime wiring esteso: registrazione default no-op ports + capability unavailable (`No adapter installed`).
+- Backlog adapter aggiornato con priorità e criteri di adozione.
+- Checklist `v0.2.0` completata con evidenze test/build.
+
 ## [0.1.0] - 2026-03-03
 ### Added
 - Validazione consumer reale in-repo con modulo standalone `examples/consumer-demo`.

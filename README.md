@@ -7,13 +7,14 @@ Libreria comune per ridurre boilerplate Bukkit/Paper nei plugin Minecraft del wo
 - Java: `21`
 - Modello distribuzione: embed-first (shading nei plugin consumer)
 
-## Stable status (`0.1.0`)
-- Release stabile core disponibile come `v0.1.0`.
+## Stable status (`0.2.0`)
+- Release stabile core disponibile come `v0.2.0`.
 - Public API `0.1.x` congelata in [`docs/api/API-FREEZE-0.1.0-rc.1.md`](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/api/API-FREEZE-0.1.0-rc.1.md).
 - Scope core bloccato: nessun adapter/plugin esterno nel dependency set core.
 - Release notes:
   - RC: [`docs/releases/0.1.0-rc.1.md`](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/releases/0.1.0-rc.1.md)
   - Stable: [`docs/releases/0.1.0.md`](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/releases/0.1.0.md)
+  - Stable: [`docs/releases/0.2.0.md`](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/releases/0.2.0.md)
 
 ## Boundary policy
 - API pubblica principale: `dev.patric.commonlib.api`
@@ -28,6 +29,11 @@ Libreria comune per ridurre boilerplate Bukkit/Paper nei plugin Minecraft del wo
 - Config service YAML: `ConfigService`
 - Message service MiniMessage: `MessageService`
 - Event router + policy hooks: `EventRouter`, `PolicyDecision`, `PolicyHook`
+- Plugin-generic ports (adapter-first):
+  - `CommandPort`, `GuiPort`, `ScoreboardPort`, `ArenaResetPort`
+  - `NpcPort`, `HologramPort`, `ClaimsPort`, `SchematicPort`
+- Capability model:
+  - `CapabilityRegistry`, `CapabilityKey`, `CapabilityStatus`, `StandardCapabilities`
 
 ## Build e test
 ```bash
@@ -93,5 +99,7 @@ public final class MyPlugin extends JavaPlugin {
 - [Release Checklist](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/RELEASE-CHECKLIST.md)
 - [Release Notes 0.1.0-rc.1](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/releases/0.1.0-rc.1.md)
 - [Release Notes 0.1.0](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/releases/0.1.0.md)
+- [Release Notes 0.2.0](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/releases/0.2.0.md)
+- [Adapter License Policy](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/policy/ADAPTER-LICENSE-POLICY.md)
 - [Library Design](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/LIB-DESIGN.md)
 - [External Libs Research](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/UTILS-EXTERNAL-LIBS-RESEARCH.md)
