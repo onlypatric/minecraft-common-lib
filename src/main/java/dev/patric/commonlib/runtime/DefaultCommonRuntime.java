@@ -9,20 +9,29 @@ import dev.patric.commonlib.api.EventRouter;
 import dev.patric.commonlib.api.MessageService;
 import dev.patric.commonlib.api.RuntimeLogger;
 import dev.patric.commonlib.api.ServiceRegistry;
+import dev.patric.commonlib.api.command.CommandRegistry;
+import dev.patric.commonlib.api.command.CommandValidator;
 import dev.patric.commonlib.api.capability.CapabilityRegistry;
 import dev.patric.commonlib.api.capability.CapabilityStatus;
 import dev.patric.commonlib.api.capability.StandardCapabilities;
+import dev.patric.commonlib.api.message.FallbackChain;
+import dev.patric.commonlib.api.message.PluralRules;
 import dev.patric.commonlib.api.port.ClaimsPort;
+import dev.patric.commonlib.api.port.CommandPort;
 import dev.patric.commonlib.api.port.HologramPort;
 import dev.patric.commonlib.api.port.NpcPort;
 import dev.patric.commonlib.api.port.SchematicPort;
 import dev.patric.commonlib.api.port.noop.NoopClaimsPort;
+import dev.patric.commonlib.api.port.noop.NoopCommandPort;
 import dev.patric.commonlib.api.port.noop.NoopHologramPort;
 import dev.patric.commonlib.api.port.noop.NoopNpcPort;
 import dev.patric.commonlib.api.port.noop.NoopSchematicPort;
+import dev.patric.commonlib.command.DefaultCommandValidator;
 import dev.patric.commonlib.config.YamlConfigService;
 import dev.patric.commonlib.lifecycle.SimpleEventRouter;
-import dev.patric.commonlib.message.MiniMessageService;
+import dev.patric.commonlib.message.AdvancedMiniMessageService;
+import dev.patric.commonlib.message.DefaultFallbackChain;
+import dev.patric.commonlib.message.DefaultPluralRules;
 import dev.patric.commonlib.scheduler.BukkitCommonScheduler;
 import dev.patric.commonlib.services.DefaultCapabilityRegistry;
 import dev.patric.commonlib.services.DefaultServiceRegistry;
@@ -84,13 +93,25 @@ public final class DefaultCommonRuntime implements CommonRuntime {
         serviceRegistry.register(RuntimeLogger.class, runtimeLogger);
         serviceRegistry.register(CommonScheduler.class, scheduler);
         serviceRegistry.register(EventRouter.class, new SimpleEventRouter());
+        serviceRegistry.register(CommandRegistry.class, new DefaultCommandRegistry());
+        serviceRegistry.register(CommandValidator.class, new DefaultCommandValidator());
         registerDefaultPortsAndCapabilities();
 
         if (includeDefaultCoreComponents) {
             YamlConfigService configService = new YamlConfigService(plugin, mainConfigPath, List.of(messagesConfigPath));
-            MiniMessageService messageService = new MiniMessageService(configService, messagesConfigPath, defaultLocale);
+            FallbackChain fallbackChain = new DefaultFallbackChain();
+            PluralRules pluralRules = new DefaultPluralRules();
+            MessageService messageService = new AdvancedMiniMessageService(
+                    configService,
+                    messagesConfigPath,
+                    defaultLocale,
+                    fallbackChain,
+                    pluralRules
+            );
 
             serviceRegistry.register(ConfigService.class, configService);
+            serviceRegistry.register(FallbackChain.class, fallbackChain);
+            serviceRegistry.register(PluralRules.class, pluralRules);
             serviceRegistry.register(MessageService.class, messageService);
 
             components.add(new CoreConfigComponent(configService));
@@ -105,11 +126,13 @@ public final class DefaultCommonRuntime implements CommonRuntime {
         HologramPort hologramPort = new NoopHologramPort();
         ClaimsPort claimsPort = new NoopClaimsPort();
         SchematicPort schematicPort = new NoopSchematicPort();
+        CommandPort commandPort = new NoopCommandPort();
 
         serviceRegistry.register(NpcPort.class, npcPort);
         serviceRegistry.register(HologramPort.class, hologramPort);
         serviceRegistry.register(ClaimsPort.class, claimsPort);
         serviceRegistry.register(SchematicPort.class, schematicPort);
+        serviceRegistry.register(CommandPort.class, commandPort);
 
         CapabilityRegistry capabilityRegistry = new DefaultCapabilityRegistry();
         capabilityRegistry.publish(StandardCapabilities.NPC, CapabilityStatus.unavailable("No adapter installed"));
@@ -206,7 +229,7 @@ public final class DefaultCommonRuntime implements CommonRuntime {
 
         @Override
         public void onLoad(CommonContext context) {
-            messageService.render("commonlib.bootstrap");
+            messageService.render("commonlib.bootstrap", Locale.ENGLISH);
         }
     }
 }

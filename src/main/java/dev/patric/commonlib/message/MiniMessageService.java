@@ -2,87 +2,83 @@ package dev.patric.commonlib.message;
 
 import dev.patric.commonlib.api.ConfigService;
 import dev.patric.commonlib.api.MessageService;
-import java.util.ArrayList;
-import java.util.List;
+import dev.patric.commonlib.api.message.FallbackChain;
+import dev.patric.commonlib.api.message.MessageRequest;
+import dev.patric.commonlib.api.message.PlaceholderResolver;
+import dev.patric.commonlib.api.message.PluralRules;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
-import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
-import org.bukkit.configuration.file.FileConfiguration;
 
 /**
- * MiniMessage-backed message renderer with locale fallback.
+ * Legacy compatibility wrapper around {@link AdvancedMiniMessageService}.
+ *
+ * @deprecated use {@link AdvancedMiniMessageService}.
  */
+@Deprecated(since = "0.3.0", forRemoval = false)
 public final class MiniMessageService implements MessageService {
 
-    private static final String DEFAULT_NAMESPACE = "default";
-
-    private final ConfigService configService;
-    private final String messagesPath;
-    private final Locale defaultLocale;
-    private final MiniMessage miniMessage;
+    private final AdvancedMiniMessageService delegate;
 
     /**
-     * Creates a message service backed by a YAML messages file.
+     * Creates the legacy wrapper using default fallback/plural strategies.
      *
      * @param configService configuration service.
      * @param messagesPath relative path for messages config.
      * @param defaultLocale default locale.
      */
     public MiniMessageService(ConfigService configService, String messagesPath, Locale defaultLocale) {
-        this.configService = Objects.requireNonNull(configService, "configService");
-        this.messagesPath = Objects.requireNonNull(messagesPath, "messagesPath");
-        this.defaultLocale = Objects.requireNonNull(defaultLocale, "defaultLocale");
-        this.miniMessage = MiniMessage.miniMessage();
+        this(configService, messagesPath, defaultLocale, new DefaultFallbackChain(), new DefaultPluralRules());
+    }
+
+    /**
+     * Creates the legacy wrapper with explicit fallback/plural strategies.
+     *
+     * @param configService configuration service.
+     * @param messagesPath relative path for messages config.
+     * @param defaultLocale default locale.
+     * @param fallbackChain fallback chain.
+     * @param pluralRules plural rules.
+     */
+    public MiniMessageService(
+            ConfigService configService,
+            String messagesPath,
+            Locale defaultLocale,
+            FallbackChain fallbackChain,
+            PluralRules pluralRules
+    ) {
+        this.delegate = new AdvancedMiniMessageService(
+                Objects.requireNonNull(configService, "configService"),
+                Objects.requireNonNull(messagesPath, "messagesPath"),
+                Objects.requireNonNull(defaultLocale, "defaultLocale"),
+                Objects.requireNonNull(fallbackChain, "fallbackChain"),
+                Objects.requireNonNull(pluralRules, "pluralRules")
+        );
+    }
+
+    @Override
+    public Component render(MessageRequest request) {
+        return delegate.render(request);
+    }
+
+    @Override
+    public Component render(String key, Locale locale) {
+        return delegate.render(key, locale);
     }
 
     @Override
     public Component render(String key, Map<String, String> placeholders, Locale locale) {
-        Objects.requireNonNull(key, "key");
-        Objects.requireNonNull(placeholders, "placeholders");
-        Locale effectiveLocale = locale == null ? defaultLocale : locale;
-
-        String template = resolveTemplate(key, effectiveLocale);
-        TagResolver[] resolvers = placeholders.entrySet()
-                .stream()
-                .map(entry -> Placeholder.unparsed(entry.getKey(), entry.getValue()))
-                .toArray(TagResolver[]::new);
-
-        return miniMessage.deserialize(template, resolvers);
+        return delegate.render(key, placeholders, locale);
     }
 
     @Override
-    public Component render(String key) {
-        return render(key, Map.of(), defaultLocale);
+    public void registerResolver(PlaceholderResolver resolver) {
+        delegate.registerResolver(resolver);
     }
 
-    private String resolveTemplate(String key, Locale locale) {
-        FileConfiguration config = configService.load(messagesPath);
-        for (String candidate : candidateKeys(key, locale)) {
-            if (config.isString(candidate)) {
-                return Objects.requireNonNull(config.getString(candidate));
-            }
-        }
-        return "<red>[common-lib] Missing message key: " + key + "</red>";
-    }
-
-    private List<String> candidateKeys(String key, Locale locale) {
-        List<String> keys = new ArrayList<>();
-
-        String languageTag = locale.toLanguageTag();
-        String language = locale.getLanguage();
-        if (!languageTag.isBlank()) {
-            keys.add(languageTag + "." + key);
-        }
-        if (!language.isBlank()) {
-            keys.add(language + "." + key);
-        }
-        keys.add(DEFAULT_NAMESPACE + "." + key);
-        keys.add(key);
-
-        return keys;
+    @Override
+    public void setFallbackChain(FallbackChain chain) {
+        delegate.setFallbackChain(chain);
     }
 }
