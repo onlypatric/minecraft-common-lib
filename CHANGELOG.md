@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.1.0-alpha.2-SNAPSHOT] - 2026-03-03
+### Changed
+- Opened next development cycle after tagging `v0.1.0-alpha.1`.
+
 ## [0.1.0-alpha.1] - 2026-03-03
 ### Added
 - Runtime kernel con builder composizionale (`CommonRuntime`).
