@@ -1,8 +1,13 @@
 # Changelog
 
-## [0.1.0-SNAPSHOT] - Unreleased
+## [0.1.0] - 2026-03-03
+### Added
+- Validazione consumer reale in-repo con modulo standalone `examples/consumer-demo`.
+- Release notes GA `docs/releases/0.1.0.md`.
+
 ### Changed
-- Opened next development cycle after tagging `v0.1.0-rc.1`.
+- Checklist GA `v0.1.0` completata con evidenze e gate finali.
+- README/compatibility matrix/release checklist riallineati allo stato stabile.
 
 ## [0.1.0-rc.1] - 2026-03-03
 ### Added
