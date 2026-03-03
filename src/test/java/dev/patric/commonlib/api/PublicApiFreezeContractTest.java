@@ -1,22 +1,38 @@
 package dev.patric.commonlib.api;
 
 import dev.patric.commonlib.api.bootstrap.RuntimeBootstrap;
+import dev.patric.commonlib.api.capability.CapabilityKey;
+import dev.patric.commonlib.api.capability.CapabilityRegistry;
+import dev.patric.commonlib.api.capability.CapabilityStatus;
+import dev.patric.commonlib.api.capability.StandardCapabilities;
 import dev.patric.commonlib.api.error.ErrorCodes;
 import dev.patric.commonlib.api.error.OperationError;
 import dev.patric.commonlib.api.error.OperationResult;
 import dev.patric.commonlib.api.port.ArenaResetPort;
+import dev.patric.commonlib.api.port.ClaimsPort;
 import dev.patric.commonlib.api.port.CommandPort;
 import dev.patric.commonlib.api.port.GuiPort;
+import dev.patric.commonlib.api.port.HologramPort;
+import dev.patric.commonlib.api.port.NpcPort;
 import dev.patric.commonlib.api.port.ScoreboardPort;
+import dev.patric.commonlib.api.port.SchematicPort;
+import dev.patric.commonlib.api.port.noop.NoopClaimsPort;
+import dev.patric.commonlib.api.port.noop.NoopHologramPort;
+import dev.patric.commonlib.api.port.noop.NoopNpcPort;
+import dev.patric.commonlib.api.port.noop.NoopSchematicPort;
+import dev.patric.commonlib.api.port.options.PasteOptions;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 import net.kyori.adventure.text.Component;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.Event;
+import org.bukkit.Location;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.junit.jupiter.api.Test;
 
@@ -45,10 +61,23 @@ class PublicApiFreezeContractTest {
                 CommandPort.class,
                 GuiPort.class,
                 ScoreboardPort.class,
-                ArenaResetPort.class
+                ArenaResetPort.class,
+                NpcPort.class,
+                HologramPort.class,
+                ClaimsPort.class,
+                SchematicPort.class,
+                PasteOptions.class,
+                CapabilityRegistry.class,
+                CapabilityKey.class,
+                CapabilityStatus.class,
+                StandardCapabilities.class,
+                NoopNpcPort.class,
+                NoopHologramPort.class,
+                NoopClaimsPort.class,
+                NoopSchematicPort.class
         };
 
-        assertEquals(18, frozenTypes.length);
+        assertEquals(31, frozenTypes.length);
         for (Class<?> type : frozenTypes) {
             assertTrue(type.getName().startsWith("dev.patric.commonlib.api"));
         }
@@ -119,6 +148,35 @@ class PublicApiFreezeContractTest {
         assertMethod(OperationError.class, "code", ErrorCodes.class);
         assertMethod(OperationError.class, "message", String.class);
         assertMethod(OperationError.class, "cause", Throwable.class);
+    }
+
+    @Test
+    void frozenPluginGenericPortsAndCapabilitiesArePresent() throws Exception {
+        assertMethod(NpcPort.class, "spawn", UUID.class, String.class, Location.class, String.class);
+        assertMethod(NpcPort.class, "despawn", boolean.class, UUID.class);
+        assertMethod(NpcPort.class, "updateDisplayName", boolean.class, UUID.class, String.class);
+        assertMethod(NpcPort.class, "teleport", boolean.class, UUID.class, Location.class);
+
+        assertMethod(HologramPort.class, "create", UUID.class, String.class, Location.class, java.util.List.class);
+        assertMethod(HologramPort.class, "updateLines", boolean.class, UUID.class, java.util.List.class);
+        assertMethod(HologramPort.class, "move", boolean.class, UUID.class, Location.class);
+        assertMethod(HologramPort.class, "delete", boolean.class, UUID.class);
+
+        assertMethod(ClaimsPort.class, "isInsideClaim", boolean.class, UUID.class, Location.class);
+        assertMethod(ClaimsPort.class, "claimIdAt", Optional.class, Location.class);
+        assertMethod(ClaimsPort.class, "hasBuildPermission", boolean.class, UUID.class, String.class);
+        assertMethod(ClaimsPort.class, "hasCombatPermission", boolean.class, UUID.class, String.class);
+
+        assertMethod(SchematicPort.class, "paste", CompletableFuture.class, String.class, Location.class, PasteOptions.class);
+        assertMethod(SchematicPort.class, "resetRegion", CompletableFuture.class, String.class, String.class, PasteOptions.class);
+
+        assertMethod(CapabilityRegistry.class, "publish", void.class, CapabilityKey.class, CapabilityStatus.class);
+        assertMethod(CapabilityRegistry.class, "status", Optional.class, CapabilityKey.class);
+        assertMethod(CapabilityRegistry.class, "isAvailable", boolean.class, CapabilityKey.class);
+
+        assertMethod(CapabilityKey.class, "of", CapabilityKey.class, String.class, Class.class);
+        assertMethod(CapabilityStatus.class, "available", CapabilityStatus.class, Object.class);
+        assertMethod(CapabilityStatus.class, "unavailable", CapabilityStatus.class, String.class);
     }
 
     private static void assertMethod(Class<?> type, String methodName, Class<?> returnType, Class<?>... parameters)

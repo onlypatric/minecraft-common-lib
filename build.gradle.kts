@@ -72,6 +72,34 @@ val verifyCoreDependencyPolicy = tasks.register("verifyCoreDependencyPolicy") {
                         "${dependency.group}:${dependency.name}:${dependency.version}"
             )
         }
+
+        val guardedApiDirs = listOf(
+            file("src/main/java/dev/patric/commonlib/api/capability"),
+            file("src/main/java/dev/patric/commonlib/api/port/noop")
+        )
+        val allowedImportPrefixes = listOf("java.", "javax.", "org.bukkit.", "dev.patric.commonlib.")
+        val importPattern = Regex("""^\s*import\s+([A-Za-z0-9_.]+);""", setOf(RegexOption.MULTILINE))
+
+        guardedApiDirs.forEach { dir ->
+            if (!dir.exists()) {
+                return@forEach
+            }
+
+            dir.walkTopDown()
+                .filter { it.isFile && it.extension == "java" }
+                .forEach { source ->
+                    val text = source.readText()
+                    importPattern.findAll(text).forEach { match ->
+                        val imported = match.groupValues[1]
+                        val allowed = allowedImportPrefixes.any(imported::startsWith)
+                        if (!allowed) {
+                            throw GradleException(
+                                "Unexpected third-party import '$imported' in guarded API source: ${source.path}"
+                            )
+                        }
+                    }
+                }
+        }
     }
 }
 
