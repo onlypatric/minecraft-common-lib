@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.1.8-SNAPSHOT] - Unreleased
+### Added
+- alpha3(issue-8): test di backward compatibility minima per API deprecate (`PluginLifecycle`, `Tasks`).
+
 ## [0.1.7-SNAPSHOT] - Unreleased
 ### Added
 - alpha3(issue-7): contract tests per API pubbliche (`CommonRuntime`, `CommonScheduler`, `ServiceRegistry`).
