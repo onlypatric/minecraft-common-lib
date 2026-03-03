@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.1.7-SNAPSHOT] - Unreleased
+### Added
+- alpha3(issue-7): contract tests per API pubbliche (`CommonRuntime`, `CommonScheduler`, `ServiceRegistry`).
+
 ## [0.1.6-SNAPSHOT] - Unreleased
 ### Changed
 - alpha3(issue-6): pattern host lifecycle documentato con `RuntimeBootstrap`.
