@@ -14,3 +14,7 @@ Servono confini chiari per evitare rotture involontarie del contratto pubblico.
 ## Conseguenze
 - Consumatori guidati su superfici API affidabili.
 - Refactor interni liberi senza promesse di backward compatibility su `internal`.
+
+## Aggiornamento alpha.3
+- Policy operativa estesa in `docs/policy/PACKAGE-STABILITY-POLICY.md`.
+- Convenzioni naming/package allineate a tre livelli: stable API, runtime soft-stable, internal unstable.

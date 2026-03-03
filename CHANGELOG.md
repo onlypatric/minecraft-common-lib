@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.1.4-SNAPSHOT] - Unreleased
+### Added
+- alpha3(issue-4): policy formale naming/package stability (`api` vs `internal`).
+
 ## [0.1.3-SNAPSHOT] - Unreleased
 ### Added
 - alpha3(issue-3): helper plugin-generic `RuntimeBootstrap` e wrapper `OperationResult`/`OperationError`.
