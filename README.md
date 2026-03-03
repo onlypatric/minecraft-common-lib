@@ -1,29 +1,63 @@
 # minecraft-common-lib
 
-Libreria comune per ridurre il boilerplate Bukkit/Paper nei plugin Minecraft del workspace.
+Libreria comune per ridurre boilerplate Bukkit/Paper nei plugin Minecraft del workspace.
 
-## Requisiti
+## Baseline
+- Paper API: `1.21.11`
+- Java: `21`
+- Modello distribuzione: embed-first (shading nei plugin consumer)
 
-- Java 21
-- Gradle Wrapper (incluso nel progetto)
+## Boundary policy
+- API pubblica principale: `dev.patric.commonlib.api`
+- Package `dev.patric.commonlib.internal` non stabili e non contrattuali
+- NMS non incluso nel core (`v0.1.x`)
+
+## Componenti core disponibili
+- Runtime composizionale: `CommonRuntime`
+- Component lifecycle: `CommonComponent`
+- Service registry: `ServiceRegistry`
+- Scheduler facade: `CommonScheduler`
+- Config service YAML: `ConfigService`
+- Message service MiniMessage: `MessageService`
+- Event router + policy hooks: `EventRouter`, `PolicyDecision`, `PolicyHook`
 
 ## Build e test
-
 ```bash
-./gradlew build
-./gradlew test
+./gradlew clean test javadoc build
 ```
 
-## Obiettivo
+## Quickstart
+```java
+public final class MyPlugin extends JavaPlugin {
+    private CommonRuntime runtime;
 
-Fornire utility e astrazioni riusabili per:
+    @Override
+    public void onLoad() {
+        runtime = CommonLib.runtime(this)
+                .component(new MyComponent())
+                .build();
+        runtime.onLoad();
+    }
 
-- lifecycle plugin
-- scheduling task Bukkit/Paper
-- helper comuni orientati a plugin Paper 1.21.11
+    @Override
+    public void onEnable() {
+        runtime.onEnable();
+    }
 
-## Roadmap breve
+    @Override
+    public void onDisable() {
+        runtime.onDisable();
+    }
+}
+```
 
-- Modulo config helper (YAML / typed access)
-- Modulo command utilities
-- Modulo inventory/UI helpers
+## Documentazione
+- [ADR-001](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/adr/ADR-001-embed-first-no-nms-core.md)
+- [ADR-002](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/adr/ADR-002-api-boundaries.md)
+- [ADR-003](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/adr/ADR-003-versioning-changelog-policy.md)
+- [Cookbook 5 minuti](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/COOKBOOK-5-MINUTES.md)
+- [Compatibility Matrix](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/COMPATIBILITY-MATRIX.md)
+- [Adapter Backlog](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/ADAPTER-BACKLOG.md)
+- [Release Checklist](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/RELEASE-CHECKLIST.md)
+- [Library Design](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/LIB-DESIGN.md)
+- [External Libs Research](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/UTILS-EXTERNAL-LIBS-RESEARCH.md)
