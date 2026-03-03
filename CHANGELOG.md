@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.1.5-SNAPSHOT] - Unreleased
+### Added
+- alpha3(issue-5): checklist migrazione per plugin consumer legacy.
+
 ## [0.1.4-SNAPSHOT] - Unreleased
 ### Added
 - alpha3(issue-4): policy formale naming/package stability (`api` vs `internal`).

@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "dev.patric"
-version = "0.1.4-SNAPSHOT"
+version = "0.1.5-SNAPSHOT"
 
 java {
     toolchain {
