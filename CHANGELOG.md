@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.1.6-SNAPSHOT] - Unreleased
+### Changed
+- alpha3(issue-6): pattern host lifecycle documentato con `RuntimeBootstrap`.
+
 ## [0.1.5-SNAPSHOT] - Unreleased
 ### Added
 - alpha3(issue-5): checklist migrazione per plugin consumer legacy.

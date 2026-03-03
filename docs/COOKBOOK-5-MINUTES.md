@@ -16,20 +16,31 @@ public final class MyPlugin extends JavaPlugin {
 
     @Override
     public void onLoad() {
-        runtime = CommonLib.runtime(this)
-                .component(new MyComponent())
-                .build();
-        runtime.onLoad();
+        OperationResult<CommonRuntime> built = RuntimeBootstrap.build(this, builder ->
+                builder.component(new MyComponent())
+        );
+        if (built.isFailure()) {
+            throw new IllegalStateException(built.errorOrNull().message(), built.errorOrNull().cause());
+        }
+        runtime = built.valueOrNull();
+
+        OperationResult<Void> loaded = RuntimeBootstrap.safeLoad(runtime);
+        if (loaded.isFailure()) {
+            throw new IllegalStateException(loaded.errorOrNull().message(), loaded.errorOrNull().cause());
+        }
     }
 
     @Override
     public void onEnable() {
-        runtime.onEnable();
+        OperationResult<Void> enabled = RuntimeBootstrap.safeEnable(runtime);
+        if (enabled.isFailure()) {
+            throw new IllegalStateException(enabled.errorOrNull().message(), enabled.errorOrNull().cause());
+        }
     }
 
     @Override
     public void onDisable() {
-        runtime.onDisable();
+        RuntimeBootstrap.safeDisable(runtime);
     }
 }
 ```

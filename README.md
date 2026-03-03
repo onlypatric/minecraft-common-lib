@@ -33,20 +33,31 @@ public final class MyPlugin extends JavaPlugin {
 
     @Override
     public void onLoad() {
-        runtime = CommonLib.runtime(this)
-                .component(new MyComponent())
-                .build();
-        runtime.onLoad();
+        var built = RuntimeBootstrap.build(this, builder ->
+                builder.component(new MyComponent())
+        );
+        if (built.isFailure()) {
+            throw new IllegalStateException(built.errorOrNull().message(), built.errorOrNull().cause());
+        }
+        runtime = built.valueOrNull();
+
+        var loadResult = RuntimeBootstrap.safeLoad(runtime);
+        if (loadResult.isFailure()) {
+            throw new IllegalStateException(loadResult.errorOrNull().message(), loadResult.errorOrNull().cause());
+        }
     }
 
     @Override
     public void onEnable() {
-        runtime.onEnable();
+        var enableResult = RuntimeBootstrap.safeEnable(runtime);
+        if (enableResult.isFailure()) {
+            throw new IllegalStateException(enableResult.errorOrNull().message(), enableResult.errorOrNull().cause());
+        }
     }
 
     @Override
     public void onDisable() {
-        runtime.onDisable();
+        RuntimeBootstrap.safeDisable(runtime);
     }
 }
 ```
