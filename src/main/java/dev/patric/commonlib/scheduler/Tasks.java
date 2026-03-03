@@ -1,12 +1,15 @@
 package dev.patric.commonlib.scheduler;
 
-import org.bukkit.Bukkit;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.scheduler.BukkitTask;
+import dev.patric.commonlib.api.CommonScheduler;
+import dev.patric.commonlib.api.TaskHandle;
+import java.util.Objects;
 
 /**
  * Lightweight facade over Bukkit scheduler APIs.
+ *
+ * @deprecated Prefer {@link CommonScheduler} directly.
  */
+@Deprecated(since = "0.1.0", forRemoval = false)
 public final class Tasks {
 
     private Tasks() {
@@ -16,22 +19,26 @@ public final class Tasks {
     /**
      * Runs a task on the next server tick.
      *
-     * @param plugin owning plugin instance.
+     * @param scheduler scheduler facade.
      * @param runnable task to run.
-     * @return scheduled Bukkit task handle.
+     * @return scheduled task handle.
      */
-    public static BukkitTask runNextTick(Plugin plugin, Runnable runnable) {
-        return Bukkit.getScheduler().runTask(plugin, runnable);
+    public static TaskHandle runNextTick(CommonScheduler scheduler, Runnable runnable) {
+        Objects.requireNonNull(scheduler, "scheduler");
+        Objects.requireNonNull(runnable, "runnable");
+        return scheduler.runSync(runnable);
     }
 
     /**
      * Runs a task asynchronously using Bukkit scheduler.
      *
-     * @param plugin owning plugin instance.
+     * @param scheduler scheduler facade.
      * @param runnable task to run.
-     * @return scheduled Bukkit task handle.
+     * @return scheduled task handle.
      */
-    public static BukkitTask runAsync(Plugin plugin, Runnable runnable) {
-        return Bukkit.getScheduler().runTaskAsynchronously(plugin, runnable);
+    public static TaskHandle runAsync(CommonScheduler scheduler, Runnable runnable) {
+        Objects.requireNonNull(scheduler, "scheduler");
+        Objects.requireNonNull(runnable, "runnable");
+        return scheduler.runAsync(runnable);
     }
 }
