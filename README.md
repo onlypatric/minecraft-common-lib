@@ -58,6 +58,7 @@ public final class MyPlugin extends JavaPlugin {
 - [Cookbook 5 minuti](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/COOKBOOK-5-MINUTES.md)
 - [Compatibility Matrix](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/COMPATIBILITY-MATRIX.md)
 - [Adapter Backlog](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/ADAPTER-BACKLOG.md)
+- [Checklist Versioni 0.x -> 1.0](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/checklist/README.md)
 - [Release Checklist](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/RELEASE-CHECKLIST.md)
 - [Library Design](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/LIB-DESIGN.md)
 - [External Libs Research](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/UTILS-EXTERNAL-LIBS-RESEARCH.md)
