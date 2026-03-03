@@ -18,3 +18,7 @@ Servono confini chiari per evitare rotture involontarie del contratto pubblico.
 ## Aggiornamento alpha.3
 - Policy operativa estesa in `docs/policy/PACKAGE-STABILITY-POLICY.md`.
 - Convenzioni naming/package allineate a tre livelli: stable API, runtime soft-stable, internal unstable.
+
+## Allineamento RC1
+- Freeze API formalizzato in `docs/api/API-FREEZE-0.1.0-rc.1.md`.
+- Verifica automatizzata del freeze tramite `PublicApiFreezeContractTest`.

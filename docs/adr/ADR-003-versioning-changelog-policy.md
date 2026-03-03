@@ -16,3 +16,7 @@ Il progetto è in fase `0.x` ma richiede tracciabilità delle rotture e delle sc
 ## Conseguenze
 - Evoluzione veloce senza perdere governance.
 - Riduzione rischio per plugin consumer in adozione iniziale.
+
+## Allineamento RC1
+- Workflow RC adottato: branch candidato, gate completi locali, tag annotato.
+- Dopo tagging RC, `main` viene riaperta su versione snapshot successiva.

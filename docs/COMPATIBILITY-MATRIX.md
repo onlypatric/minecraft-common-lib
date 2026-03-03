@@ -6,6 +6,7 @@
 
 ## Stato release
 - `0.1.0-alpha.2`: baseline validata per core runtime/plugin-generic (senza adapter hard esterni).
+- `0.1.0-rc.1`: freeze API `0.1.x` confermato, scope core bloccato senza adapter esterni.
 - Build di riferimento: `./gradlew --no-daemon clean test javadoc build`.
 
 ## Policy corrente
@@ -15,3 +16,4 @@
 
 ## Prossimo target
 - Mantenere compatibilità su patch/minor `1.21.x` con verifica continua in CI locale.
+- Promuovere `0.1.0-rc.1` a `0.1.0` solo dopo checklist GA completata.

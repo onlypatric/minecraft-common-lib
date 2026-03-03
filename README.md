@@ -7,6 +7,11 @@ Libreria comune per ridurre boilerplate Bukkit/Paper nei plugin Minecraft del wo
 - Java: `21`
 - Modello distribuzione: embed-first (shading nei plugin consumer)
 
+## RC status (`0.1.0-rc.1`)
+- Public API `0.1.x` congelata in [`docs/api/API-FREEZE-0.1.0-rc.1.md`](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/api/API-FREEZE-0.1.0-rc.1.md).
+- Scope core bloccato: nessun adapter/plugin esterno nel dependency set core.
+- Limiti RC espliciti in [`docs/releases/0.1.0-rc.1.md`](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/releases/0.1.0-rc.1.md).
+
 ## Boundary policy
 - API pubblica principale: `dev.patric.commonlib.api`
 - Package `dev.patric.commonlib.internal` non stabili e non contrattuali
@@ -81,5 +86,6 @@ public final class MyPlugin extends JavaPlugin {
 - [Adapter Backlog](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/ADAPTER-BACKLOG.md)
 - [Checklist Versioni 0.x -> 1.0](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/checklist/README.md)
 - [Release Checklist](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/RELEASE-CHECKLIST.md)
+- [Release Notes 0.1.0-rc.1](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/releases/0.1.0-rc.1.md)
 - [Library Design](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/LIB-DESIGN.md)
 - [External Libs Research](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/UTILS-EXTERNAL-LIBS-RESEARCH.md)

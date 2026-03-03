@@ -3,6 +3,7 @@
 ## [0.1.11-SNAPSHOT] - Unreleased
 ### Changed
 - alpha3(issue-11): checklist alpha.3 completata e baseline `0.1.x` marcata pronta per freeze RC.
+- rc1: documentazione release candidate allineata (API freeze, review thread/lifecycle, release notes RC, matrix/release checklist).
 
 ## [0.1.10-SNAPSHOT] - Unreleased
 ### Added

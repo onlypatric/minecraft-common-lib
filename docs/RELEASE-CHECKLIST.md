@@ -1,20 +1,15 @@
 # Release Readiness Checklist
 
-## Core quality
-- [ ] `./gradlew clean test javadoc build` verde
-- [ ] Nessun task scheduler orfano in shutdown test
-- [ ] API pubblica documentata in README
+## RC Completed Checks (`0.1.0-rc.1`)
+- [x] Freeze API documentato (`docs/api/API-FREEZE-0.1.0-rc.1.md`)
+- [x] Policy dipendenze core verificata (`verifyCoreDependencyPolicy`)
+- [x] Review thread-safety/lifecycle formalizzata (`docs/reviews/RC1-THREAD-LIFECYCLE-REVIEW.md`)
+- [x] Smoke test runtime bootstrap disponibile (`RcRuntimeBootstrapSmokeTest`)
+- [x] Release notes RC con limiti espliciti (`docs/releases/0.1.0-rc.1.md`)
 
-## Governance
-- [ ] CHANGELOG aggiornato
-- [ ] ADR aggiornate se ci sono decisioni nuove
-- [ ] Compatibility matrix aggiornata
-
-## Packaging
-- [ ] Version bump coerente (`alpha/rc/stable`)
-- [ ] Tag git creato (`vX.Y.Z`)
-- [ ] Artifact verificato localmente
-
-## Post-release
-- [ ] Esempio quickstart validato
-- [ ] Backlog adapter rivalutato
+## GA Pending Checks (`0.1.0`)
+- [ ] `./gradlew --no-daemon clean test javadoc build` verde su commit finale GA
+- [ ] CHANGELOG aggiornato con sezione release stabile
+- [ ] Tag stabile creato (`v0.1.0`)
+- [ ] Validazione jar in consumer demo reale
+- [ ] Chiusura checklist `docs/checklist/04-v0.1.0.md`
