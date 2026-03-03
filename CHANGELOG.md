@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.1.10-SNAPSHOT] - Unreleased
+### Added
+- alpha3(issue-10): criteri DX verificabili per nuovi consumer documentati in README e checklist.
+
 ## [0.1.9-SNAPSHOT] - Unreleased
 ### Changed
 - alpha3(issue-9): verificata build completa obbligatoria (`clean test javadoc build`).

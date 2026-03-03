@@ -62,6 +62,16 @@ public final class MyPlugin extends JavaPlugin {
 }
 ```
 
+## How To Verify As New Consumer
+1. Add the library to your plugin project and shade it in your final jar.
+2. Create a minimal plugin using the quickstart pattern with `RuntimeBootstrap`.
+3. Start a Paper `1.21.11` test server and confirm no startup exceptions.
+4. Trigger one command/event that touches at least one registered `CommonComponent`.
+5. Stop the server and confirm clean disable with no task warnings.
+6. Run local quality gates:
+   - `./gradlew --no-daemon test`
+   - `./gradlew --no-daemon clean test javadoc build`
+
 ## Documentazione
 - [ADR-001](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/adr/ADR-001-embed-first-no-nms-core.md)
 - [ADR-002](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/adr/ADR-002-api-boundaries.md)
