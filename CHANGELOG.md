@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.1.3-SNAPSHOT] - Unreleased
+### Added
+- alpha3(issue-3): helper plugin-generic `RuntimeBootstrap` e wrapper `OperationResult`/`OperationError`.
+
 ## [0.1.2-SNAPSHOT] - Unreleased
 ### Added
 - alpha3(issue-2): standard logging runtime con `RuntimeLogger` e `DefaultRuntimeLogger`.
