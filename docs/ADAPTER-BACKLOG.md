@@ -1,15 +1,16 @@
-# Adapter Backlog (post v0.2.0)
+# Adapter Backlog (post v0.4.0)
 
 ## Priority order
 1. `CommandPort` -> CommandAPI adapter
 2. `ScoreboardPort` -> FastBoard adapter
 3. `GuiPort` -> InvUI adapter
-4. `ClaimsPort` -> HuskClaims adapter
-5. `SchematicPort` -> WorldEdit adapter
-6. `SchematicPort` -> FAWE adapter
-7. `NpcPort` -> FancyNpcs adapter
-8. `HologramPort` -> FancyHolograms adapter
-9. `ArenaResetPort` -> advanced world instance/reset adapter
+4. `GuiPort` -> inventory-framework adapter
+5. `ClaimsPort` -> HuskClaims adapter
+6. `SchematicPort` -> WorldEdit adapter
+7. `SchematicPort` -> FAWE adapter
+8. `NpcPort` -> FancyNpcs adapter
+9. `HologramPort` -> FancyHolograms adapter
+10. `ArenaResetPort` -> advanced world instance/reset adapter
 
 ## Adoption criteria
 - API maturity: backend API stabile e documentata.

@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.4.0] - 2026-03-03
+### Added
+- Nuovo package `api.gui` con modello session-oriented completo:
+  - `GuiSessionService`, `GuiSession`, `GuiOpenRequest`, `GuiState`
+  - `GuiEvent` (`GuiClickEvent`, `GuiCloseEvent`, `GuiTimeoutEvent`, `GuiDisconnectEvent`)
+  - enum di supporto (`GuiCloseReason`, `GuiSessionStatus`, `ClickAction`, `GuiUpdateResult`, `GuiEventResult`)
+- Nuovo servizio runtime `DefaultGuiSessionService` con gestione timeout/race-condition.
+- Bridge policy `GuiPolicyRoutedEvent` per integrare eventi GUI portabili con `EventRouter`.
+- Nuovo no-op ufficiale `NoopGuiPort`.
+- Capability model esteso: `StandardCapabilities.GUI`.
+- Guide nuove:
+  - `docs/guides/GUI-SESSION-MODEL.md`
+  - `docs/guides/GUI-ADAPTER-MAPPING.md`
+- Release notes `0.4.0`: `docs/releases/0.4.0.md`.
+
+### Changed
+- Breaking: `GuiPort` ridisegnata (`open(GuiSession)`, `render(UUID, GuiState)`, `close(UUID, GuiCloseReason)`, `supportsPortableEvents()`).
+- Runtime wiring aggiornato con registrazione default di `GuiSessionService` e `GuiPort`.
+
 ## [0.3.0] - 2026-03-03
 ### Added
 - Nuovo command model backend-agnostic in `api.command` (`CommandModel`, `CommandNode`, `CommandExecution`, `CommandContext`, `CommandValidator`, `CommandResult`, `CommandRegistry`).
