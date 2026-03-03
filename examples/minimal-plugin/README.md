@@ -3,6 +3,9 @@
 Questo esempio mostra il wiring minimo di `CommonRuntime` dentro un plugin Paper
 usando il pattern canonicale con `RuntimeBootstrap`.
 
+Per una validazione reale del jar della libreria in un consumer separato,
+vedi `examples/consumer-demo` (progetto Gradle standalone con test MockBukkit).
+
 ```java
 public final class ExamplePlugin extends JavaPlugin {
     private CommonRuntime runtime;

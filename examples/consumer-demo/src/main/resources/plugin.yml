@@ -1,0 +1,4 @@
+name: ConsumerDemoPlugin
+version: 1.0.0
+main: dev.patric.consumerdemo.DemoConsumerPlugin
+api-version: '1.21'
