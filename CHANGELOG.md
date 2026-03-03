@@ -1,9 +1,15 @@
 # Changelog
 
-## [0.1.11-SNAPSHOT] - Unreleased
+## [0.1.0-rc.1] - 2026-03-03
+### Added
+- Freeze API `0.1.x` documentato (`API-FREEZE-0.1.0-rc.1`) con contract test dedicato.
+- Review formale thread-safety/lifecycle con mappa failure mode e limiti noti.
+- Smoke test RC su `RuntimeBootstrap` in ambiente MockBukkit.
+- Release notes candidate con limiti espliciti della versione.
+
 ### Changed
-- alpha3(issue-11): checklist alpha.3 completata e baseline `0.1.x` marcata pronta per freeze RC.
-- rc1: documentazione release candidate allineata (API freeze, review thread/lifecycle, release notes RC, matrix/release checklist).
+- Introdotta policy build `verifyCoreDependencyPolicy` per bloccare dipendenze adapter esterne nel core.
+- Riallineata documentazione di governance (`README`, ADR, matrix, release checklist, checklist RC).
 
 ## [0.1.10-SNAPSHOT] - Unreleased
 ### Added
