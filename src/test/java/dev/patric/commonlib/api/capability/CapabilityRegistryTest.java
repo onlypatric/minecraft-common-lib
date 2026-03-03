@@ -2,6 +2,7 @@ package dev.patric.commonlib.api.capability;
 
 import dev.patric.commonlib.api.CommonRuntime;
 import dev.patric.commonlib.api.port.ClaimsPort;
+import dev.patric.commonlib.api.port.GuiPort;
 import dev.patric.commonlib.api.port.HologramPort;
 import dev.patric.commonlib.api.port.NpcPort;
 import dev.patric.commonlib.api.port.SchematicPort;
@@ -56,11 +57,14 @@ class CapabilityRegistryTest {
         assertFalse(registry.isAvailable(StandardCapabilities.HOLOGRAM));
         assertFalse(registry.isAvailable(StandardCapabilities.CLAIMS));
         assertFalse(registry.isAvailable(StandardCapabilities.SCHEMATIC));
+        assertFalse(registry.isAvailable(StandardCapabilities.GUI));
         assertEquals("No adapter installed", registry.status(StandardCapabilities.NPC).orElseThrow().reason());
+        assertEquals("No adapter installed", registry.status(StandardCapabilities.GUI).orElseThrow().reason());
 
         runtime.services().require(NpcPort.class);
         runtime.services().require(HologramPort.class);
         runtime.services().require(ClaimsPort.class);
         runtime.services().require(SchematicPort.class);
+        runtime.services().require(GuiPort.class);
     }
 }

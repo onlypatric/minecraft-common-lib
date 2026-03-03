@@ -21,6 +21,19 @@ import dev.patric.commonlib.api.command.ValidationIssue;
 import dev.patric.commonlib.api.error.ErrorCodes;
 import dev.patric.commonlib.api.error.OperationError;
 import dev.patric.commonlib.api.error.OperationResult;
+import dev.patric.commonlib.api.gui.ClickAction;
+import dev.patric.commonlib.api.gui.GuiCloseEvent;
+import dev.patric.commonlib.api.gui.GuiCloseReason;
+import dev.patric.commonlib.api.gui.GuiDisconnectEvent;
+import dev.patric.commonlib.api.gui.GuiEvent;
+import dev.patric.commonlib.api.gui.GuiEventResult;
+import dev.patric.commonlib.api.gui.GuiOpenRequest;
+import dev.patric.commonlib.api.gui.GuiSession;
+import dev.patric.commonlib.api.gui.GuiSessionService;
+import dev.patric.commonlib.api.gui.GuiSessionStatus;
+import dev.patric.commonlib.api.gui.GuiState;
+import dev.patric.commonlib.api.gui.GuiTimeoutEvent;
+import dev.patric.commonlib.api.gui.GuiUpdateResult;
 import dev.patric.commonlib.api.message.FallbackChain;
 import dev.patric.commonlib.api.message.MessageRequest;
 import dev.patric.commonlib.api.message.PlaceholderResolver;
@@ -35,6 +48,7 @@ import dev.patric.commonlib.api.port.SchematicPort;
 import dev.patric.commonlib.api.port.ScoreboardPort;
 import dev.patric.commonlib.api.port.noop.NoopClaimsPort;
 import dev.patric.commonlib.api.port.noop.NoopCommandPort;
+import dev.patric.commonlib.api.port.noop.NoopGuiPort;
 import dev.patric.commonlib.api.port.noop.NoopHologramPort;
 import dev.patric.commonlib.api.port.noop.NoopNpcPort;
 import dev.patric.commonlib.api.port.noop.NoopSchematicPort;
@@ -96,6 +110,7 @@ class PublicApiFreezeContractTest {
                 NoopClaimsPort.class,
                 NoopSchematicPort.class,
                 NoopCommandPort.class,
+                NoopGuiPort.class,
                 CommandModel.class,
                 CommandNode.class,
                 CommandExecution.class,
@@ -112,7 +127,20 @@ class PublicApiFreezeContractTest {
                 MessageRequest.class,
                 PlaceholderResolver.class,
                 FallbackChain.class,
-                PluralRules.class
+                PluralRules.class,
+                GuiState.class,
+                GuiCloseReason.class,
+                GuiSessionStatus.class,
+                ClickAction.class,
+                GuiUpdateResult.class,
+                GuiEventResult.class,
+                GuiOpenRequest.class,
+                GuiSession.class,
+                GuiEvent.class,
+                GuiCloseEvent.class,
+                GuiTimeoutEvent.class,
+                GuiDisconnectEvent.class,
+                GuiSessionService.class
         };
 
         assertTrue(frozenTypes.length >= 48);
@@ -196,6 +224,10 @@ class PublicApiFreezeContractTest {
         assertMethod(CommandPort.class, "register", void.class, CommandModel.class);
         assertMethod(CommandPort.class, "unregister", void.class, String.class);
         assertMethod(CommandPort.class, "supportsSuggestions", boolean.class);
+        assertMethod(GuiPort.class, "open", boolean.class, GuiSession.class);
+        assertMethod(GuiPort.class, "render", boolean.class, UUID.class, GuiState.class);
+        assertMethod(GuiPort.class, "close", boolean.class, UUID.class, GuiCloseReason.class);
+        assertMethod(GuiPort.class, "supportsPortableEvents", boolean.class);
 
         assertMethod(CommandModel.class, "root", String.class);
         assertMethod(CommandModel.class, "nodes", List.class);
@@ -214,6 +246,18 @@ class PublicApiFreezeContractTest {
         assertMethod(CommandResult.class, "success", CommandResult.class);
         assertMethod(CommandResult.class, "failure", CommandResult.class, String.class, String.class);
         assertMethod(CommandResult.class, "validationFailure", CommandResult.class, String.class, String.class);
+    }
+
+    @Test
+    void frozenGuiSessionModelIsPresent() throws Exception {
+        assertMethod(GuiSessionService.class, "open", GuiSession.class, GuiOpenRequest.class);
+        assertMethod(GuiSessionService.class, "find", Optional.class, UUID.class);
+        assertMethod(GuiSessionService.class, "activeByPlayer", List.class, UUID.class);
+        assertMethod(GuiSessionService.class, "update", GuiUpdateResult.class, UUID.class, GuiState.class, long.class);
+        assertMethod(GuiSessionService.class, "publish", GuiEventResult.class, GuiEvent.class);
+        assertMethod(GuiSessionService.class, "close", boolean.class, UUID.class, GuiCloseReason.class);
+        assertMethod(GuiSessionService.class, "closeAllByPlayer", int.class, UUID.class, GuiCloseReason.class);
+        assertMethod(GuiSessionService.class, "closeAll", int.class, GuiCloseReason.class);
     }
 
     @Test
