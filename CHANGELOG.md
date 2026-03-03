@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.1.0-SNAPSHOT] - Unreleased
+### Changed
+- Opened next development cycle after tagging `v0.1.0-rc.1`.
+
 ## [0.1.0-rc.1] - 2026-03-03
 ### Added
 - Freeze API `0.1.x` documentato (`API-FREEZE-0.1.0-rc.1`) con contract test dedicato.
