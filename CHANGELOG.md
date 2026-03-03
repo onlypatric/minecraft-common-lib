@@ -1,8 +1,14 @@
 # Changelog
 
-## [0.1.0-alpha.2-SNAPSHOT] - 2026-03-03
+## [0.1.0-alpha.2] - 2026-03-03
+### Added
+- Checklist roadmap versionata `0.x -> 1.0` in `docs/checklist/`.
+- Checklist `v0.1.0-alpha.2` completata con evidenze file/test/comandi.
+
 ### Changed
-- Opened next development cycle after tagging `v0.1.0-alpha.1`.
+- Consolidata baseline API `0.1.x` (`dev.patric.commonlib.api`).
+- Confermata compatibilità legacy con API deprecate (`PluginLifecycle`, `Tasks`).
+- Verifica release completa eseguita con `clean test javadoc build`.
 
 ## [0.1.0-alpha.1] - 2026-03-03
 ### Added
