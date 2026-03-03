@@ -9,10 +9,22 @@ import dev.patric.commonlib.api.EventRouter;
 import dev.patric.commonlib.api.MessageService;
 import dev.patric.commonlib.api.RuntimeLogger;
 import dev.patric.commonlib.api.ServiceRegistry;
+import dev.patric.commonlib.api.capability.CapabilityRegistry;
+import dev.patric.commonlib.api.capability.CapabilityStatus;
+import dev.patric.commonlib.api.capability.StandardCapabilities;
+import dev.patric.commonlib.api.port.ClaimsPort;
+import dev.patric.commonlib.api.port.HologramPort;
+import dev.patric.commonlib.api.port.NpcPort;
+import dev.patric.commonlib.api.port.SchematicPort;
+import dev.patric.commonlib.api.port.noop.NoopClaimsPort;
+import dev.patric.commonlib.api.port.noop.NoopHologramPort;
+import dev.patric.commonlib.api.port.noop.NoopNpcPort;
+import dev.patric.commonlib.api.port.noop.NoopSchematicPort;
 import dev.patric.commonlib.config.YamlConfigService;
 import dev.patric.commonlib.lifecycle.SimpleEventRouter;
 import dev.patric.commonlib.message.MiniMessageService;
 import dev.patric.commonlib.scheduler.BukkitCommonScheduler;
+import dev.patric.commonlib.services.DefaultCapabilityRegistry;
 import dev.patric.commonlib.services.DefaultServiceRegistry;
 import java.util.ArrayList;
 import java.util.List;
@@ -72,6 +84,7 @@ public final class DefaultCommonRuntime implements CommonRuntime {
         serviceRegistry.register(RuntimeLogger.class, runtimeLogger);
         serviceRegistry.register(CommonScheduler.class, scheduler);
         serviceRegistry.register(EventRouter.class, new SimpleEventRouter());
+        registerDefaultPortsAndCapabilities();
 
         if (includeDefaultCoreComponents) {
             YamlConfigService configService = new YamlConfigService(plugin, mainConfigPath, List.of(messagesConfigPath));
@@ -85,6 +98,26 @@ public final class DefaultCommonRuntime implements CommonRuntime {
         }
 
         components.addAll(customComponents);
+    }
+
+    private void registerDefaultPortsAndCapabilities() {
+        NpcPort npcPort = new NoopNpcPort();
+        HologramPort hologramPort = new NoopHologramPort();
+        ClaimsPort claimsPort = new NoopClaimsPort();
+        SchematicPort schematicPort = new NoopSchematicPort();
+
+        serviceRegistry.register(NpcPort.class, npcPort);
+        serviceRegistry.register(HologramPort.class, hologramPort);
+        serviceRegistry.register(ClaimsPort.class, claimsPort);
+        serviceRegistry.register(SchematicPort.class, schematicPort);
+
+        CapabilityRegistry capabilityRegistry = new DefaultCapabilityRegistry();
+        capabilityRegistry.publish(StandardCapabilities.NPC, CapabilityStatus.unavailable("No adapter installed"));
+        capabilityRegistry.publish(StandardCapabilities.HOLOGRAM, CapabilityStatus.unavailable("No adapter installed"));
+        capabilityRegistry.publish(StandardCapabilities.CLAIMS, CapabilityStatus.unavailable("No adapter installed"));
+        capabilityRegistry.publish(StandardCapabilities.SCHEMATIC, CapabilityStatus.unavailable("No adapter installed"));
+
+        serviceRegistry.register(CapabilityRegistry.class, capabilityRegistry);
     }
 
     @Override
