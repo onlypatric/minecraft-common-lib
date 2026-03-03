@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.1.0-alpha.3-SNAPSHOT] - Unreleased
+### Changed
+- Opened next development cycle after tagging `v0.1.0-alpha.2`.
+
 ## [0.1.0-alpha.2] - 2026-03-03
 ### Added
 - Checklist roadmap versionata `0.x -> 1.0` in `docs/checklist/`.
