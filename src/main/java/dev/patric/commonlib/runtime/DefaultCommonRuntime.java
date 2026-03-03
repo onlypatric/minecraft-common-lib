@@ -7,6 +7,7 @@ import dev.patric.commonlib.api.CommonScheduler;
 import dev.patric.commonlib.api.ConfigService;
 import dev.patric.commonlib.api.EventRouter;
 import dev.patric.commonlib.api.MessageService;
+import dev.patric.commonlib.api.RuntimeLogger;
 import dev.patric.commonlib.api.ServiceRegistry;
 import dev.patric.commonlib.config.YamlConfigService;
 import dev.patric.commonlib.lifecycle.SimpleEventRouter;
@@ -18,7 +19,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.logging.Level;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
@@ -28,6 +28,7 @@ public final class DefaultCommonRuntime implements CommonRuntime {
 
     private final CommonContext context;
     private final ServiceRegistry serviceRegistry;
+    private final RuntimeLogger runtimeLogger;
     private final BukkitCommonScheduler scheduler;
     private final List<CommonComponent> components;
     private final List<CommonComponent> enabledComponents;
@@ -59,6 +60,7 @@ public final class DefaultCommonRuntime implements CommonRuntime {
         Objects.requireNonNull(defaultLocale, "defaultLocale");
 
         this.serviceRegistry = new DefaultServiceRegistry();
+        this.runtimeLogger = new DefaultRuntimeLogger(plugin.getLogger());
         this.scheduler = new BukkitCommonScheduler(plugin);
         this.context = new DefaultCommonContext(plugin, plugin.getLogger(), scheduler, serviceRegistry);
         this.components = new ArrayList<>();
@@ -67,6 +69,7 @@ public final class DefaultCommonRuntime implements CommonRuntime {
         this.enabled = new AtomicBoolean(false);
 
         serviceRegistry.register(ServiceRegistry.class, serviceRegistry);
+        serviceRegistry.register(RuntimeLogger.class, runtimeLogger);
         serviceRegistry.register(CommonScheduler.class, scheduler);
         serviceRegistry.register(EventRouter.class, new SimpleEventRouter());
 
@@ -91,7 +94,7 @@ public final class DefaultCommonRuntime implements CommonRuntime {
         }
 
         for (CommonComponent component : components) {
-            context.logger().fine(() -> "[common-lib] onLoad -> " + component.id());
+            runtimeLogger.lifecycleEvent("onLoad", component.id());
             component.onLoad(context);
         }
     }
@@ -107,12 +110,12 @@ public final class DefaultCommonRuntime implements CommonRuntime {
 
         try {
             for (CommonComponent component : components) {
-                context.logger().fine(() -> "[common-lib] onEnable -> " + component.id());
+                runtimeLogger.lifecycleEvent("onEnable", component.id());
                 component.onEnable(context);
                 enabledComponents.add(component);
             }
         } catch (RuntimeException ex) {
-            context.logger().log(Level.SEVERE, "[common-lib] enable failed, running rollback", ex);
+            runtimeLogger.error("enable failed, running rollback", ex);
             rollbackEnabledComponents();
             enabled.set(false);
             throw ex;
@@ -139,10 +142,10 @@ public final class DefaultCommonRuntime implements CommonRuntime {
         for (int i = enabledComponents.size() - 1; i >= 0; i--) {
             CommonComponent component = enabledComponents.get(i);
             try {
-                context.logger().fine(() -> "[common-lib] onDisable -> " + component.id());
+                runtimeLogger.lifecycleEvent("onDisable", component.id());
                 component.onDisable(context);
             } catch (RuntimeException ex) {
-                context.logger().log(Level.SEVERE, "[common-lib] disable failed for " + component.id(), ex);
+                runtimeLogger.error("disable failed for " + component.id(), ex);
             }
         }
         enabledComponents.clear();

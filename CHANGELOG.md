@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.1.2-SNAPSHOT] - Unreleased
+### Added
+- alpha3(issue-2): standard logging runtime con `RuntimeLogger` e `DefaultRuntimeLogger`.
+
 ## [0.1.1-SNAPSHOT] - Unreleased
 ### Added
 - alpha3(issue-1): linee guida production-ready per `CommonComponent`.
