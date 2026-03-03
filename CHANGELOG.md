@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.1.9-SNAPSHOT] - Unreleased
+### Changed
+- alpha3(issue-9): verificata build completa obbligatoria (`clean test javadoc build`).
+
 ## [0.1.8-SNAPSHOT] - Unreleased
 ### Added
 - alpha3(issue-8): test di backward compatibility minima per API deprecate (`PluginLifecycle`, `Tasks`).
