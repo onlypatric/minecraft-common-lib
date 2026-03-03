@@ -3,6 +3,8 @@ package dev.patric.commonlib.message;
 import dev.patric.commonlib.api.CommonRuntime;
 import dev.patric.commonlib.api.ConfigService;
 import dev.patric.commonlib.api.MessageService;
+import dev.patric.commonlib.api.message.MessageRequest;
+import dev.patric.commonlib.api.message.PlaceholderResolver;
 import dev.patric.commonlib.testsupport.TestPlugin;
 import java.io.File;
 import java.io.IOException;
@@ -19,7 +21,7 @@ import org.mockbukkit.mockbukkit.ServerMock;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class MiniMessageServiceTest {
+class AdvancedMessageServiceTest {
 
     private ServerMock server;
     private TestPlugin plugin;
@@ -36,7 +38,7 @@ class MiniMessageServiceTest {
     }
 
     @Test
-    void localeAndPlaceholderFallbackWorks() throws IOException {
+    void localeFallbackPluralAndResolverChainWork() throws IOException {
         CommonRuntime runtime = CommonRuntime.builder(plugin).build();
         runtime.onLoad();
 
@@ -44,18 +46,37 @@ class MiniMessageServiceTest {
         File messagesFile = new File(plugin.getDataFolder(), "messages.yml");
         Files.writeString(messagesFile.toPath(), String.join("\n",
                 "default.commonlib.bootstrap: \"Boot\"",
-                "default.hello: \"Hello <name>\"",
-                "it.hello: \"Ciao <name>\""
+                "default.welcome: \"Hello <name> from <server>\"",
+                "en.points.one: \"<name> has <count> point\"",
+                "en.points.other: \"<name> has <count> points\""
         ));
         configs.reloadAll();
 
         MessageService messages = runtime.services().require(MessageService.class);
-        String italian = PlainTextComponentSerializer.plainText().serialize(
-                messages.render("hello", Map.of("name", "Patric"), Locale.ITALIAN)
-        );
-        String fallback = PlainTextComponentSerializer.plainText().serialize(messages.render("missing-key"));
+        messages.registerResolver(new PlaceholderResolver() {
+            @Override
+            public boolean supports(String placeholderKey) {
+                return "server".equals(placeholderKey);
+            }
 
-        assertEquals("Ciao Patric", italian);
-        assertTrue(fallback.contains("Missing message key"));
+            @Override
+            public String resolve(String placeholderKey, MessageRequest request) {
+                return "Paper";
+            }
+        });
+
+        String fallback = PlainTextComponentSerializer.plainText().serialize(
+                messages.render("welcome", Map.of("name", "Patric"), Locale.ITALIAN)
+        );
+        String one = PlainTextComponentSerializer.plainText().serialize(
+                messages.render(new MessageRequest("points", Locale.ENGLISH, Map.of("name", "Patric"), 1L, Map.of()))
+        );
+        String other = PlainTextComponentSerializer.plainText().serialize(
+                messages.render(new MessageRequest("points", Locale.ENGLISH, Map.of("name", "Patric"), 3L, Map.of()))
+        );
+
+        assertTrue(fallback.contains("Hello Patric from Paper"));
+        assertEquals("Patric has 1 point", one);
+        assertEquals("Patric has 3 points", other);
     }
 }

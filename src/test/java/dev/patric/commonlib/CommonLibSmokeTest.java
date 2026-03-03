@@ -4,6 +4,12 @@ import dev.patric.commonlib.api.CommonRuntime;
 import dev.patric.commonlib.api.capability.CapabilityRegistry;
 import dev.patric.commonlib.api.capability.CapabilityStatus;
 import dev.patric.commonlib.api.capability.StandardCapabilities;
+import dev.patric.commonlib.api.command.CommandModel;
+import dev.patric.commonlib.api.command.CommandRegistry;
+import dev.patric.commonlib.api.message.FallbackChain;
+import dev.patric.commonlib.api.message.MessageRequest;
+import dev.patric.commonlib.api.message.PlaceholderResolver;
+import dev.patric.commonlib.api.message.PluralRules;
 import dev.patric.commonlib.api.port.ArenaResetPort;
 import dev.patric.commonlib.api.port.ClaimsPort;
 import dev.patric.commonlib.api.port.CommandPort;
@@ -13,6 +19,7 @@ import dev.patric.commonlib.api.port.NpcPort;
 import dev.patric.commonlib.api.port.ScoreboardPort;
 import dev.patric.commonlib.api.port.SchematicPort;
 import dev.patric.commonlib.api.port.noop.NoopClaimsPort;
+import dev.patric.commonlib.api.port.noop.NoopCommandPort;
 import dev.patric.commonlib.api.port.noop.NoopHologramPort;
 import dev.patric.commonlib.api.port.noop.NoopNpcPort;
 import dev.patric.commonlib.api.port.noop.NoopSchematicPort;
@@ -44,9 +51,16 @@ class CommonLibSmokeTest {
         assertDoesNotThrow(() -> Class.forName(CapabilityRegistry.class.getName()));
         assertDoesNotThrow(() -> Class.forName(CapabilityStatus.class.getName()));
         assertDoesNotThrow(() -> Class.forName(StandardCapabilities.class.getName()));
+        assertDoesNotThrow(() -> Class.forName(CommandModel.class.getName()));
+        assertDoesNotThrow(() -> Class.forName(CommandRegistry.class.getName()));
+        assertDoesNotThrow(() -> Class.forName(MessageRequest.class.getName()));
+        assertDoesNotThrow(() -> Class.forName(PlaceholderResolver.class.getName()));
+        assertDoesNotThrow(() -> Class.forName(FallbackChain.class.getName()));
+        assertDoesNotThrow(() -> Class.forName(PluralRules.class.getName()));
         assertDoesNotThrow(() -> Class.forName(NoopNpcPort.class.getName()));
         assertDoesNotThrow(() -> Class.forName(NoopHologramPort.class.getName()));
         assertDoesNotThrow(() -> Class.forName(NoopClaimsPort.class.getName()));
         assertDoesNotThrow(() -> Class.forName(NoopSchematicPort.class.getName()));
+        assertDoesNotThrow(() -> Class.forName(NoopCommandPort.class.getName()));
     }
 }
