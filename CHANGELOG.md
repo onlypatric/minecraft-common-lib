@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.3.0] - 2026-03-03
+### Added
+- Nuovo command model backend-agnostic in `api.command` (`CommandModel`, `CommandNode`, `CommandExecution`, `CommandContext`, `CommandValidator`, `CommandResult`, `CommandRegistry`).
+- Nuovo blocco i18n advanced in `api.message` (`MessageRequest`, `PlaceholderResolver`, `FallbackChain`, `PluralRules`).
+- Nuove implementazioni runtime: `DefaultCommandRegistry`, `DefaultCommandValidator`, `AdvancedMiniMessageService`, `DefaultFallbackChain`, `DefaultPluralRules`.
+- Guide dedicate:
+  - `docs/guides/COMMAND-MODEL.md`
+  - `docs/guides/I18N-ADVANCED.md`
+  - `docs/guides/MIGRATION-BUKKIT-RAW-COMMANDS.md`
+- Release notes `0.3.0`: `docs/releases/0.3.0.md`.
+
+### Changed
+- `CommandPort` redesign (breaking): ora usa `register(CommandModel)`, `unregister(String)`, `supportsSuggestions()`.
+- `MessageService` redesign (breaking): nuovo entrypoint `render(MessageRequest)` con fallback locale multiplo e pluralizzazione base.
+- Runtime wiring aggiornato con registrazione default command/i18n services.
+
 ## [0.2.0] - 2026-03-03
 ### Added
 - Nuove porte plugin-generic ricche: `NpcPort`, `HologramPort`, `ClaimsPort`, `SchematicPort`.

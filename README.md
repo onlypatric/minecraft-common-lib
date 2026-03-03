@@ -7,14 +7,15 @@ Libreria comune per ridurre boilerplate Bukkit/Paper nei plugin Minecraft del wo
 - Java: `21`
 - Modello distribuzione: embed-first (shading nei plugin consumer)
 
-## Stable status (`0.2.0`)
-- Release stabile core disponibile come `v0.2.0`.
+## Stable status (`0.3.0`)
+- Release stabile core disponibile come `v0.3.0`.
 - Public API `0.1.x` congelata in [`docs/api/API-FREEZE-0.1.0-rc.1.md`](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/api/API-FREEZE-0.1.0-rc.1.md).
 - Scope core bloccato: nessun adapter/plugin esterno nel dependency set core.
 - Release notes:
   - RC: [`docs/releases/0.1.0-rc.1.md`](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/releases/0.1.0-rc.1.md)
   - Stable: [`docs/releases/0.1.0.md`](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/releases/0.1.0.md)
   - Stable: [`docs/releases/0.2.0.md`](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/releases/0.2.0.md)
+  - Stable: [`docs/releases/0.3.0.md`](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/releases/0.3.0.md)
 
 ## Boundary policy
 - API pubblica principale: `dev.patric.commonlib.api`
@@ -27,8 +28,11 @@ Libreria comune per ridurre boilerplate Bukkit/Paper nei plugin Minecraft del wo
 - Service registry: `ServiceRegistry`
 - Scheduler facade: `CommonScheduler`
 - Config service YAML: `ConfigService`
-- Message service MiniMessage: `MessageService`
+- Message service advanced: `MessageService` + `MessageRequest` + `FallbackChain` + `PluralRules`
 - Event router + policy hooks: `EventRouter`, `PolicyDecision`, `PolicyHook`
+- Command model backend-agnostic:
+  - `api.command/*` (`CommandModel`, `CommandNode`, `CommandValidator`, `CommandRegistry`, ...)
+  - execution utility `command.CommandExecutions`
 - Plugin-generic ports (adapter-first):
   - `CommandPort`, `GuiPort`, `ScoreboardPort`, `ArenaResetPort`
   - `NpcPort`, `HologramPort`, `ClaimsPort`, `SchematicPort`
@@ -86,7 +90,7 @@ public final class MyPlugin extends JavaPlugin {
    - `./gradlew --no-daemon test`
    - `./gradlew --no-daemon clean test javadoc build`
 7. Run the in-repo consumer validation project:
-   - `./gradlew --no-daemon -p examples/consumer-demo clean test -PcommonLibJar=../../build/libs/minecraft-common-lib-0.1.0.jar`
+   - `./gradlew --no-daemon -p examples/consumer-demo clean test -PcommonLibJar=../../build/libs/minecraft-common-lib-0.3.0.jar`
 
 ## Documentazione
 - [ADR-001](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/adr/ADR-001-embed-first-no-nms-core.md)
@@ -100,6 +104,10 @@ public final class MyPlugin extends JavaPlugin {
 - [Release Notes 0.1.0-rc.1](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/releases/0.1.0-rc.1.md)
 - [Release Notes 0.1.0](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/releases/0.1.0.md)
 - [Release Notes 0.2.0](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/releases/0.2.0.md)
+- [Release Notes 0.3.0](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/releases/0.3.0.md)
+- [Command Model Guide](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/guides/COMMAND-MODEL.md)
+- [I18N Advanced Guide](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/guides/I18N-ADVANCED.md)
+- [Migration Bukkit Raw Commands](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/guides/MIGRATION-BUKKIT-RAW-COMMANDS.md)
 - [Adapter License Policy](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/policy/ADAPTER-LICENSE-POLICY.md)
 - [Library Design](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/LIB-DESIGN.md)
 - [External Libs Research](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/UTILS-EXTERNAL-LIBS-RESEARCH.md)

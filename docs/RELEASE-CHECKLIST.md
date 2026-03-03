@@ -13,3 +13,10 @@
 - [x] Tag stabile creato (`v0.1.0`)
 - [x] Validazione jar in consumer demo reale (`examples/consumer-demo`)
 - [x] Checklist `docs/checklist/04-v0.1.0.md` chiusa
+
+## Stable Completed Checks (`0.3.0`)
+- [x] Command model backend-agnostic completo in `api.command`
+- [x] Message service advanced con `MessageRequest` + resolver/fallback/plural rules
+- [x] Breaking changes documentate (`CHANGELOG.md`, `docs/releases/0.3.0.md`)
+- [x] Guide aggiornate (`COMMAND-MODEL`, `I18N-ADVANCED`, migrazione Bukkit raw commands)
+- [x] Checklist `docs/checklist/06-v0.3.0.md` chiusa con evidenze
