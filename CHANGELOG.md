@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.1.1-SNAPSHOT] - Unreleased
+### Added
+- alpha3(issue-1): linee guida production-ready per `CommonComponent`.
+
 ## [0.1.0-alpha.3-SNAPSHOT] - Unreleased
 ### Changed
 - Opened next development cycle after tagging `v0.1.0-alpha.2`.
