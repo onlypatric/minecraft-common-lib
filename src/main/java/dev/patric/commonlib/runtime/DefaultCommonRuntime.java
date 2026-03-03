@@ -14,15 +14,19 @@ import dev.patric.commonlib.api.command.CommandValidator;
 import dev.patric.commonlib.api.capability.CapabilityRegistry;
 import dev.patric.commonlib.api.capability.CapabilityStatus;
 import dev.patric.commonlib.api.capability.StandardCapabilities;
+import dev.patric.commonlib.api.gui.GuiCloseReason;
+import dev.patric.commonlib.api.gui.GuiSessionService;
 import dev.patric.commonlib.api.message.FallbackChain;
 import dev.patric.commonlib.api.message.PluralRules;
 import dev.patric.commonlib.api.port.ClaimsPort;
 import dev.patric.commonlib.api.port.CommandPort;
+import dev.patric.commonlib.api.port.GuiPort;
 import dev.patric.commonlib.api.port.HologramPort;
 import dev.patric.commonlib.api.port.NpcPort;
 import dev.patric.commonlib.api.port.SchematicPort;
 import dev.patric.commonlib.api.port.noop.NoopClaimsPort;
 import dev.patric.commonlib.api.port.noop.NoopCommandPort;
+import dev.patric.commonlib.api.port.noop.NoopGuiPort;
 import dev.patric.commonlib.api.port.noop.NoopHologramPort;
 import dev.patric.commonlib.api.port.noop.NoopNpcPort;
 import dev.patric.commonlib.api.port.noop.NoopSchematicPort;
@@ -92,10 +96,11 @@ public final class DefaultCommonRuntime implements CommonRuntime {
         serviceRegistry.register(ServiceRegistry.class, serviceRegistry);
         serviceRegistry.register(RuntimeLogger.class, runtimeLogger);
         serviceRegistry.register(CommonScheduler.class, scheduler);
-        serviceRegistry.register(EventRouter.class, new SimpleEventRouter());
+        EventRouter eventRouter = new SimpleEventRouter();
+        serviceRegistry.register(EventRouter.class, eventRouter);
         serviceRegistry.register(CommandRegistry.class, new DefaultCommandRegistry());
         serviceRegistry.register(CommandValidator.class, new DefaultCommandValidator());
-        registerDefaultPortsAndCapabilities();
+        registerDefaultPortsAndCapabilities(eventRouter);
 
         if (includeDefaultCoreComponents) {
             YamlConfigService configService = new YamlConfigService(plugin, mainConfigPath, List.of(messagesConfigPath));
@@ -121,24 +126,31 @@ public final class DefaultCommonRuntime implements CommonRuntime {
         components.addAll(customComponents);
     }
 
-    private void registerDefaultPortsAndCapabilities() {
+    private void registerDefaultPortsAndCapabilities(EventRouter eventRouter) {
         NpcPort npcPort = new NoopNpcPort();
         HologramPort hologramPort = new NoopHologramPort();
         ClaimsPort claimsPort = new NoopClaimsPort();
         SchematicPort schematicPort = new NoopSchematicPort();
         CommandPort commandPort = new NoopCommandPort();
+        GuiPort guiPort = new NoopGuiPort();
 
         serviceRegistry.register(NpcPort.class, npcPort);
         serviceRegistry.register(HologramPort.class, hologramPort);
         serviceRegistry.register(ClaimsPort.class, claimsPort);
         serviceRegistry.register(SchematicPort.class, schematicPort);
         serviceRegistry.register(CommandPort.class, commandPort);
+        serviceRegistry.register(GuiPort.class, guiPort);
+        serviceRegistry.register(
+                GuiSessionService.class,
+                new DefaultGuiSessionService(scheduler, eventRouter, runtimeLogger, guiPort)
+        );
 
         CapabilityRegistry capabilityRegistry = new DefaultCapabilityRegistry();
         capabilityRegistry.publish(StandardCapabilities.NPC, CapabilityStatus.unavailable("No adapter installed"));
         capabilityRegistry.publish(StandardCapabilities.HOLOGRAM, CapabilityStatus.unavailable("No adapter installed"));
         capabilityRegistry.publish(StandardCapabilities.CLAIMS, CapabilityStatus.unavailable("No adapter installed"));
         capabilityRegistry.publish(StandardCapabilities.SCHEMATIC, CapabilityStatus.unavailable("No adapter installed"));
+        capabilityRegistry.publish(StandardCapabilities.GUI, CapabilityStatus.unavailable("No adapter installed"));
 
         serviceRegistry.register(CapabilityRegistry.class, capabilityRegistry);
     }
@@ -185,6 +197,7 @@ public final class DefaultCommonRuntime implements CommonRuntime {
         }
 
         rollbackEnabledComponents();
+        serviceRegistry.find(GuiSessionService.class).ifPresent(service -> service.closeAll(GuiCloseReason.PLUGIN_DISABLE));
         scheduler.cancelAll();
         enabled.set(false);
     }

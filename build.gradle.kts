@@ -75,6 +75,7 @@ val verifyCoreDependencyPolicy = tasks.register("verifyCoreDependencyPolicy") {
 
         val guardedApiDirs = listOf(
             file("src/main/java/dev/patric/commonlib/api/capability"),
+            file("src/main/java/dev/patric/commonlib/api/gui"),
             file("src/main/java/dev/patric/commonlib/api/port/noop")
         )
         val allowedImportPrefixes = listOf("java.", "javax.", "org.bukkit.", "dev.patric.commonlib.")
