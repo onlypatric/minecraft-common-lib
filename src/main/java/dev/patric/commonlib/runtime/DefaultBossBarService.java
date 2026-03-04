@@ -31,7 +31,8 @@ public final class DefaultBossBarService implements BossBarService {
     private final BossBarPort port;
     private final HudUpdatePolicy policy;
     private final AtomicLong tickCounter;
-    private final TaskHandle flushHandle;
+    private final Object flushLock;
+    private volatile TaskHandle flushHandle;
 
     /**
      * Creates bossbar service with competitive default policy.
@@ -64,12 +65,16 @@ public final class DefaultBossBarService implements BossBarService {
         this.policy = Objects.requireNonNull(policy, "policy");
         this.bars = new ConcurrentHashMap<>();
         this.tickCounter = new AtomicLong(0L);
-        this.flushHandle = scheduler.runSyncRepeating(1L, 1L, this::flushTick);
+        this.flushLock = new Object();
+        this.flushHandle = null;
     }
 
     @Override
     public BossBarSession open(BossBarOpenRequest request) {
         Objects.requireNonNull(request, "request");
+        if (!ensureFlushLoopStarted()) {
+            throw new IllegalStateException("Unable to start bossbar flush loop");
+        }
 
         UUID barId = UUID.randomUUID();
         long now = System.currentTimeMillis();
@@ -116,6 +121,9 @@ public final class DefaultBossBarService implements BossBarService {
     public BossBarUpdateResult update(UUID barId, BossBarState nextState) {
         Objects.requireNonNull(barId, "barId");
         Objects.requireNonNull(nextState, "nextState");
+        if (!ensureFlushLoopStarted()) {
+            return BossBarUpdateResult.BAR_CLOSED;
+        }
 
         BossBarUpdateResult validity = validateState(nextState);
         if (validity != BossBarUpdateResult.APPLIED) {
@@ -192,6 +200,11 @@ public final class DefaultBossBarService implements BossBarService {
     }
 
     private void flushTick() {
+        if (bars.isEmpty()) {
+            stopFlushLoopIfIdle();
+            return;
+        }
+
         long tick = tickCounter.incrementAndGet();
 
         for (BarRecord record : List.copyOf(bars.values())) {
@@ -223,7 +236,43 @@ public final class DefaultBossBarService implements BossBarService {
         }
 
         bars.remove(barId, record);
+        stopFlushLoopIfIdle();
         return true;
+    }
+
+    private boolean ensureFlushLoopStarted() {
+        if (flushHandle != null && !flushHandle.isCancelled()) {
+            return true;
+        }
+        synchronized (flushLock) {
+            if (flushHandle != null && !flushHandle.isCancelled()) {
+                return true;
+            }
+            try {
+                flushHandle = scheduler.runSyncRepeating(1L, 1L, this::flushTick);
+                return true;
+            } catch (RuntimeException ex) {
+                logger.error("bossbar flush loop start failed", ex);
+                return false;
+            }
+        }
+    }
+
+    private void stopFlushLoopIfIdle() {
+        if (!bars.isEmpty()) {
+            return;
+        }
+        synchronized (flushLock) {
+            if (!bars.isEmpty()) {
+                return;
+            }
+            TaskHandle handle = flushHandle;
+            if (handle == null) {
+                return;
+            }
+            handle.cancel();
+            flushHandle = null;
+        }
     }
 
     private BossBarUpdateResult validateState(BossBarState state) {

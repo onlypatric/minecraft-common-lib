@@ -37,6 +37,9 @@ public class DemoConsumerPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        if (runtime == null) {
+            throw new IllegalStateException("Runtime was not built during onLoad.");
+        }
         OperationResult<Void> enable = RuntimeBootstrap.safeEnable(runtime);
         if (enable.isFailure()) {
             throw new IllegalStateException(enable.errorOrNull().message(), enable.errorOrNull().cause());
@@ -45,6 +48,9 @@ public class DemoConsumerPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        if (runtime == null) {
+            return;
+        }
         RuntimeBootstrap.safeDisable(runtime);
     }
 

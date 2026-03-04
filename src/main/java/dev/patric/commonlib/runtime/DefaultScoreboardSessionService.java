@@ -32,7 +32,8 @@ public final class DefaultScoreboardSessionService implements ScoreboardSessionS
     private final ScoreboardPort port;
     private final HudUpdatePolicy policy;
     private final AtomicLong tickCounter;
-    private final TaskHandle flushHandle;
+    private final Object flushLock;
+    private volatile TaskHandle flushHandle;
 
     /**
      * Creates scoreboard service with competitive default policy.
@@ -65,12 +66,16 @@ public final class DefaultScoreboardSessionService implements ScoreboardSessionS
         this.policy = Objects.requireNonNull(policy, "policy");
         this.sessions = new ConcurrentHashMap<>();
         this.tickCounter = new AtomicLong(0L);
-        this.flushHandle = scheduler.runSyncRepeating(1L, 1L, this::flushTick);
+        this.flushLock = new Object();
+        this.flushHandle = null;
     }
 
     @Override
     public ScoreboardSession open(ScoreboardOpenRequest request) {
         Objects.requireNonNull(request, "request");
+        if (!ensureFlushLoopStarted()) {
+            throw new IllegalStateException("Unable to start scoreboard flush loop");
+        }
 
         ScoreboardSnapshot normalized = normalizeOpenSnapshot(request.initialSnapshot(), request.boardKey());
         UUID sessionId = UUID.randomUUID();
@@ -118,6 +123,9 @@ public final class DefaultScoreboardSessionService implements ScoreboardSessionS
     public ScoreboardUpdateResult update(UUID sessionId, ScoreboardSnapshot nextSnapshot) {
         Objects.requireNonNull(sessionId, "sessionId");
         Objects.requireNonNull(nextSnapshot, "nextSnapshot");
+        if (!ensureFlushLoopStarted()) {
+            return ScoreboardUpdateResult.SESSION_CLOSED;
+        }
 
         ScoreboardUpdateResult validity = validateUpdatePayload(nextSnapshot);
         if (validity != ScoreboardUpdateResult.APPLIED) {
@@ -194,6 +202,11 @@ public final class DefaultScoreboardSessionService implements ScoreboardSessionS
     }
 
     private void flushTick() {
+        if (sessions.isEmpty()) {
+            stopFlushLoopIfIdle();
+            return;
+        }
+
         long tick = tickCounter.incrementAndGet();
 
         for (SessionRecord record : List.copyOf(sessions.values())) {
@@ -225,7 +238,43 @@ public final class DefaultScoreboardSessionService implements ScoreboardSessionS
         }
 
         sessions.remove(sessionId, record);
+        stopFlushLoopIfIdle();
         return true;
+    }
+
+    private boolean ensureFlushLoopStarted() {
+        if (flushHandle != null && !flushHandle.isCancelled()) {
+            return true;
+        }
+        synchronized (flushLock) {
+            if (flushHandle != null && !flushHandle.isCancelled()) {
+                return true;
+            }
+            try {
+                flushHandle = scheduler.runSyncRepeating(1L, 1L, this::flushTick);
+                return true;
+            } catch (RuntimeException ex) {
+                logger.error("scoreboard flush loop start failed", ex);
+                return false;
+            }
+        }
+    }
+
+    private void stopFlushLoopIfIdle() {
+        if (!sessions.isEmpty()) {
+            return;
+        }
+        synchronized (flushLock) {
+            if (!sessions.isEmpty()) {
+                return;
+            }
+            TaskHandle handle = flushHandle;
+            if (handle == null) {
+                return;
+            }
+            handle.cancel();
+            flushHandle = null;
+        }
     }
 
     private ScoreboardSnapshot normalizeOpenSnapshot(ScoreboardSnapshot snapshot, String boardKey) {

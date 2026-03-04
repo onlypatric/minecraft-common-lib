@@ -38,6 +38,15 @@ tasks.withType<JavaCompile>().configureEach {
     options.release.set(21)
 }
 
+tasks.jar {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from(
+        zipTree(commonLibJar).matching {
+            exclude("META-INF/*.SF", "META-INF/*.DSA", "META-INF/*.RSA")
+        }
+    )
+}
+
 tasks.test {
     useJUnitPlatform()
 }
