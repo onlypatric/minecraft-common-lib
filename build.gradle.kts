@@ -49,6 +49,14 @@ subprojects {
         useJUnitPlatform()
     }
 
+    tasks.withType<Javadoc>().configureEach {
+        val opts = options as org.gradle.external.javadoc.StandardJavadocDocletOptions
+        opts.encoding = "UTF-8"
+        opts.addBooleanOption("Werror", true)
+        opts.addBooleanOption("Xdoclint:none", true)
+        opts.addBooleanOption("quiet", true)
+    }
+
     dependencies {
         "testImplementation"("io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT")
         "testImplementation"(platform("org.junit:junit-bom:5.12.2"))
@@ -139,6 +147,14 @@ dependencies {
 tasks.withType<JavaCompile>().configureEach {
     options.encoding = "UTF-8"
     options.release.set(21)
+}
+
+tasks.withType<Javadoc>().configureEach {
+    val opts = options as org.gradle.external.javadoc.StandardJavadocDocletOptions
+    opts.encoding = "UTF-8"
+    opts.addBooleanOption("Werror", true)
+    opts.addBooleanOption("Xdoclint:none", true)
+    opts.addBooleanOption("quiet", true)
 }
 
 tasks.test {
