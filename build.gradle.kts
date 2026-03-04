@@ -17,6 +17,8 @@ java {
 repositories {
     mavenCentral()
     maven("https://repo.papermc.io/repository/maven-public/")
+    maven("https://repo.fancyinnovations.com/releases")
+    maven("https://repo.dmulloy2.net/repository/public/")
 }
 
 subprojects {
@@ -29,6 +31,7 @@ subprojects {
         mavenCentral()
         maven("https://repo.papermc.io/repository/maven-public/")
         maven("https://repo.fancyinnovations.com/releases")
+        maven("https://repo.dmulloy2.net/repository/public/")
     }
 
     extensions.configure<JavaPluginExtension> {
@@ -68,6 +71,12 @@ dependencies {
     testImplementation(project(":adapter-fastboard"))
     testImplementation(project(":adapter-fancyholograms"))
     testImplementation(project(":adapter-fancynpcs"))
+    testImplementation(project(":adapter-huskclaims"))
+    testImplementation(project(":adapter-worldedit"))
+    testImplementation(project(":adapter-fawe"))
+    testImplementation(project(":adapter-bossbar-paper"))
+    testImplementation(project(":adapter-bstats"))
+    testImplementation(project(":adapter-protocollib"))
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
@@ -95,11 +104,36 @@ configurations[adapterIntegrationTestSourceSet.implementationConfigurationName]
 configurations[adapterIntegrationTestSourceSet.runtimeOnlyConfigurationName]
     .extendsFrom(configurations.testRuntimeOnly.get())
 
+val externalMatrixTestSourceSet = sourceSets.create("externalMatrixTest") {
+    java.srcDir("src/externalMatrixTest/java")
+    resources.srcDir("src/externalMatrixTest/resources")
+    compileClasspath += sourceSets.main.get().output + sourceSets.test.get().output + configurations.testRuntimeClasspath.get()
+    runtimeClasspath += output + compileClasspath
+}
+
+configurations[externalMatrixTestSourceSet.implementationConfigurationName]
+    .extendsFrom(configurations.testImplementation.get())
+configurations[externalMatrixTestSourceSet.runtimeOnlyConfigurationName]
+    .extendsFrom(configurations.testRuntimeOnly.get())
+
 dependencies {
-    add(adapterIntegrationTestSourceSet.implementationConfigurationName, project(":adapter-commandapi"))
-    add(adapterIntegrationTestSourceSet.implementationConfigurationName, project(":adapter-fastboard"))
-    add(adapterIntegrationTestSourceSet.implementationConfigurationName, project(":adapter-fancyholograms"))
-    add(adapterIntegrationTestSourceSet.implementationConfigurationName, project(":adapter-fancynpcs"))
+    val waveProjects = listOf(
+        ":adapter-commandapi",
+        ":adapter-fastboard",
+        ":adapter-fancyholograms",
+        ":adapter-fancynpcs",
+        ":adapter-huskclaims",
+        ":adapter-worldedit",
+        ":adapter-fawe",
+        ":adapter-bossbar-paper",
+        ":adapter-bstats",
+        ":adapter-protocollib"
+    )
+
+    waveProjects.forEach { adapterProject ->
+        add(adapterIntegrationTestSourceSet.implementationConfigurationName, project(adapterProject))
+        add(externalMatrixTestSourceSet.implementationConfigurationName, project(adapterProject))
+    }
 }
 
 tasks.withType<JavaCompile>().configureEach {
@@ -119,9 +153,9 @@ val integrationTest = tasks.register<Test>("integrationTest") {
     useJUnitPlatform()
     onlyIf {
         providers.gradleProperty("runIntegrationHarness")
-                .map(String::toBoolean)
-                .orElse(false)
-                .get()
+            .map(String::toBoolean)
+            .orElse(false)
+            .get()
     }
 }
 
@@ -133,9 +167,23 @@ val adapterIntegrationTest = tasks.register<Test>("adapterIntegrationTest") {
     useJUnitPlatform()
     onlyIf {
         providers.gradleProperty("runAdapterIntegration")
-                .map(String::toBoolean)
-                .orElse(false)
-                .get()
+            .map(String::toBoolean)
+            .orElse(false)
+            .get()
+    }
+}
+
+val externalMatrixTest = tasks.register<Test>("externalMatrixTest") {
+    description = "Runs opt-in external adapter matrix tests."
+    group = "verification"
+    testClassesDirs = externalMatrixTestSourceSet.output.classesDirs
+    classpath = externalMatrixTestSourceSet.runtimeClasspath
+    useJUnitPlatform()
+    onlyIf {
+        providers.gradleProperty("runExternalMatrix")
+            .map(String::toBoolean)
+            .orElse(false)
+            .get()
     }
 }
 
@@ -169,13 +217,14 @@ val verifyCoreDependencyPolicy = tasks.register("verifyCoreDependencyPolicy") {
         if (!valid) {
             throw GradleException(
                 "Configuration 'compileOnly' must contain only io.papermc.paper:paper-api. Found: " +
-                        "${dependency.group}:${dependency.name}:${dependency.version}"
+                    "${dependency.group}:${dependency.name}:${dependency.version}"
             )
         }
 
         val guardedApiDirs = listOf(
             file("src/main/java/dev/patric/commonlib/api/adapter"),
             file("src/main/java/dev/patric/commonlib/api/capability"),
+            file("src/main/java/dev/patric/commonlib/api/packet"),
             file("src/main/java/dev/patric/commonlib/api/match"),
             file("src/main/java/dev/patric/commonlib/api/hud"),
             file("src/main/java/dev/patric/commonlib/api/gui"),
@@ -219,7 +268,13 @@ val verifyAdapterDependencyPolicy = tasks.register("verifyAdapterDependencyPolic
             ":adapter-commandapi",
             ":adapter-fastboard",
             ":adapter-fancyholograms",
-            ":adapter-fancynpcs"
+            ":adapter-fancynpcs",
+            ":adapter-huskclaims",
+            ":adapter-worldedit",
+            ":adapter-fawe",
+            ":adapter-bossbar-paper",
+            ":adapter-bstats",
+            ":adapter-protocollib"
         )
 
         adapterProjects.forEach { projectPath ->
@@ -241,8 +296,35 @@ val verifyAdapterDependencyPolicy = tasks.register("verifyAdapterDependencyPolic
             if (invalidProjectDeps.isNotEmpty()) {
                 throw GradleException(
                     "Adapter modules may only depend on core project ':'. Invalid project dependencies: " +
-                            invalidProjectDeps.joinToString(", ")
+                        invalidProjectDeps.joinToString(", ")
                 )
+            }
+        }
+    }
+}
+
+val verifyAdapterLicensePolicy = tasks.register("verifyAdapterLicensePolicy") {
+    group = "verification"
+    description = "Enforces GPL/proprietary adapter policy boundaries."
+
+    doLast {
+        val restrictedAdapters = setOf(":adapter-fawe", ":adapter-protocollib")
+        val forbiddenConfigurations = listOf("api", "implementation", "runtimeOnly")
+
+        restrictedAdapters.forEach { projectPath ->
+            val adapterProject = project(projectPath)
+            forbiddenConfigurations.forEach { configurationName ->
+                val configuration = adapterProject.configurations.findByName(configurationName) ?: return@forEach
+                val external = configuration.dependencies.filterNot { dependency ->
+                    dependency is org.gradle.api.artifacts.ProjectDependency && dependency.path == ":"
+                }
+
+                if (external.isNotEmpty()) {
+                    val found = external.joinToString(", ") { "${it.group}:${it.name}:${it.version}" }
+                    throw GradleException(
+                        "Adapter '$projectPath' violates license policy. '$configurationName' cannot declare external deps: $found"
+                    )
+                }
             }
         }
     }
@@ -251,6 +333,7 @@ val verifyAdapterDependencyPolicy = tasks.register("verifyAdapterDependencyPolic
 tasks.check {
     dependsOn(verifyCoreDependencyPolicy)
     dependsOn(verifyAdapterDependencyPolicy)
+    dependsOn(verifyAdapterLicensePolicy)
 }
 
 tasks.jacocoTestReport {

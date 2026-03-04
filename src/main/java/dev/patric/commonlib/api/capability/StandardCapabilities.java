@@ -21,6 +21,10 @@ public final class StandardCapabilities {
     public static final CapabilityKey<String> SCOREBOARD = CapabilityKey.of("scoreboard", String.class);
     /** Bossbar capability key. */
     public static final CapabilityKey<String> BOSSBAR = CapabilityKey.of("bossbar", String.class);
+    /** Metrics capability key. */
+    public static final CapabilityKey<String> METRICS = CapabilityKey.of("metrics", String.class);
+    /** Packets capability key. */
+    public static final CapabilityKey<String> PACKETS = CapabilityKey.of("packets", String.class);
     /** Match engine capability key. */
     public static final CapabilityKey<String> MATCH_ENGINE = CapabilityKey.of("match_engine", String.class);
     /** Arena reset capability key. */

@@ -36,7 +36,9 @@ import dev.patric.commonlib.api.port.ClaimsPort;
 import dev.patric.commonlib.api.port.CommandPort;
 import dev.patric.commonlib.api.port.GuiPort;
 import dev.patric.commonlib.api.port.HologramPort;
+import dev.patric.commonlib.api.port.MetricsPort;
 import dev.patric.commonlib.api.port.NpcPort;
+import dev.patric.commonlib.api.port.PacketPort;
 import dev.patric.commonlib.api.port.SchematicPort;
 import dev.patric.commonlib.api.port.ScoreboardPort;
 import dev.patric.commonlib.api.port.noop.NoopBossBarPort;
@@ -44,8 +46,10 @@ import dev.patric.commonlib.api.port.noop.NoopClaimsPort;
 import dev.patric.commonlib.api.port.noop.NoopCommandPort;
 import dev.patric.commonlib.api.port.noop.NoopGuiPort;
 import dev.patric.commonlib.api.port.noop.NoopHologramPort;
+import dev.patric.commonlib.api.port.noop.NoopMetricsPort;
 import dev.patric.commonlib.api.port.noop.NoopNpcPort;
 import dev.patric.commonlib.api.port.noop.NoopArenaResetPort;
+import dev.patric.commonlib.api.port.noop.NoopPacketPort;
 import dev.patric.commonlib.api.port.noop.NoopSchematicPort;
 import dev.patric.commonlib.api.port.noop.NoopScoreboardPort;
 import dev.patric.commonlib.command.DefaultCommandValidator;
@@ -60,8 +64,13 @@ import dev.patric.commonlib.runtime.persistence.DefaultYamlPersistencePort;
 import dev.patric.commonlib.runtime.persistence.NoopSqlPersistencePort;
 import dev.patric.commonlib.runtime.adapter.DefaultPortBindingService;
 import dev.patric.commonlib.runtime.adapter.DelegatingCommandPort;
+import dev.patric.commonlib.runtime.adapter.DelegatingClaimsPort;
+import dev.patric.commonlib.runtime.adapter.DelegatingBossBarPort;
 import dev.patric.commonlib.runtime.adapter.DelegatingHologramPort;
+import dev.patric.commonlib.runtime.adapter.DelegatingMetricsPort;
 import dev.patric.commonlib.runtime.adapter.DelegatingNpcPort;
+import dev.patric.commonlib.runtime.adapter.DelegatingPacketPort;
+import dev.patric.commonlib.runtime.adapter.DelegatingSchematicPort;
 import dev.patric.commonlib.runtime.adapter.DelegatingScoreboardPort;
 import dev.patric.commonlib.services.DefaultCapabilityRegistry;
 import dev.patric.commonlib.services.DefaultServiceRegistry;
@@ -160,14 +169,21 @@ public final class DefaultCommonRuntime implements CommonRuntime {
         DelegatingNpcPort npcPort = new DelegatingNpcPort(fallbackNpcPort);
         HologramPort fallbackHologramPort = new NoopHologramPort();
         DelegatingHologramPort hologramPort = new DelegatingHologramPort(fallbackHologramPort);
-        ClaimsPort claimsPort = new NoopClaimsPort();
-        SchematicPort schematicPort = new NoopSchematicPort();
+        ClaimsPort fallbackClaimsPort = new NoopClaimsPort();
+        DelegatingClaimsPort claimsPort = new DelegatingClaimsPort(fallbackClaimsPort);
+        SchematicPort fallbackSchematicPort = new NoopSchematicPort();
+        DelegatingSchematicPort schematicPort = new DelegatingSchematicPort(fallbackSchematicPort);
         CommandPort fallbackCommandPort = new NoopCommandPort();
         DelegatingCommandPort commandPort = new DelegatingCommandPort(fallbackCommandPort);
         GuiPort guiPort = new NoopGuiPort();
         ScoreboardPort fallbackScoreboardPort = new NoopScoreboardPort();
         DelegatingScoreboardPort scoreboardPort = new DelegatingScoreboardPort(fallbackScoreboardPort);
-        BossBarPort bossBarPort = new NoopBossBarPort();
+        BossBarPort fallbackBossBarPort = new NoopBossBarPort();
+        DelegatingBossBarPort bossBarPort = new DelegatingBossBarPort(fallbackBossBarPort);
+        MetricsPort fallbackMetricsPort = new NoopMetricsPort();
+        DelegatingMetricsPort metricsPort = new DelegatingMetricsPort(fallbackMetricsPort);
+        PacketPort fallbackPacketPort = new NoopPacketPort();
+        DelegatingPacketPort packetPort = new DelegatingPacketPort(fallbackPacketPort);
         ArenaResetPort arenaResetPort = new NoopArenaResetPort();
 
         serviceRegistry.register(NpcPort.class, npcPort);
@@ -178,6 +194,8 @@ public final class DefaultCommonRuntime implements CommonRuntime {
         serviceRegistry.register(GuiPort.class, guiPort);
         serviceRegistry.register(ScoreboardPort.class, scoreboardPort);
         serviceRegistry.register(BossBarPort.class, bossBarPort);
+        serviceRegistry.register(MetricsPort.class, metricsPort);
+        serviceRegistry.register(PacketPort.class, packetPort);
         serviceRegistry.register(ArenaResetPort.class, arenaResetPort);
 
         TeamService teamService = new DefaultTeamService();
@@ -221,6 +239,11 @@ public final class DefaultCommonRuntime implements CommonRuntime {
                 scoreboardPort,
                 hologramPort,
                 npcPort,
+                claimsPort,
+                schematicPort,
+                bossBarPort,
+                metricsPort,
+                packetPort,
                 capabilityRegistry
         );
         capabilityRegistry.publish(StandardCapabilities.NPC, CapabilityStatus.unavailable("No adapter installed"));
@@ -231,6 +254,8 @@ public final class DefaultCommonRuntime implements CommonRuntime {
         capabilityRegistry.publish(StandardCapabilities.COMMAND, CapabilityStatus.unavailable("No adapter installed"));
         capabilityRegistry.publish(StandardCapabilities.SCOREBOARD, CapabilityStatus.unavailable("No adapter installed"));
         capabilityRegistry.publish(StandardCapabilities.BOSSBAR, CapabilityStatus.unavailable("No adapter installed"));
+        capabilityRegistry.publish(StandardCapabilities.METRICS, CapabilityStatus.unavailable("No adapter installed"));
+        capabilityRegistry.publish(StandardCapabilities.PACKETS, CapabilityStatus.unavailable("No adapter installed"));
         capabilityRegistry.publish(StandardCapabilities.MATCH_ENGINE, CapabilityStatus.available("core-default"));
         capabilityRegistry.publish(StandardCapabilities.ARENA_RESET, CapabilityStatus.unavailable("No adapter installed"));
         capabilityRegistry.publish(StandardCapabilities.PERSISTENCE_YAML, CapabilityStatus.available("core-default"));
@@ -296,6 +321,8 @@ public final class DefaultCommonRuntime implements CommonRuntime {
         serviceRegistry.find(BossBarService.class)
                 .ifPresent(service -> service.closeAll(HudAudienceCloseReason.PLUGIN_DISABLE));
         serviceRegistry.find(GuiSessionService.class).ifPresent(service -> service.closeAll(GuiCloseReason.PLUGIN_DISABLE));
+        serviceRegistry.find(PacketPort.class).ifPresent(PacketPort::unregisterAll);
+        serviceRegistry.find(MetricsPort.class).ifPresent(MetricsPort::shutdown);
         scheduler.cancelAll();
         enabled.set(false);
     }
