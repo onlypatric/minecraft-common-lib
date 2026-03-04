@@ -14,22 +14,29 @@ import dev.patric.commonlib.api.command.CommandValidator;
 import dev.patric.commonlib.api.capability.CapabilityRegistry;
 import dev.patric.commonlib.api.capability.CapabilityStatus;
 import dev.patric.commonlib.api.capability.StandardCapabilities;
+import dev.patric.commonlib.api.hud.BossBarService;
+import dev.patric.commonlib.api.hud.HudAudienceCloseReason;
+import dev.patric.commonlib.api.hud.ScoreboardSessionService;
 import dev.patric.commonlib.api.gui.GuiCloseReason;
 import dev.patric.commonlib.api.gui.GuiSessionService;
 import dev.patric.commonlib.api.message.FallbackChain;
 import dev.patric.commonlib.api.message.PluralRules;
+import dev.patric.commonlib.api.port.BossBarPort;
 import dev.patric.commonlib.api.port.ClaimsPort;
 import dev.patric.commonlib.api.port.CommandPort;
 import dev.patric.commonlib.api.port.GuiPort;
 import dev.patric.commonlib.api.port.HologramPort;
 import dev.patric.commonlib.api.port.NpcPort;
 import dev.patric.commonlib.api.port.SchematicPort;
+import dev.patric.commonlib.api.port.ScoreboardPort;
+import dev.patric.commonlib.api.port.noop.NoopBossBarPort;
 import dev.patric.commonlib.api.port.noop.NoopClaimsPort;
 import dev.patric.commonlib.api.port.noop.NoopCommandPort;
 import dev.patric.commonlib.api.port.noop.NoopGuiPort;
 import dev.patric.commonlib.api.port.noop.NoopHologramPort;
 import dev.patric.commonlib.api.port.noop.NoopNpcPort;
 import dev.patric.commonlib.api.port.noop.NoopSchematicPort;
+import dev.patric.commonlib.api.port.noop.NoopScoreboardPort;
 import dev.patric.commonlib.command.DefaultCommandValidator;
 import dev.patric.commonlib.config.YamlConfigService;
 import dev.patric.commonlib.lifecycle.SimpleEventRouter;
@@ -133,6 +140,8 @@ public final class DefaultCommonRuntime implements CommonRuntime {
         SchematicPort schematicPort = new NoopSchematicPort();
         CommandPort commandPort = new NoopCommandPort();
         GuiPort guiPort = new NoopGuiPort();
+        ScoreboardPort scoreboardPort = new NoopScoreboardPort();
+        BossBarPort bossBarPort = new NoopBossBarPort();
 
         serviceRegistry.register(NpcPort.class, npcPort);
         serviceRegistry.register(HologramPort.class, hologramPort);
@@ -140,9 +149,19 @@ public final class DefaultCommonRuntime implements CommonRuntime {
         serviceRegistry.register(SchematicPort.class, schematicPort);
         serviceRegistry.register(CommandPort.class, commandPort);
         serviceRegistry.register(GuiPort.class, guiPort);
+        serviceRegistry.register(ScoreboardPort.class, scoreboardPort);
+        serviceRegistry.register(BossBarPort.class, bossBarPort);
         serviceRegistry.register(
                 GuiSessionService.class,
                 new DefaultGuiSessionService(scheduler, eventRouter, runtimeLogger, guiPort)
+        );
+        serviceRegistry.register(
+                ScoreboardSessionService.class,
+                new DefaultScoreboardSessionService(scheduler, runtimeLogger, scoreboardPort)
+        );
+        serviceRegistry.register(
+                BossBarService.class,
+                new DefaultBossBarService(scheduler, runtimeLogger, bossBarPort)
         );
 
         CapabilityRegistry capabilityRegistry = new DefaultCapabilityRegistry();
@@ -151,6 +170,8 @@ public final class DefaultCommonRuntime implements CommonRuntime {
         capabilityRegistry.publish(StandardCapabilities.CLAIMS, CapabilityStatus.unavailable("No adapter installed"));
         capabilityRegistry.publish(StandardCapabilities.SCHEMATIC, CapabilityStatus.unavailable("No adapter installed"));
         capabilityRegistry.publish(StandardCapabilities.GUI, CapabilityStatus.unavailable("No adapter installed"));
+        capabilityRegistry.publish(StandardCapabilities.SCOREBOARD, CapabilityStatus.unavailable("No adapter installed"));
+        capabilityRegistry.publish(StandardCapabilities.BOSSBAR, CapabilityStatus.unavailable("No adapter installed"));
 
         serviceRegistry.register(CapabilityRegistry.class, capabilityRegistry);
     }
@@ -197,6 +218,10 @@ public final class DefaultCommonRuntime implements CommonRuntime {
         }
 
         rollbackEnabledComponents();
+        serviceRegistry.find(ScoreboardSessionService.class)
+                .ifPresent(service -> service.closeAll(HudAudienceCloseReason.PLUGIN_DISABLE));
+        serviceRegistry.find(BossBarService.class)
+                .ifPresent(service -> service.closeAll(HudAudienceCloseReason.PLUGIN_DISABLE));
         serviceRegistry.find(GuiSessionService.class).ifPresent(service -> service.closeAll(GuiCloseReason.PLUGIN_DISABLE));
         scheduler.cancelAll();
         enabled.set(false);
