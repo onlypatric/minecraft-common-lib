@@ -5,6 +5,7 @@ import dev.patric.commonlib.api.port.BossBarPort;
 import dev.patric.commonlib.api.port.ClaimsPort;
 import dev.patric.commonlib.api.port.GuiPort;
 import dev.patric.commonlib.api.port.HologramPort;
+import dev.patric.commonlib.api.match.MatchEngineService;
 import dev.patric.commonlib.api.port.NpcPort;
 import dev.patric.commonlib.api.port.ScoreboardPort;
 import dev.patric.commonlib.api.port.SchematicPort;
@@ -62,10 +63,12 @@ class CapabilityRegistryTest {
         assertFalse(registry.isAvailable(StandardCapabilities.GUI));
         assertFalse(registry.isAvailable(StandardCapabilities.SCOREBOARD));
         assertFalse(registry.isAvailable(StandardCapabilities.BOSSBAR));
+        assertTrue(registry.isAvailable(StandardCapabilities.MATCH_ENGINE));
         assertEquals("No adapter installed", registry.status(StandardCapabilities.NPC).orElseThrow().reason());
         assertEquals("No adapter installed", registry.status(StandardCapabilities.GUI).orElseThrow().reason());
         assertEquals("No adapter installed", registry.status(StandardCapabilities.SCOREBOARD).orElseThrow().reason());
         assertEquals("No adapter installed", registry.status(StandardCapabilities.BOSSBAR).orElseThrow().reason());
+        assertEquals("core-default", registry.status(StandardCapabilities.MATCH_ENGINE).orElseThrow().metadata());
 
         runtime.services().require(NpcPort.class);
         runtime.services().require(HologramPort.class);
@@ -74,5 +77,6 @@ class CapabilityRegistryTest {
         runtime.services().require(GuiPort.class);
         runtime.services().require(ScoreboardPort.class);
         runtime.services().require(BossBarPort.class);
+        runtime.services().require(MatchEngineService.class);
     }
 }

@@ -53,6 +53,21 @@ import dev.patric.commonlib.api.message.FallbackChain;
 import dev.patric.commonlib.api.message.MessageRequest;
 import dev.patric.commonlib.api.message.PlaceholderResolver;
 import dev.patric.commonlib.api.message.PluralRules;
+import dev.patric.commonlib.api.match.DisconnectResult;
+import dev.patric.commonlib.api.match.EndReason;
+import dev.patric.commonlib.api.match.JoinResult;
+import dev.patric.commonlib.api.match.MatchCallbacks;
+import dev.patric.commonlib.api.match.MatchCleanup;
+import dev.patric.commonlib.api.match.MatchEngineService;
+import dev.patric.commonlib.api.match.MatchOpenRequest;
+import dev.patric.commonlib.api.match.MatchPolicy;
+import dev.patric.commonlib.api.match.MatchSession;
+import dev.patric.commonlib.api.match.MatchSessionStatus;
+import dev.patric.commonlib.api.match.MatchState;
+import dev.patric.commonlib.api.match.MatchTimingPolicy;
+import dev.patric.commonlib.api.match.MatchTransitionResult;
+import dev.patric.commonlib.api.match.RejoinPolicy;
+import dev.patric.commonlib.api.match.RejoinResult;
 import dev.patric.commonlib.api.port.ArenaResetPort;
 import dev.patric.commonlib.api.port.BossBarPort;
 import dev.patric.commonlib.api.port.ClaimsPort;
@@ -176,7 +191,22 @@ class PublicApiFreezeContractTest {
                 BossBarUpdateResult.class,
                 BossBarSession.class,
                 BossBarService.class,
-                BossBarPort.class
+                BossBarPort.class,
+                MatchState.class,
+                EndReason.class,
+                MatchSessionStatus.class,
+                MatchTimingPolicy.class,
+                RejoinPolicy.class,
+                MatchPolicy.class,
+                MatchOpenRequest.class,
+                MatchSession.class,
+                MatchTransitionResult.class,
+                JoinResult.class,
+                DisconnectResult.class,
+                RejoinResult.class,
+                MatchCallbacks.class,
+                MatchCleanup.class,
+                MatchEngineService.class
         };
 
         assertTrue(frozenTypes.length >= 48);
@@ -313,6 +343,28 @@ class PublicApiFreezeContractTest {
         assertMethod(BossBarService.class, "onPlayerQuit", void.class, UUID.class);
         assertMethod(BossBarService.class, "onPlayerWorldChange", void.class, UUID.class);
         assertMethod(BossBarService.class, "policy", HudUpdatePolicy.class);
+    }
+
+    @Test
+    void frozenMatchEngineModelIsPresent() throws Exception {
+        assertMethod(MatchTimingPolicy.class, "competitiveDefaults", MatchTimingPolicy.class);
+        assertMethod(RejoinPolicy.class, "competitiveDefaults", RejoinPolicy.class);
+        assertMethod(MatchPolicy.class, "competitiveDefaults", MatchPolicy.class);
+        assertMethod(MatchCleanup.class, "noop", MatchCleanup.class);
+
+        assertMethod(MatchEngineService.class, "open", MatchSession.class, MatchOpenRequest.class);
+        assertMethod(MatchEngineService.class, "find", Optional.class, UUID.class);
+        assertMethod(MatchEngineService.class, "active", List.class);
+        assertMethod(MatchEngineService.class, "startCountdown", MatchTransitionResult.class, UUID.class);
+        assertMethod(MatchEngineService.class, "transition", MatchTransitionResult.class, UUID.class, MatchState.class, EndReason.class);
+        assertMethod(MatchEngineService.class, "end", MatchTransitionResult.class, UUID.class, EndReason.class);
+        assertMethod(MatchEngineService.class, "join", JoinResult.class, UUID.class, UUID.class);
+        assertMethod(MatchEngineService.class, "disconnect", DisconnectResult.class, UUID.class, UUID.class);
+        assertMethod(MatchEngineService.class, "rejoin", RejoinResult.class, UUID.class, UUID.class);
+        assertMethod(MatchEngineService.class, "closeAll", int.class, EndReason.class);
+        assertMethod(MatchEngineService.class, "onPlayerQuit", void.class, UUID.class);
+        assertMethod(MatchEngineService.class, "onPlayerWorldChange", void.class, UUID.class);
+        assertMethod(MatchEngineService.class, "isIdle", boolean.class);
     }
 
     @Test

@@ -18,6 +18,7 @@ class CoreDependencyPolicyTest {
         assertTrue(script.contains("compileOnly"));
         assertTrue(script.contains("io.papermc.paper:paper-api"));
         assertTrue(script.contains("api/capability"));
+        assertTrue(script.contains("api/match"));
         assertTrue(script.contains("api/hud"));
         assertTrue(script.contains("api/gui"));
         assertTrue(script.contains("api/port/noop"));
