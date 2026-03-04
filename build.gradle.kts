@@ -224,6 +224,7 @@ val verifyCoreDependencyPolicy = tasks.register("verifyCoreDependencyPolicy") {
         val guardedApiDirs = listOf(
             file("src/main/java/dev/patric/commonlib/api/adapter"),
             file("src/main/java/dev/patric/commonlib/api/capability"),
+            file("src/main/java/dev/patric/commonlib/api/dialog"),
             file("src/main/java/dev/patric/commonlib/api/packet"),
             file("src/main/java/dev/patric/commonlib/api/match"),
             file("src/main/java/dev/patric/commonlib/api/hud"),
@@ -233,7 +234,14 @@ val verifyCoreDependencyPolicy = tasks.register("verifyCoreDependencyPolicy") {
             file("src/main/java/dev/patric/commonlib/api/persistence"),
             file("src/main/java/dev/patric/commonlib/api/port/noop")
         )
-        val allowedImportPrefixes = listOf("java.", "javax.", "org.bukkit.", "dev.patric.commonlib.")
+        val allowedImportPrefixes = listOf(
+            "java.",
+            "javax.",
+            "org.bukkit.",
+            "org.jspecify.",
+            "net.kyori.",
+            "dev.patric.commonlib."
+        )
         val importPattern = Regex("""^\s*import\s+([A-Za-z0-9_.]+);""", setOf(RegexOption.MULTILINE))
 
         guardedApiDirs.forEach { dir ->

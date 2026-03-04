@@ -10,6 +10,9 @@ import dev.patric.commonlib.api.MessageService;
 import dev.patric.commonlib.api.RuntimeLogger;
 import dev.patric.commonlib.api.ServiceRegistry;
 import dev.patric.commonlib.api.adapter.PortBindingService;
+import dev.patric.commonlib.api.dialog.DialogCloseReason;
+import dev.patric.commonlib.api.dialog.DialogService;
+import dev.patric.commonlib.api.dialog.DialogTemplateRegistry;
 import dev.patric.commonlib.api.command.CommandRegistry;
 import dev.patric.commonlib.api.command.CommandValidator;
 import dev.patric.commonlib.api.capability.CapabilityRegistry;
@@ -96,6 +99,7 @@ public final class DefaultCommonRuntime implements CommonRuntime {
     private final AtomicBoolean loaded;
     private final AtomicBoolean enabled;
     private MatchPlayerLifecycleBridge matchPlayerLifecycleBridge;
+    private DialogPlayerLifecycleBridge dialogPlayerLifecycleBridge;
 
     /**
      * Creates the default runtime with optional built-in components.
@@ -130,6 +134,7 @@ public final class DefaultCommonRuntime implements CommonRuntime {
         this.loaded = new AtomicBoolean(false);
         this.enabled = new AtomicBoolean(false);
         this.matchPlayerLifecycleBridge = null;
+        this.dialogPlayerLifecycleBridge = null;
 
         serviceRegistry.register(ServiceRegistry.class, serviceRegistry);
         serviceRegistry.register(RuntimeLogger.class, runtimeLogger);
@@ -234,6 +239,18 @@ public final class DefaultCommonRuntime implements CommonRuntime {
         );
 
         CapabilityRegistry capabilityRegistry = new DefaultCapabilityRegistry();
+        DialogTemplateRegistry dialogTemplateRegistry = new DefaultDialogTemplateRegistry();
+        DialogService dialogService = new DefaultDialogService(
+                context.plugin(),
+                scheduler,
+                eventRouter,
+                runtimeLogger,
+                dialogTemplateRegistry,
+                capabilityRegistry
+        );
+        serviceRegistry.register(DialogTemplateRegistry.class, dialogTemplateRegistry);
+        serviceRegistry.register(DialogService.class, dialogService);
+
         PortBindingService portBindingService = new DefaultPortBindingService(
                 commandPort,
                 scoreboardPort,
@@ -256,6 +273,7 @@ public final class DefaultCommonRuntime implements CommonRuntime {
         capabilityRegistry.publish(StandardCapabilities.BOSSBAR, CapabilityStatus.unavailable("No adapter installed"));
         capabilityRegistry.publish(StandardCapabilities.METRICS, CapabilityStatus.unavailable("No adapter installed"));
         capabilityRegistry.publish(StandardCapabilities.PACKETS, CapabilityStatus.unavailable("No adapter installed"));
+        capabilityRegistry.publish(StandardCapabilities.DIALOG, CapabilityStatus.available("core-default"));
         capabilityRegistry.publish(StandardCapabilities.MATCH_ENGINE, CapabilityStatus.available("core-default"));
         capabilityRegistry.publish(StandardCapabilities.ARENA_RESET, CapabilityStatus.unavailable("No adapter installed"));
         capabilityRegistry.publish(StandardCapabilities.PERSISTENCE_YAML, CapabilityStatus.available("core-default"));
@@ -298,8 +316,10 @@ public final class DefaultCommonRuntime implements CommonRuntime {
                 enabledComponents.add(component);
             }
             installMatchLifecycleBridge();
+            installDialogLifecycleBridge();
         } catch (RuntimeException ex) {
             runtimeLogger.error("enable failed, running rollback", ex);
+            uninstallDialogLifecycleBridge();
             uninstallMatchLifecycleBridge();
             rollbackEnabledComponents();
             enabled.set(false);
@@ -309,11 +329,8 @@ public final class DefaultCommonRuntime implements CommonRuntime {
 
     @Override
     public void onDisable() {
-        if (!loaded.get()) {
-            return;
-        }
-
         rollbackEnabledComponents();
+        uninstallDialogLifecycleBridge();
         uninstallMatchLifecycleBridge();
         serviceRegistry.find(MatchEngineService.class).ifPresent(service -> service.closeAll(EndReason.PLUGIN_DISABLE));
         serviceRegistry.find(ScoreboardSessionService.class)
@@ -321,6 +338,7 @@ public final class DefaultCommonRuntime implements CommonRuntime {
         serviceRegistry.find(BossBarService.class)
                 .ifPresent(service -> service.closeAll(HudAudienceCloseReason.PLUGIN_DISABLE));
         serviceRegistry.find(GuiSessionService.class).ifPresent(service -> service.closeAll(GuiCloseReason.PLUGIN_DISABLE));
+        serviceRegistry.find(DialogService.class).ifPresent(service -> service.closeAll(DialogCloseReason.PLUGIN_DISABLE));
         serviceRegistry.find(PacketPort.class).ifPresent(PacketPort::unregisterAll);
         serviceRegistry.find(MetricsPort.class).ifPresent(MetricsPort::shutdown);
         scheduler.cancelAll();
@@ -350,6 +368,29 @@ public final class DefaultCommonRuntime implements CommonRuntime {
         }
         HandlerList.unregisterAll(matchPlayerLifecycleBridge);
         matchPlayerLifecycleBridge = null;
+    }
+
+    private void installDialogLifecycleBridge() {
+        if (dialogPlayerLifecycleBridge != null) {
+            return;
+        }
+
+        serviceRegistry.find(DialogService.class)
+                .filter(DefaultDialogService.class::isInstance)
+                .map(DefaultDialogService.class::cast)
+                .ifPresent(dialogService -> {
+                    DialogPlayerLifecycleBridge bridge = new DialogPlayerLifecycleBridge(dialogService);
+                    context.plugin().getServer().getPluginManager().registerEvents(bridge, context.plugin());
+                    dialogPlayerLifecycleBridge = bridge;
+                });
+    }
+
+    private void uninstallDialogLifecycleBridge() {
+        if (dialogPlayerLifecycleBridge == null) {
+            return;
+        }
+        HandlerList.unregisterAll(dialogPlayerLifecycleBridge);
+        dialogPlayerLifecycleBridge = null;
     }
 
     private void rollbackEnabledComponents() {
