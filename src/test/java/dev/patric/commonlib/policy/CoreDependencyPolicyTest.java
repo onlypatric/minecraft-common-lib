@@ -19,6 +19,7 @@ class CoreDependencyPolicyTest {
         assertTrue(script.contains("io.papermc.paper:paper-api"));
         assertTrue(script.contains("api/adapter"));
         assertTrue(script.contains("api/capability"));
+        assertTrue(script.contains("api/packet"));
         assertTrue(script.contains("api/match"));
         assertTrue(script.contains("api/hud"));
         assertTrue(script.contains("api/gui"));
@@ -28,8 +29,17 @@ class CoreDependencyPolicyTest {
         assertTrue(script.contains("api/port/noop"));
         assertTrue(script.contains("integrationTest"));
         assertTrue(script.contains("adapterIntegrationTest"));
+        assertTrue(script.contains("externalMatrixTest"));
         assertTrue(script.contains("runIntegrationHarness"));
         assertTrue(script.contains("runAdapterIntegration"));
+        assertTrue(script.contains("runExternalMatrix"));
         assertTrue(script.contains("verifyAdapterDependencyPolicy"));
+        assertTrue(script.contains("verifyAdapterLicensePolicy"));
+        assertTrue(script.contains(":adapter-huskclaims"));
+        assertTrue(script.contains(":adapter-worldedit"));
+        assertTrue(script.contains(":adapter-fawe"));
+        assertTrue(script.contains(":adapter-bossbar-paper"));
+        assertTrue(script.contains(":adapter-bstats"));
+        assertTrue(script.contains(":adapter-protocollib"));
     }
 }

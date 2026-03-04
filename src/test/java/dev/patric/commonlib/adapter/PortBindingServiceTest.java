@@ -10,25 +10,51 @@ import dev.patric.commonlib.api.command.CommandPermission;
 import dev.patric.commonlib.api.command.CommandResult;
 import dev.patric.commonlib.api.command.ExecutionMode;
 import dev.patric.commonlib.api.command.PermissionPolicy;
+import dev.patric.commonlib.api.hud.BossBarSession;
+import dev.patric.commonlib.api.hud.BossBarState;
 import dev.patric.commonlib.api.hud.HudAudienceCloseReason;
+import dev.patric.commonlib.api.hud.HudBarColor;
+import dev.patric.commonlib.api.hud.HudBarStyle;
 import dev.patric.commonlib.api.hud.ScoreboardSession;
 import dev.patric.commonlib.api.hud.ScoreboardSessionStatus;
 import dev.patric.commonlib.api.hud.ScoreboardSnapshot;
+import dev.patric.commonlib.api.packet.PacketDirection;
+import dev.patric.commonlib.api.packet.PacketEnvelope;
+import dev.patric.commonlib.api.packet.PacketListenerHandle;
+import dev.patric.commonlib.api.packet.PacketListenerOptions;
+import dev.patric.commonlib.api.packet.PacketListenerPriority;
+import dev.patric.commonlib.api.port.BossBarPort;
+import dev.patric.commonlib.api.port.ClaimsPort;
 import dev.patric.commonlib.api.port.CommandPort;
 import dev.patric.commonlib.api.port.HologramPort;
+import dev.patric.commonlib.api.port.MetricsPort;
 import dev.patric.commonlib.api.port.NpcPort;
+import dev.patric.commonlib.api.port.PacketPort;
+import dev.patric.commonlib.api.port.SchematicPort;
 import dev.patric.commonlib.api.port.ScoreboardPort;
+import dev.patric.commonlib.api.port.noop.NoopBossBarPort;
+import dev.patric.commonlib.api.port.noop.NoopClaimsPort;
 import dev.patric.commonlib.api.port.noop.NoopCommandPort;
 import dev.patric.commonlib.api.port.noop.NoopHologramPort;
+import dev.patric.commonlib.api.port.noop.NoopMetricsPort;
 import dev.patric.commonlib.api.port.noop.NoopNpcPort;
+import dev.patric.commonlib.api.port.noop.NoopPacketPort;
+import dev.patric.commonlib.api.port.noop.NoopSchematicPort;
 import dev.patric.commonlib.api.port.noop.NoopScoreboardPort;
+import dev.patric.commonlib.api.port.options.PasteOptions;
 import dev.patric.commonlib.runtime.adapter.DefaultPortBindingService;
+import dev.patric.commonlib.runtime.adapter.DelegatingBossBarPort;
+import dev.patric.commonlib.runtime.adapter.DelegatingClaimsPort;
 import dev.patric.commonlib.runtime.adapter.DelegatingCommandPort;
 import dev.patric.commonlib.runtime.adapter.DelegatingHologramPort;
+import dev.patric.commonlib.runtime.adapter.DelegatingMetricsPort;
 import dev.patric.commonlib.runtime.adapter.DelegatingNpcPort;
+import dev.patric.commonlib.runtime.adapter.DelegatingPacketPort;
+import dev.patric.commonlib.runtime.adapter.DelegatingSchematicPort;
 import dev.patric.commonlib.runtime.adapter.DelegatingScoreboardPort;
 import dev.patric.commonlib.services.DefaultCapabilityRegistry;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -43,11 +69,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class PortBindingServiceTest {
 
     @Test
-    void bindAndMarkUnavailableSwitchesDelegatesAndCapabilities() {
+    void bindAndMarkUnavailableSwitchesDelegatesAndCapabilitiesAcrossAllPorts() {
         DelegatingCommandPort commandPort = new DelegatingCommandPort(new NoopCommandPort());
         DelegatingScoreboardPort scoreboardPort = new DelegatingScoreboardPort(new NoopScoreboardPort());
         DelegatingHologramPort hologramPort = new DelegatingHologramPort(new NoopHologramPort());
         DelegatingNpcPort npcPort = new DelegatingNpcPort(new NoopNpcPort());
+        DelegatingClaimsPort claimsPort = new DelegatingClaimsPort(new NoopClaimsPort());
+        DelegatingSchematicPort schematicPort = new DelegatingSchematicPort(new NoopSchematicPort());
+        DelegatingBossBarPort bossBarPort = new DelegatingBossBarPort(new NoopBossBarPort());
+        DelegatingMetricsPort metricsPort = new DelegatingMetricsPort(new NoopMetricsPort());
+        DelegatingPacketPort packetPort = new DelegatingPacketPort(new NoopPacketPort());
         CapabilityRegistry capabilityRegistry = new DefaultCapabilityRegistry();
 
         DefaultPortBindingService bindingService = new DefaultPortBindingService(
@@ -55,6 +86,11 @@ class PortBindingServiceTest {
                 scoreboardPort,
                 hologramPort,
                 npcPort,
+                claimsPort,
+                schematicPort,
+                bossBarPort,
+                metricsPort,
+                packetPort,
                 capabilityRegistry
         );
 
@@ -69,10 +105,7 @@ class PortBindingServiceTest {
 
         bindingService.markUnavailable(StandardCapabilities.COMMAND, "missing-plugin:CommandAPI");
         assertFalse(capabilityRegistry.isAvailable(StandardCapabilities.COMMAND));
-        assertEquals(
-                "missing-plugin:CommandAPI",
-                capabilityRegistry.status(StandardCapabilities.COMMAND).orElseThrow().reason()
-        );
+        assertEquals("missing-plugin:CommandAPI", capabilityRegistry.status(StandardCapabilities.COMMAND).orElseThrow().reason());
         assertFalse(commandPort.supportsSuggestions());
 
         ToggleScoreboardPort toggleScoreboardPort = new ToggleScoreboardPort();
@@ -145,6 +178,138 @@ class PortBindingServiceTest {
         assertEquals(new UUID(0L, 99L), npcPort.spawn("villager", new Location(null, 0, 0, 0), "Trader"));
         bindingService.markUnavailable(StandardCapabilities.NPC, "missing-plugin:FancyNpcs");
         assertFalse(npcPort.despawn(new UUID(0L, 99L)));
+
+        ClaimsPort claimsImpl = new ClaimsPort() {
+            @Override
+            public boolean isInsideClaim(UUID playerId, Location location) {
+                return true;
+            }
+
+            @Override
+            public Optional<String> claimIdAt(Location location) {
+                return Optional.of("claim-main");
+            }
+
+            @Override
+            public boolean hasBuildPermission(UUID playerId, String claimId) {
+                return true;
+            }
+
+            @Override
+            public boolean hasCombatPermission(UUID playerId, String claimId) {
+                return false;
+            }
+        };
+        bindingService.bindClaimsPort(claimsImpl, "huskclaims", "4.7.1");
+        assertTrue(claimsPort.isInsideClaim(UUID.randomUUID(), new Location(null, 0, 0, 0)));
+
+        bindingService.markUnavailable(StandardCapabilities.CLAIMS, "missing-plugin:HuskClaims");
+        assertFalse(claimsPort.isInsideClaim(UUID.randomUUID(), new Location(null, 0, 0, 0)));
+
+        SchematicPort schematicImpl = new SchematicPort() {
+            @Override
+            public CompletableFuture<Void> paste(String schematicKey, Location origin, PasteOptions options) {
+                return CompletableFuture.failedFuture(new IllegalStateException("custom"));
+            }
+
+            @Override
+            public CompletableFuture<Void> resetRegion(String regionKey, String templateKey, PasteOptions options) {
+                return CompletableFuture.failedFuture(new IllegalStateException("custom"));
+            }
+        };
+        bindingService.bindSchematicPort(schematicImpl, "worldedit", "7.3.0");
+        assertTrue(capabilityRegistry.isAvailable(StandardCapabilities.SCHEMATIC));
+
+        bindingService.markUnavailable(StandardCapabilities.SCHEMATIC, "disabled-plugin:WorldEdit");
+        assertFalse(capabilityRegistry.isAvailable(StandardCapabilities.SCHEMATIC));
+
+        BossBarPort bossImpl = new BossBarPort() {
+            @Override
+            public boolean open(BossBarSession session) {
+                return false;
+            }
+
+            @Override
+            public boolean render(UUID barId, BossBarState state) {
+                return false;
+            }
+
+            @Override
+            public boolean close(UUID barId, HudAudienceCloseReason reason) {
+                return false;
+            }
+        };
+        bindingService.bindBossBarPort(bossImpl, "paper-bossbar", "paper-1.21.11");
+        assertFalse(bossBarPort.open(new BossBarSession(
+                UUID.randomUUID(),
+                UUID.randomUUID(),
+                "hud",
+                new BossBarState("Title", 1.0f, HudBarColor.BLUE, HudBarStyle.SOLID, true),
+                false,
+                System.currentTimeMillis(),
+                0L
+        )));
+
+        bindingService.markUnavailable(StandardCapabilities.BOSSBAR, "binding-failed:paper-bossbar:RuntimeException");
+        assertTrue(bossBarPort.close(UUID.randomUUID(), HudAudienceCloseReason.MANUAL));
+
+        MetricsPort metricsImpl = new MetricsPort() {
+            @Override
+            public boolean initialize(org.bukkit.plugin.java.JavaPlugin plugin, int pluginId) {
+                return false;
+            }
+
+            @Override
+            public boolean addSimplePie(String chartId, java.util.function.Supplier<String> supplier) {
+                return false;
+            }
+
+            @Override
+            public boolean addSingleLineChart(String chartId, java.util.function.IntSupplier supplier) {
+                return false;
+            }
+
+            @Override
+            public void shutdown() {
+                // no-op
+            }
+        };
+        bindingService.bindMetricsPort(metricsImpl, "bstats", "3.1.0");
+        assertFalse(metricsPort.addSimplePie("mode", () -> "solo"));
+
+        bindingService.markUnavailable(StandardCapabilities.METRICS, "binding-failed:bstats:initialize");
+        assertTrue(metricsPort.addSimplePie("mode", () -> "solo"));
+
+        PacketPort packetImpl = new PacketPort() {
+            @Override
+            public PacketListenerHandle register(PacketListenerOptions options, java.util.function.Consumer<PacketEnvelope> listener) {
+                return () -> {
+                    // no-op
+                };
+            }
+
+            @Override
+            public boolean supportsMutation() {
+                return true;
+            }
+
+            @Override
+            public void unregisterAll() {
+                // no-op
+            }
+        };
+        bindingService.bindPacketPort(packetImpl, "protocollib", "5.3.0");
+        assertTrue(packetPort.supportsMutation());
+
+        bindingService.markUnavailable(StandardCapabilities.PACKETS, "missing-plugin:ProtocolLib");
+        assertFalse(packetPort.supportsMutation());
+
+        packetPort.register(
+                new PacketListenerOptions(PacketDirection.INBOUND, List.of("CHAT"), PacketListenerPriority.NORMAL, false),
+                envelope -> {
+                    // no-op
+                }
+        ).close();
     }
 
     private static CommandModel testModel(String root) {

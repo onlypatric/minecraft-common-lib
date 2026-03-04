@@ -11,7 +11,9 @@ import dev.patric.commonlib.api.port.CommandPort;
 import dev.patric.commonlib.api.port.GuiPort;
 import dev.patric.commonlib.api.port.HologramPort;
 import dev.patric.commonlib.api.match.MatchEngineService;
+import dev.patric.commonlib.api.port.MetricsPort;
 import dev.patric.commonlib.api.port.NpcPort;
+import dev.patric.commonlib.api.port.PacketPort;
 import dev.patric.commonlib.api.port.ScoreboardPort;
 import dev.patric.commonlib.api.port.SchematicPort;
 import dev.patric.commonlib.api.team.PartyService;
@@ -71,6 +73,8 @@ class CapabilityRegistryTest {
         assertFalse(registry.isAvailable(StandardCapabilities.COMMAND));
         assertFalse(registry.isAvailable(StandardCapabilities.SCOREBOARD));
         assertFalse(registry.isAvailable(StandardCapabilities.BOSSBAR));
+        assertFalse(registry.isAvailable(StandardCapabilities.METRICS));
+        assertFalse(registry.isAvailable(StandardCapabilities.PACKETS));
         assertTrue(registry.isAvailable(StandardCapabilities.MATCH_ENGINE));
         assertFalse(registry.isAvailable(StandardCapabilities.ARENA_RESET));
         assertTrue(registry.isAvailable(StandardCapabilities.PERSISTENCE_YAML));
@@ -82,6 +86,8 @@ class CapabilityRegistryTest {
         assertEquals("No adapter installed", registry.status(StandardCapabilities.COMMAND).orElseThrow().reason());
         assertEquals("No adapter installed", registry.status(StandardCapabilities.SCOREBOARD).orElseThrow().reason());
         assertEquals("No adapter installed", registry.status(StandardCapabilities.BOSSBAR).orElseThrow().reason());
+        assertEquals("No adapter installed", registry.status(StandardCapabilities.METRICS).orElseThrow().reason());
+        assertEquals("No adapter installed", registry.status(StandardCapabilities.PACKETS).orElseThrow().reason());
         assertEquals("core-default", registry.status(StandardCapabilities.MATCH_ENGINE).orElseThrow().metadata());
         assertEquals("No adapter installed", registry.status(StandardCapabilities.ARENA_RESET).orElseThrow().reason());
         assertEquals("core-default", registry.status(StandardCapabilities.PERSISTENCE_YAML).orElseThrow().metadata());
@@ -100,6 +106,8 @@ class CapabilityRegistryTest {
         runtime.services().require(GuiPort.class);
         runtime.services().require(ScoreboardPort.class);
         runtime.services().require(BossBarPort.class);
+        runtime.services().require(MetricsPort.class);
+        runtime.services().require(PacketPort.class);
         runtime.services().require(MatchEngineService.class);
         runtime.services().require(ArenaService.class);
         runtime.services().require(TeamService.class);

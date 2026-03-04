@@ -9,6 +9,8 @@ import dev.patric.commonlib.api.persistence.SchemaMigrationService;
 import dev.patric.commonlib.api.persistence.SqlPersistencePort;
 import dev.patric.commonlib.api.persistence.YamlPersistencePort;
 import dev.patric.commonlib.api.port.CommandPort;
+import dev.patric.commonlib.api.port.MetricsPort;
+import dev.patric.commonlib.api.port.PacketPort;
 import dev.patric.commonlib.api.team.PartyService;
 import dev.patric.commonlib.api.team.TeamService;
 import dev.patric.commonlib.testsupport.TestPlugin;
@@ -78,6 +80,8 @@ class CommonRuntimeContractTest {
         assertNotNull(runtime.services().require(BossBarService.class));
         assertNotNull(runtime.services().require(MatchEngineService.class));
         assertNotNull(runtime.services().require(CommandPort.class));
+        assertNotNull(runtime.services().require(MetricsPort.class));
+        assertNotNull(runtime.services().require(PacketPort.class));
         assertNotNull(runtime.services().require(PortBindingService.class));
         assertNotNull(runtime.services().require(ArenaService.class));
         assertNotNull(runtime.services().require(TeamService.class));

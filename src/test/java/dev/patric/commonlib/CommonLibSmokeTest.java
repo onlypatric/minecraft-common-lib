@@ -66,16 +66,25 @@ import dev.patric.commonlib.api.port.ClaimsPort;
 import dev.patric.commonlib.api.port.CommandPort;
 import dev.patric.commonlib.api.port.GuiPort;
 import dev.patric.commonlib.api.port.HologramPort;
+import dev.patric.commonlib.api.port.MetricsPort;
 import dev.patric.commonlib.api.port.NpcPort;
+import dev.patric.commonlib.api.port.PacketPort;
 import dev.patric.commonlib.api.port.ScoreboardPort;
 import dev.patric.commonlib.api.port.SchematicPort;
+import dev.patric.commonlib.api.packet.PacketDirection;
+import dev.patric.commonlib.api.packet.PacketEnvelope;
+import dev.patric.commonlib.api.packet.PacketListenerHandle;
+import dev.patric.commonlib.api.packet.PacketListenerOptions;
+import dev.patric.commonlib.api.packet.PacketListenerPriority;
 import dev.patric.commonlib.api.port.noop.NoopArenaResetPort;
 import dev.patric.commonlib.api.port.noop.NoopBossBarPort;
 import dev.patric.commonlib.api.port.noop.NoopClaimsPort;
 import dev.patric.commonlib.api.port.noop.NoopCommandPort;
 import dev.patric.commonlib.api.port.noop.NoopGuiPort;
 import dev.patric.commonlib.api.port.noop.NoopHologramPort;
+import dev.patric.commonlib.api.port.noop.NoopMetricsPort;
 import dev.patric.commonlib.api.port.noop.NoopNpcPort;
+import dev.patric.commonlib.api.port.noop.NoopPacketPort;
 import dev.patric.commonlib.api.port.noop.NoopSchematicPort;
 import dev.patric.commonlib.api.port.noop.NoopScoreboardPort;
 import dev.patric.commonlib.api.port.options.PasteOptions;
@@ -108,6 +117,8 @@ class CommonLibSmokeTest {
         assertDoesNotThrow(() -> Class.forName(ScoreboardPort.class.getName()));
         assertDoesNotThrow(() -> Class.forName(BossBarPort.class.getName()));
         assertDoesNotThrow(() -> Class.forName(ArenaResetPort.class.getName()));
+        assertDoesNotThrow(() -> Class.forName(MetricsPort.class.getName()));
+        assertDoesNotThrow(() -> Class.forName(PacketPort.class.getName()));
         assertDoesNotThrow(() -> Class.forName(ArenaService.class.getName()));
         assertDoesNotThrow(() -> Class.forName(ArenaInstance.class.getName()));
         assertDoesNotThrow(() -> Class.forName(ArenaOpenRequest.class.getName()));
@@ -120,6 +131,11 @@ class CommonLibSmokeTest {
         assertDoesNotThrow(() -> Class.forName(ClaimsPort.class.getName()));
         assertDoesNotThrow(() -> Class.forName(SchematicPort.class.getName()));
         assertDoesNotThrow(() -> Class.forName(PasteOptions.class.getName()));
+        assertDoesNotThrow(() -> Class.forName(PacketDirection.class.getName()));
+        assertDoesNotThrow(() -> Class.forName(PacketListenerPriority.class.getName()));
+        assertDoesNotThrow(() -> Class.forName(PacketListenerOptions.class.getName()));
+        assertDoesNotThrow(() -> Class.forName(PacketEnvelope.class.getName()));
+        assertDoesNotThrow(() -> Class.forName(PacketListenerHandle.class.getName()));
         assertDoesNotThrow(() -> Class.forName(CapabilityRegistry.class.getName()));
         assertDoesNotThrow(() -> Class.forName(CapabilityStatus.class.getName()));
         assertDoesNotThrow(() -> Class.forName(StandardCapabilities.class.getName()));
@@ -190,5 +206,7 @@ class CommonLibSmokeTest {
         assertDoesNotThrow(() -> Class.forName(NoopScoreboardPort.class.getName()));
         assertDoesNotThrow(() -> Class.forName(NoopBossBarPort.class.getName()));
         assertDoesNotThrow(() -> Class.forName(NoopArenaResetPort.class.getName()));
+        assertDoesNotThrow(() -> Class.forName(NoopMetricsPort.class.getName()));
+        assertDoesNotThrow(() -> Class.forName(NoopPacketPort.class.getName()));
     }
 }

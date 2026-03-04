@@ -89,7 +89,9 @@ import dev.patric.commonlib.api.port.ClaimsPort;
 import dev.patric.commonlib.api.port.CommandPort;
 import dev.patric.commonlib.api.port.GuiPort;
 import dev.patric.commonlib.api.port.HologramPort;
+import dev.patric.commonlib.api.port.MetricsPort;
 import dev.patric.commonlib.api.port.NpcPort;
+import dev.patric.commonlib.api.port.PacketPort;
 import dev.patric.commonlib.api.port.SchematicPort;
 import dev.patric.commonlib.api.port.ScoreboardPort;
 import dev.patric.commonlib.api.port.noop.NoopClaimsPort;
@@ -97,11 +99,18 @@ import dev.patric.commonlib.api.port.noop.NoopBossBarPort;
 import dev.patric.commonlib.api.port.noop.NoopCommandPort;
 import dev.patric.commonlib.api.port.noop.NoopGuiPort;
 import dev.patric.commonlib.api.port.noop.NoopHologramPort;
+import dev.patric.commonlib.api.port.noop.NoopMetricsPort;
 import dev.patric.commonlib.api.port.noop.NoopNpcPort;
+import dev.patric.commonlib.api.port.noop.NoopPacketPort;
 import dev.patric.commonlib.api.port.noop.NoopArenaResetPort;
 import dev.patric.commonlib.api.port.noop.NoopSchematicPort;
 import dev.patric.commonlib.api.port.noop.NoopScoreboardPort;
 import dev.patric.commonlib.api.port.options.PasteOptions;
+import dev.patric.commonlib.api.packet.PacketDirection;
+import dev.patric.commonlib.api.packet.PacketEnvelope;
+import dev.patric.commonlib.api.packet.PacketListenerHandle;
+import dev.patric.commonlib.api.packet.PacketListenerOptions;
+import dev.patric.commonlib.api.packet.PacketListenerPriority;
 import dev.patric.commonlib.api.team.FriendlyFirePolicy;
 import dev.patric.commonlib.api.team.PartyActionResult;
 import dev.patric.commonlib.api.team.PartyService;
@@ -158,7 +167,14 @@ class PublicApiFreezeContractTest {
                 HologramPort.class,
                 ClaimsPort.class,
                 SchematicPort.class,
+                MetricsPort.class,
+                PacketPort.class,
                 PasteOptions.class,
+                PacketDirection.class,
+                PacketListenerPriority.class,
+                PacketListenerOptions.class,
+                PacketEnvelope.class,
+                PacketListenerHandle.class,
                 CapabilityRegistry.class,
                 PortBindingService.class,
                 CapabilityKey.class,
@@ -173,6 +189,8 @@ class PublicApiFreezeContractTest {
                 NoopScoreboardPort.class,
                 NoopBossBarPort.class,
                 NoopArenaResetPort.class,
+                NoopMetricsPort.class,
+                NoopPacketPort.class,
                 CommandModel.class,
                 CommandNode.class,
                 CommandExecution.class,
@@ -350,6 +368,13 @@ class PublicApiFreezeContractTest {
         assertMethod(BossBarPort.class, "open", boolean.class, BossBarSession.class);
         assertMethod(BossBarPort.class, "render", boolean.class, UUID.class, BossBarState.class);
         assertMethod(BossBarPort.class, "close", boolean.class, UUID.class, HudAudienceCloseReason.class);
+        assertMethod(MetricsPort.class, "initialize", boolean.class, JavaPlugin.class, int.class);
+        assertMethod(MetricsPort.class, "addSimplePie", boolean.class, String.class, java.util.function.Supplier.class);
+        assertMethod(MetricsPort.class, "addSingleLineChart", boolean.class, String.class, java.util.function.IntSupplier.class);
+        assertMethod(MetricsPort.class, "shutdown", void.class);
+        assertMethod(PacketPort.class, "register", PacketListenerHandle.class, PacketListenerOptions.class, java.util.function.Consumer.class);
+        assertMethod(PacketPort.class, "supportsMutation", boolean.class);
+        assertMethod(PacketPort.class, "unregisterAll", void.class);
 
         assertMethod(CommandModel.class, "root", String.class);
         assertMethod(CommandModel.class, "nodes", List.class);
@@ -472,6 +497,11 @@ class PublicApiFreezeContractTest {
                 String.class
         );
         assertMethod(PortBindingService.class, "bindNpcPort", void.class, NpcPort.class, String.class, String.class);
+        assertMethod(PortBindingService.class, "bindClaimsPort", void.class, ClaimsPort.class, String.class, String.class);
+        assertMethod(PortBindingService.class, "bindSchematicPort", void.class, SchematicPort.class, String.class, String.class);
+        assertMethod(PortBindingService.class, "bindBossBarPort", void.class, BossBarPort.class, String.class, String.class);
+        assertMethod(PortBindingService.class, "bindMetricsPort", void.class, MetricsPort.class, String.class, String.class);
+        assertMethod(PortBindingService.class, "bindPacketPort", void.class, PacketPort.class, String.class, String.class);
         assertMethod(PortBindingService.class, "markUnavailable", void.class, CapabilityKey.class, String.class);
     }
 
