@@ -30,6 +30,18 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
+val integrationTestSourceSet = sourceSets.create("integrationTest") {
+    java.srcDir("src/integrationTest/java")
+    resources.srcDir("src/integrationTest/resources")
+    compileClasspath += sourceSets.main.get().output + configurations.testRuntimeClasspath.get()
+    runtimeClasspath += output + compileClasspath
+}
+
+configurations[integrationTestSourceSet.implementationConfigurationName]
+    .extendsFrom(configurations.testImplementation.get())
+configurations[integrationTestSourceSet.runtimeOnlyConfigurationName]
+    .extendsFrom(configurations.testRuntimeOnly.get())
+
 tasks.withType<JavaCompile>().configureEach {
     options.encoding = "UTF-8"
     options.release.set(21)
@@ -37,6 +49,20 @@ tasks.withType<JavaCompile>().configureEach {
 
 tasks.test {
     useJUnitPlatform()
+}
+
+val integrationTest = tasks.register<Test>("integrationTest") {
+    description = "Runs opt-in integration harness tests."
+    group = "verification"
+    testClassesDirs = integrationTestSourceSet.output.classesDirs
+    classpath = integrationTestSourceSet.runtimeClasspath
+    useJUnitPlatform()
+    onlyIf {
+        providers.gradleProperty("runIntegrationHarness")
+                .map(String::toBoolean)
+                .orElse(false)
+                .get()
+    }
 }
 
 val verifyCoreDependencyPolicy = tasks.register("verifyCoreDependencyPolicy") {
@@ -78,6 +104,9 @@ val verifyCoreDependencyPolicy = tasks.register("verifyCoreDependencyPolicy") {
             file("src/main/java/dev/patric/commonlib/api/match"),
             file("src/main/java/dev/patric/commonlib/api/hud"),
             file("src/main/java/dev/patric/commonlib/api/gui"),
+            file("src/main/java/dev/patric/commonlib/api/arena"),
+            file("src/main/java/dev/patric/commonlib/api/team"),
+            file("src/main/java/dev/patric/commonlib/api/persistence"),
             file("src/main/java/dev/patric/commonlib/api/port/noop")
         )
         val allowedImportPrefixes = listOf("java.", "javax.", "org.bukkit.", "dev.patric.commonlib.")

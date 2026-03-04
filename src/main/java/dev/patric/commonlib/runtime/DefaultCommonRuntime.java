@@ -14,6 +14,7 @@ import dev.patric.commonlib.api.command.CommandValidator;
 import dev.patric.commonlib.api.capability.CapabilityRegistry;
 import dev.patric.commonlib.api.capability.CapabilityStatus;
 import dev.patric.commonlib.api.capability.StandardCapabilities;
+import dev.patric.commonlib.api.arena.ArenaService;
 import dev.patric.commonlib.api.hud.BossBarService;
 import dev.patric.commonlib.api.hud.HudAudienceCloseReason;
 import dev.patric.commonlib.api.hud.ScoreboardSessionService;
@@ -23,6 +24,12 @@ import dev.patric.commonlib.api.match.EndReason;
 import dev.patric.commonlib.api.match.MatchEngineService;
 import dev.patric.commonlib.api.message.FallbackChain;
 import dev.patric.commonlib.api.message.PluralRules;
+import dev.patric.commonlib.api.persistence.SchemaMigrationService;
+import dev.patric.commonlib.api.persistence.SqlPersistencePort;
+import dev.patric.commonlib.api.persistence.YamlPersistencePort;
+import dev.patric.commonlib.api.team.PartyService;
+import dev.patric.commonlib.api.team.TeamService;
+import dev.patric.commonlib.api.port.ArenaResetPort;
 import dev.patric.commonlib.api.port.BossBarPort;
 import dev.patric.commonlib.api.port.ClaimsPort;
 import dev.patric.commonlib.api.port.CommandPort;
@@ -37,6 +44,7 @@ import dev.patric.commonlib.api.port.noop.NoopCommandPort;
 import dev.patric.commonlib.api.port.noop.NoopGuiPort;
 import dev.patric.commonlib.api.port.noop.NoopHologramPort;
 import dev.patric.commonlib.api.port.noop.NoopNpcPort;
+import dev.patric.commonlib.api.port.noop.NoopArenaResetPort;
 import dev.patric.commonlib.api.port.noop.NoopSchematicPort;
 import dev.patric.commonlib.api.port.noop.NoopScoreboardPort;
 import dev.patric.commonlib.command.DefaultCommandValidator;
@@ -46,6 +54,9 @@ import dev.patric.commonlib.message.AdvancedMiniMessageService;
 import dev.patric.commonlib.message.DefaultFallbackChain;
 import dev.patric.commonlib.message.DefaultPluralRules;
 import dev.patric.commonlib.scheduler.BukkitCommonScheduler;
+import dev.patric.commonlib.runtime.persistence.DefaultSchemaMigrationService;
+import dev.patric.commonlib.runtime.persistence.DefaultYamlPersistencePort;
+import dev.patric.commonlib.runtime.persistence.NoopSqlPersistencePort;
 import dev.patric.commonlib.services.DefaultCapabilityRegistry;
 import dev.patric.commonlib.services.DefaultServiceRegistry;
 import java.util.ArrayList;
@@ -147,6 +158,7 @@ public final class DefaultCommonRuntime implements CommonRuntime {
         GuiPort guiPort = new NoopGuiPort();
         ScoreboardPort scoreboardPort = new NoopScoreboardPort();
         BossBarPort bossBarPort = new NoopBossBarPort();
+        ArenaResetPort arenaResetPort = new NoopArenaResetPort();
 
         serviceRegistry.register(NpcPort.class, npcPort);
         serviceRegistry.register(HologramPort.class, hologramPort);
@@ -156,6 +168,26 @@ public final class DefaultCommonRuntime implements CommonRuntime {
         serviceRegistry.register(GuiPort.class, guiPort);
         serviceRegistry.register(ScoreboardPort.class, scoreboardPort);
         serviceRegistry.register(BossBarPort.class, bossBarPort);
+        serviceRegistry.register(ArenaResetPort.class, arenaResetPort);
+
+        TeamService teamService = new DefaultTeamService();
+        PartyService partyService = new DefaultPartyService();
+        YamlPersistencePort yamlPersistencePort = new DefaultYamlPersistencePort(context.plugin());
+        SqlPersistencePort sqlPersistencePort = new NoopSqlPersistencePort();
+        SchemaMigrationService schemaMigrationService = new DefaultSchemaMigrationService(
+                context.plugin(),
+                yamlPersistencePort,
+                sqlPersistencePort,
+                serviceRegistry
+        );
+        ArenaService arenaService = new DefaultArenaService(scheduler, runtimeLogger, serviceRegistry, arenaResetPort);
+
+        serviceRegistry.register(TeamService.class, teamService);
+        serviceRegistry.register(PartyService.class, partyService);
+        serviceRegistry.register(YamlPersistencePort.class, yamlPersistencePort);
+        serviceRegistry.register(SqlPersistencePort.class, sqlPersistencePort);
+        serviceRegistry.register(SchemaMigrationService.class, schemaMigrationService);
+        serviceRegistry.register(ArenaService.class, arenaService);
         serviceRegistry.register(
                 GuiSessionService.class,
                 new DefaultGuiSessionService(scheduler, eventRouter, runtimeLogger, guiPort)
@@ -182,6 +214,14 @@ public final class DefaultCommonRuntime implements CommonRuntime {
         capabilityRegistry.publish(StandardCapabilities.SCOREBOARD, CapabilityStatus.unavailable("No adapter installed"));
         capabilityRegistry.publish(StandardCapabilities.BOSSBAR, CapabilityStatus.unavailable("No adapter installed"));
         capabilityRegistry.publish(StandardCapabilities.MATCH_ENGINE, CapabilityStatus.available("core-default"));
+        capabilityRegistry.publish(StandardCapabilities.ARENA_RESET, CapabilityStatus.unavailable("No adapter installed"));
+        capabilityRegistry.publish(StandardCapabilities.PERSISTENCE_YAML, CapabilityStatus.available("core-default"));
+        capabilityRegistry.publish(
+                StandardCapabilities.PERSISTENCE_SQL,
+                CapabilityStatus.unavailable("No SQL adapter configured")
+        );
+        capabilityRegistry.publish(StandardCapabilities.TEAMS, CapabilityStatus.available("core-default"));
+        capabilityRegistry.publish(StandardCapabilities.PARTIES, CapabilityStatus.available("core-default"));
 
         serviceRegistry.register(CapabilityRegistry.class, capabilityRegistry);
     }

@@ -21,6 +21,16 @@ public final class StandardCapabilities {
     public static final CapabilityKey<String> BOSSBAR = CapabilityKey.of("bossbar", String.class);
     /** Match engine capability key. */
     public static final CapabilityKey<String> MATCH_ENGINE = CapabilityKey.of("match_engine", String.class);
+    /** Arena reset capability key. */
+    public static final CapabilityKey<String> ARENA_RESET = CapabilityKey.of("arena_reset", String.class);
+    /** YAML persistence capability key. */
+    public static final CapabilityKey<String> PERSISTENCE_YAML = CapabilityKey.of("persistence_yaml", String.class);
+    /** SQL persistence capability key. */
+    public static final CapabilityKey<String> PERSISTENCE_SQL = CapabilityKey.of("persistence_sql", String.class);
+    /** Team service capability key. */
+    public static final CapabilityKey<String> TEAMS = CapabilityKey.of("teams", String.class);
+    /** Party service capability key. */
+    public static final CapabilityKey<String> PARTIES = CapabilityKey.of("parties", String.class);
 
     private StandardCapabilities() {
         throw new UnsupportedOperationException("Utility class");
