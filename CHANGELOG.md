@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.0.1-SNAPSHOT] - Unreleased
+### Changed
+- Aperto ciclo patch post-GA su `main`.
+
 ## [1.0.0] - 2026-03-04
 ### Added
 - Release GA `1.0.0` della libreria common con freeze API formalizzato.
