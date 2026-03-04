@@ -1,5 +1,46 @@
 # Changelog
 
+## [0.8.0] - 2026-03-04
+### Added
+- Nuovo package API adapter:
+  - `api.adapter.PortBindingService`
+- Nuovi runtime adapter primitives:
+  - `DefaultPortBindingService`
+  - `DelegatingCommandPort`
+  - `DelegatingScoreboardPort`
+  - `DelegatingHologramPort`
+  - `DelegatingNpcPort`
+  - `BukkitDependencyProbe`
+- Estensione capability model:
+  - `StandardCapabilities.COMMAND`
+- Nuovi moduli adapter wave 1:
+  - `adapter-commandapi`
+  - `adapter-fastboard`
+  - `adapter-fancyholograms`
+  - `adapter-fancynpcs`
+- Nuovi adapter/component:
+  - `CommandApiCommandPort`, `CommandApiAdapterComponent`
+  - `FastBoardScoreboardPort`, `FastBoardAdapterComponent`
+  - `FancyHologramsPort`, `FancyHologramsAdapterComponent`
+  - `FancyNpcsPort`, `FancyNpcsAdapterComponent`
+- Nuovi test wave 1:
+  - core: `PortBindingServiceTest`, `AdapterCapabilityTransitionTest`, `AdapterFallbackNoopTransparencyTest`, `AdapterStartupOrderingTest`, `BukkitDependencyProbeTest`
+  - adapter modules: `CommandApiAdapterComponentTest`, `CommandApiPortRegistrationTest`, `FastBoardScoreboardPortTest`, `FancyHologramsPortTest`, `FancyNpcsPortTest`
+  - smoke matrix: `AdapterWave1NoDependencySmokeTest`, `AdapterWave1WithDependencySmokeTest`
+- Nuove guide/documenti:
+  - `docs/guides/ADAPTER-WAVE1-SETUP.md`
+  - `docs/guides/ADAPTER-COMMANDAPI.md`
+  - `docs/guides/ADAPTER-FASTBOARD.md`
+  - `docs/guides/ADAPTER-FANCYHOLOGRAMS.md`
+  - `docs/guides/ADAPTER-FANCYNPCS.md`
+  - `docs/releases/0.8.0.md`
+
+### Changed
+- `DefaultCommonRuntime` ora registra delegating ports + `PortBindingService` al posto dei no-op diretti per `CommandPort`, `ScoreboardPort`, `HologramPort`, `NpcPort`.
+- `verifyCoreDependencyPolicy` estesa a `api/adapter`.
+- Nuova `verifyAdapterDependencyPolicy` per bloccare dipendenze cross-adapter.
+- Nuovo source set/task opt-in `adapterIntegrationTest` (`-PrunAdapterIntegration=true`).
+
 ## [0.7.0] - 2026-03-04
 ### Added
 - Nuovo package `api.arena` con foundation arena:

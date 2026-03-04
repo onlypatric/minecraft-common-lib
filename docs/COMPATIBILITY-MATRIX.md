@@ -14,6 +14,7 @@
 - `0.5.0`: HUD primitives (`api.hud`) con scoreboard sessions, bossbar service e rate limiting default.
 - `0.6.0`: match/state engine (`api.match`) con loop deterministico, end reasons e policy rejoin/timeout.
 - `0.7.0`: foundation arena/team/persistence (`api.arena`, `api.team`, `api.persistence`) con schema migrations integer-based.
+- `0.8.0`: adapter wave 1 (`CommandAPI`, `FastBoard`, `FancyHolograms`, `FancyNpcs`) con fallback no-op trasparente.
 - Build di riferimento: `./gradlew --no-daemon clean test javadoc build`.
 
 ## Policy corrente
@@ -24,9 +25,9 @@
 - `v0.5.x` estende il core con primitive HUD e cleanup audience policy.
 - `v0.6.x` estende il core con match lifecycle riusabile e orchestration deterministic-first.
 - `v0.7.x` estende il core con foundation arena/team/persistence pronta per adapter wave successive.
-- Nessun adapter esterno incluso in core.
+- `v0.8.x` introduce adapter reali opzionali in moduli separati (nessuna dipendenza hard nel core).
 - Nessun supporto NMS diretto nel core.
 
 ## Prossimo target
 - Mantenere compatibilità su patch/minor `1.21.x` con verifica continua in CI locale.
-- Avanzare verso checklist `v0.8.0` (wave adapter esterna su ports maturati).
+- Avanzare verso checklist `v0.9.0` (adapter wave 2).
