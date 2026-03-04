@@ -1,4 +1,4 @@
-# Adapter Backlog (post v0.5.0)
+# Adapter Backlog (post v0.7.0)
 
 ## Priority order
 1. `CommandPort` -> CommandAPI adapter
@@ -12,6 +12,8 @@
 9. `NpcPort` -> FancyNpcs adapter
 10. `HologramPort` -> FancyHolograms adapter
 11. `ArenaResetPort` -> advanced world instance/reset adapter
+12. `SqlPersistencePort` -> SQL backend adapter module (JDBC/Hikari-based)
+13. `TeamService/PartyService` -> optional external sync/bridge adapter (se necessario)
 
 ## Adoption criteria
 - API maturity: backend API stabile e documentata.
@@ -25,3 +27,4 @@
 - Nessuna dipendenza adapter entra nel core `minecraft-common-lib`.
 - Capability detection (`CapabilityRegistry`) governa availability a runtime.
 - `v0.6.0` introduce il match/state engine core-only: arena/team/persistence restano pianificati per `v0.7.0` prima delle wave adapter successive.
+- `v0.7.0` completa foundation arena/team/persistence nel core: la prossima wave (`v0.8.0`) può concentrarsi su adapter esterni reali senza cambiare i contratti core.

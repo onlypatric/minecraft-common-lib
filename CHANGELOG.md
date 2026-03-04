@@ -1,5 +1,53 @@
 # Changelog
 
+## [0.7.0] - 2026-03-04
+### Added
+- Nuovo package `api.arena` con foundation arena:
+  - `ArenaInstance`, `ArenaOpenRequest`, `ArenaStatus`
+  - `ArenaResetStrategy`, `ArenaResetContext`, `ArenaResetResult`
+  - `ArenaService`
+- Nuovo package `api.team`:
+  - `TeamService`, `TeamDefinition`, `TeamSnapshot`, `FriendlyFirePolicy`
+  - `PartyService`, `PartySnapshot`, `PartyActionResult`, `PartyStatus`
+- Nuovo package `api.persistence`:
+  - `PersistenceRecord`, `PersistenceWriteResult`
+  - `YamlPersistencePort` + implementazione `DefaultYamlPersistencePort`
+  - `SqlPersistencePort` + implementazione no-op `NoopSqlPersistencePort`
+  - `SchemaMigration`, `SchemaMigrationContext`, `SchemaMigrationService`
+- Nuove implementazioni/runtime helpers:
+  - `DefaultArenaService`, `NoopArenaResetStrategy`, `PortBackedArenaResetStrategy`
+  - `DefaultTeamService`, `DefaultPartyService`
+  - `MatchFoundationHooks` per cleanup roster su match end
+- Nuovi no-op ufficiali:
+  - `NoopArenaResetPort`
+- Nuove capability:
+  - `ARENA_RESET`
+  - `PERSISTENCE_YAML`
+  - `PERSISTENCE_SQL`
+  - `TEAMS`
+  - `PARTIES`
+- Nuove guide:
+  - `docs/guides/ARENA-RESET-STRATEGIES.md`
+  - `docs/guides/TEAM-PARTY-SERVICE.md`
+  - `docs/guides/PERSISTENCE-PORTS.md`
+  - `docs/guides/SCHEMA-MIGRATIONS.md`
+  - `docs/guides/ARENA-RESET-BENCHMARK-HARNESS.md`
+- Release notes `0.7.0`: `docs/releases/0.7.0.md`.
+
+### Changed
+- Runtime wiring esteso in `DefaultCommonRuntime` con registrazione default di:
+  - `ArenaService`
+  - `TeamService`
+  - `PartyService`
+  - `YamlPersistencePort`
+  - `SqlPersistencePort`
+  - `SchemaMigrationService`
+- Policy build `verifyCoreDependencyPolicy` estesa ai package:
+  - `api/arena`
+  - `api/team`
+  - `api/persistence`
+- Introdotto source set/task `integrationTest` opt-in (`-PrunIntegrationHarness=true`) per harness integration arena reset.
+
 ## [0.6.0] - 2026-03-04
 ### Added
 - Nuovo package `api.match` con match/state engine plugin-generic:
