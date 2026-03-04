@@ -7,8 +7,8 @@ Libreria comune per ridurre boilerplate Bukkit/Paper nei plugin Minecraft del wo
 - Java: `21`
 - Modello distribuzione: embed-first (shading nei plugin consumer)
 
-## Stable status (`1.0.0`)
-- Release stabile corrente disponibile come `v1.0.0`.
+## Stable status (`2.0.0`)
+- Release stabile corrente disponibile come `v2.0.0`.
 - API freeze `1.0.0` documentato in [`docs/api/API-FREEZE-1.0.0.md`](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/api/API-FREEZE-1.0.0.md).
 - Scope core bloccato: nessun adapter/plugin esterno nel dependency set core.
 - Release notes:
@@ -25,6 +25,16 @@ Libreria comune per ridurre boilerplate Bukkit/Paper nei plugin Minecraft del wo
   - Stable: [`docs/releases/0.9.1.md`](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/releases/0.9.1.md)
   - RC: [`docs/releases/1.0.0-rc.1.md`](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/releases/1.0.0-rc.1.md)
   - Stable: [`docs/releases/1.0.0.md`](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/releases/1.0.0.md)
+  - RC: [`docs/releases/2.0.0-rc.1.md`](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/releases/2.0.0-rc.1.md)
+  - Stable: [`docs/releases/2.0.0.md`](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/releases/2.0.0.md)
+
+## Current focus (`2.0.0`)
+- GUI major power-up completed:
+  - nuovo model tipizzato `api.gui`
+  - `GuiDsl` fluente per chest GUI
+  - slot policies (`BUTTON_ONLY`, `INPUT_DIALOG`, `TAKE_ONLY`, `DEPOSIT_ONLY`, `TAKE_DEPOSIT`, `LOCKED`)
+  - bridge Bukkit inventory/player integrato
+  - modulo `adapter-invui` con backend InvUI reale + fallback no-op trasparente
 
 ## Boundary policy
 - API pubblica principale: `dev.patric.commonlib.api`
@@ -51,8 +61,11 @@ Guida migrazione:
 - Command model backend-agnostic:
   - `api.command/*` (`CommandModel`, `CommandNode`, `CommandValidator`, `CommandRegistry`, ...)
   - execution utility `command.CommandExecutions`
-- GUI session layer backend-agnostic:
-  - `api.gui/*` (`GuiSessionService`, `GuiSession`, `GuiState`, `GuiEvent`, ...)
+- GUI session layer backend-agnostic (v2):
+  - `api.gui/*` (`GuiDefinition`, `GuiDefinitionRegistry`, `SlotDefinition`, `GuiAction`, `GuiInteractionEvent`, `GuiSessionService`, ...)
+  - action first-class: `ToggleStateAction`, `OpenSubMenuAction`, `BackMenuAction`
+  - dialog binding: `DialogResponseBinding` + `DialogOpenOptionsMapping.responseBindings`
+  - `api.gui.render/*` (`GuiRenderModel`, `GuiRenderPatch`)
   - runtime service `DefaultGuiSessionService`
 - HUD primitives backend-agnostic:
   - `api.hud/*` (`ScoreboardSessionService`, `BossBarService`, `HudUpdatePolicy`, ...)
@@ -89,6 +102,7 @@ Guida migrazione:
 - `adapter-bossbar-paper`: `PaperBossBarAdapterComponent`, `PaperBossBarPort`
 - `adapter-bstats`: `BStatsAdapterComponent`, `BStatsMetricsPort`
 - `adapter-protocollib`: `ProtocolLibAdapterComponent`, `ProtocolLibPacketPort`
+- `adapter-invui`: `InvUiAdapterComponent`, `InvUiGuiPort`
 - Guide setup:
   - [`docs/guides/ADAPTER-WAVE1-SETUP.md`](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/guides/ADAPTER-WAVE1-SETUP.md)
   - [`docs/guides/ADAPTER-COMMANDAPI.md`](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/guides/ADAPTER-COMMANDAPI.md)
@@ -155,7 +169,7 @@ public final class MyPlugin extends JavaPlugin {
    - `./gradlew --no-daemon test`
    - `./gradlew --no-daemon clean test javadoc build`
 7. Run the in-repo consumer validation project:
-   - `./gradlew --no-daemon -p examples/consumer-demo clean test -PcommonLibJar=../../build/libs/minecraft-common-lib-1.0.0.jar`
+   - `./gradlew --no-daemon -p examples/consumer-demo clean test -PcommonLibJar=../../build/libs/minecraft-common-lib-2.0.0.jar`
 
 ## Documentazione
 - [ADR-001](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/adr/ADR-001-embed-first-no-nms-core.md)
@@ -210,6 +224,11 @@ public final class MyPlugin extends JavaPlugin {
 - [External Matrix Tests](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/guides/EXTERNAL-MATRIX-TESTS.md)
 - [Paper Dialog Wrapper](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/guides/PAPER-DIALOG-WRAPPER.md)
 - [Paper Dialog Model Reference](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/guides/PAPER-DIALOG-MODEL-REFERENCE.md)
+- [GUI Fluent DSL](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/guides/GUI-FLUENT-DSL.md)
+- [GUI Slot Policies](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/guides/GUI-SLOT-POLICIES.md)
+- [GUI Dialog Integration](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/guides/GUI-DIALOG-INTEGRATION.md)
+- [Adapter InvUI](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/guides/ADAPTER-INVUI.md)
+- [Migration GUI 1.x to 2.0](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/guides/MIGRATION-GUI-1.x-TO-2.0.md)
 - [Adapter License Policy](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/policy/ADAPTER-LICENSE-POLICY.md)
 - [Library Design](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/LIB-DESIGN.md)
 - [External Libs Research](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/UTILS-EXTERNAL-LIBS-RESEARCH.md)

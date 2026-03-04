@@ -1,8 +1,44 @@
 # Changelog
 
-## [1.0.1-SNAPSHOT] - Unreleased
+## [2.0.0] - 2026-03-04
+### Added
+- GUI v2 foundation (`api.gui`) con model tipizzato:
+  - `GuiDefinition`, `GuiLayout`, `SlotDefinition`, `SlotInteractionPolicy`, `GuiAction`
+  - eventi portabili v2 (`GuiInteractionEvent/*`) e risultati (`GuiInteractionResult`)
+  - DTO render adapter-facing: `api.gui.render.GuiRenderModel`, `GuiRenderPatch`
+- GUI interaction pack:
+  - switch stateful (`ToggleStateAction`, `GuiDsl#switchSlot`)
+  - submenu stack navigation (`OpenSubMenuAction`, `BackMenuAction`, `GuiDsl#subMenuSlot`, `GuiDsl#backSlot`)
+  - dialog response bindings (`DialogResponseBinding`, `GuiDsl#dialogInputSlot`, `DialogOpenOptionsMapping#responseBindings`)
+  - menu registry runtime (`GuiDefinitionRegistry`, `DefaultGuiDefinitionRegistry`)
+- Fluent DSL iniziale:
+  - `GuiDsl` con builder `chest(key, rows)` e helper slot/policy.
+- Modulo adapter GUI:
+  - `adapter-invui` con `InvUiGuiPort` e `InvUiAdapterComponent`.
+- Test adapter InvUI aggiuntivi:
+  - `InvUiInteractionForwardingTest`
+  - `InvUiFallbackNoDependencySmokeTest`
+- Runtime bridge inventory/player per GUI v2:
+  - `GuiPlayerInventoryBridge`
+  - `GuiInteractionPolicyRoutedEvent`
+- Binding GUI esteso:
+  - `PortBindingService#bindGuiPort(...)`
+  - `DefaultPortBindingService` + `DelegatingGuiPort`
+
 ### Changed
-- Aperto ciclo patch post-GA su `main`.
+- `GuiSessionService` esteso con API v2:
+  - `open(GuiDefinition, UUID, GuiOpenOptions)`
+  - `interact(GuiInteractionEvent)`
+  - bridge legacy mantenuti (`open(GuiOpenRequest)`, `publish(GuiEvent)`) per migrazione controllata.
+- `GuiPort` redesign adapter-facing:
+  - `open(GuiRenderModel)`, `render(UUID, GuiRenderPatch)`, `supports(GuiPortFeature)`
+  - bridge legacy mantenuti (`open(GuiSession)`, `render(UUID, GuiState)`, `supportsPortableEvents()`).
+- `DefaultCommonRuntime` ora registra `GuiPort` delegating + fallback no-op e installa bridge Bukkit GUI.
+- `InvUiGuiPort` ora usa backend InvUI reale (`Gui`/`Window`) al posto del fallback Bukkit diretto.
+- Build wiring InvUI completato:
+  - repo `https://repo.xenondevs.xyz/releases`
+  - property `invuiVersion` in `gradle.properties`
+  - dependency `xyz.xenondevs.invui:invui-core` in `adapter-invui`.
 
 ## [1.0.0] - 2026-03-04
 ### Added

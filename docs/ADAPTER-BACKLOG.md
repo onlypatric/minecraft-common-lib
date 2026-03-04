@@ -14,13 +14,12 @@
 - `MetricsPort` -> bStats adapter
 - `PacketPort` -> ProtocolLib adapter
 
-## Backlog `1.0.x`
-1. `GuiPort` -> InvUI adapter
-2. `GuiPort` -> inventory-framework adapter
-3. `CommandPort` -> Cloud Commands backend adapter
-4. `ArenaResetPort` -> advanced world instance/reset adapter
-5. `SqlPersistencePort` -> SQL backend adapter module (JDBC/Hikari-based)
-6. Packets backend alternative: PacketEvents (evaluation go/no-go)
+## Backlog `2.1.x+`
+1. `GuiPort` -> inventory-framework adapter
+2. `CommandPort` -> Cloud Commands backend adapter
+3. `ArenaResetPort` -> advanced world instance/reset adapter
+4. `SqlPersistencePort` -> SQL backend adapter module (JDBC/Hikari-based)
+5. Packets backend alternative: PacketEvents (evaluation go/no-go)
 
 ## Adoption criteria
 - API maturity: backend API stabile e documentata.
@@ -33,4 +32,4 @@
 - Tutti gli adapter restano opzionali e separati dal core.
 - Nessuna dipendenza adapter entra nel core `minecraft-common-lib`.
 - Capability detection (`CapabilityRegistry`) governa availability a runtime.
-- `v0.9.0` chiude wave 2 e prepara freeze API `1.0.0`.
+- `v2.0.0` chiude il primo ciclo GUI adapter con InvUI backend reale.
