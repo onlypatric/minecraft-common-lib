@@ -1,6 +1,10 @@
 package dev.patric.commonlib.api.capability;
 
 import dev.patric.commonlib.api.CommonRuntime;
+import dev.patric.commonlib.api.arena.ArenaService;
+import dev.patric.commonlib.api.persistence.SchemaMigrationService;
+import dev.patric.commonlib.api.persistence.SqlPersistencePort;
+import dev.patric.commonlib.api.persistence.YamlPersistencePort;
 import dev.patric.commonlib.api.port.BossBarPort;
 import dev.patric.commonlib.api.port.ClaimsPort;
 import dev.patric.commonlib.api.port.GuiPort;
@@ -9,6 +13,8 @@ import dev.patric.commonlib.api.match.MatchEngineService;
 import dev.patric.commonlib.api.port.NpcPort;
 import dev.patric.commonlib.api.port.ScoreboardPort;
 import dev.patric.commonlib.api.port.SchematicPort;
+import dev.patric.commonlib.api.team.PartyService;
+import dev.patric.commonlib.api.team.TeamService;
 import dev.patric.commonlib.services.DefaultCapabilityRegistry;
 import dev.patric.commonlib.testsupport.TestPlugin;
 import org.junit.jupiter.api.AfterEach;
@@ -64,11 +70,24 @@ class CapabilityRegistryTest {
         assertFalse(registry.isAvailable(StandardCapabilities.SCOREBOARD));
         assertFalse(registry.isAvailable(StandardCapabilities.BOSSBAR));
         assertTrue(registry.isAvailable(StandardCapabilities.MATCH_ENGINE));
+        assertFalse(registry.isAvailable(StandardCapabilities.ARENA_RESET));
+        assertTrue(registry.isAvailable(StandardCapabilities.PERSISTENCE_YAML));
+        assertFalse(registry.isAvailable(StandardCapabilities.PERSISTENCE_SQL));
+        assertTrue(registry.isAvailable(StandardCapabilities.TEAMS));
+        assertTrue(registry.isAvailable(StandardCapabilities.PARTIES));
         assertEquals("No adapter installed", registry.status(StandardCapabilities.NPC).orElseThrow().reason());
         assertEquals("No adapter installed", registry.status(StandardCapabilities.GUI).orElseThrow().reason());
         assertEquals("No adapter installed", registry.status(StandardCapabilities.SCOREBOARD).orElseThrow().reason());
         assertEquals("No adapter installed", registry.status(StandardCapabilities.BOSSBAR).orElseThrow().reason());
         assertEquals("core-default", registry.status(StandardCapabilities.MATCH_ENGINE).orElseThrow().metadata());
+        assertEquals("No adapter installed", registry.status(StandardCapabilities.ARENA_RESET).orElseThrow().reason());
+        assertEquals("core-default", registry.status(StandardCapabilities.PERSISTENCE_YAML).orElseThrow().metadata());
+        assertEquals(
+                "No SQL adapter configured",
+                registry.status(StandardCapabilities.PERSISTENCE_SQL).orElseThrow().reason()
+        );
+        assertEquals("core-default", registry.status(StandardCapabilities.TEAMS).orElseThrow().metadata());
+        assertEquals("core-default", registry.status(StandardCapabilities.PARTIES).orElseThrow().metadata());
 
         runtime.services().require(NpcPort.class);
         runtime.services().require(HologramPort.class);
@@ -78,5 +97,11 @@ class CapabilityRegistryTest {
         runtime.services().require(ScoreboardPort.class);
         runtime.services().require(BossBarPort.class);
         runtime.services().require(MatchEngineService.class);
+        runtime.services().require(ArenaService.class);
+        runtime.services().require(TeamService.class);
+        runtime.services().require(PartyService.class);
+        runtime.services().require(YamlPersistencePort.class);
+        runtime.services().require(SqlPersistencePort.class);
+        runtime.services().require(SchemaMigrationService.class);
     }
 }

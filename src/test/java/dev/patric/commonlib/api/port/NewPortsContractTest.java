@@ -43,6 +43,11 @@ class NewPortsContractTest {
         assertMethod(SchematicPort.class, "resetRegion", CompletableFuture.class, String.class, String.class, PasteOptions.class);
     }
 
+    @Test
+    void arenaResetPortContractMatchesExpectedSignatures() throws Exception {
+        assertMethod(ArenaResetPort.class, "resetArena", CompletableFuture.class, String.class);
+    }
+
     private static void assertMethod(Class<?> type, String methodName, Class<?> returnType, Class<?>... parameters)
             throws NoSuchMethodException {
         Method method = type.getMethod(methodName, parameters);

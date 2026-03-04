@@ -5,6 +5,13 @@ import dev.patric.commonlib.api.capability.CapabilityKey;
 import dev.patric.commonlib.api.capability.CapabilityRegistry;
 import dev.patric.commonlib.api.capability.CapabilityStatus;
 import dev.patric.commonlib.api.capability.StandardCapabilities;
+import dev.patric.commonlib.api.arena.ArenaInstance;
+import dev.patric.commonlib.api.arena.ArenaOpenRequest;
+import dev.patric.commonlib.api.arena.ArenaResetContext;
+import dev.patric.commonlib.api.arena.ArenaResetResult;
+import dev.patric.commonlib.api.arena.ArenaResetStrategy;
+import dev.patric.commonlib.api.arena.ArenaService;
+import dev.patric.commonlib.api.arena.ArenaStatus;
 import dev.patric.commonlib.api.command.ArgumentType;
 import dev.patric.commonlib.api.command.CommandContext;
 import dev.patric.commonlib.api.command.CommandExecution;
@@ -53,6 +60,13 @@ import dev.patric.commonlib.api.message.FallbackChain;
 import dev.patric.commonlib.api.message.MessageRequest;
 import dev.patric.commonlib.api.message.PlaceholderResolver;
 import dev.patric.commonlib.api.message.PluralRules;
+import dev.patric.commonlib.api.persistence.PersistenceRecord;
+import dev.patric.commonlib.api.persistence.PersistenceWriteResult;
+import dev.patric.commonlib.api.persistence.SchemaMigration;
+import dev.patric.commonlib.api.persistence.SchemaMigrationContext;
+import dev.patric.commonlib.api.persistence.SchemaMigrationService;
+import dev.patric.commonlib.api.persistence.SqlPersistencePort;
+import dev.patric.commonlib.api.persistence.YamlPersistencePort;
 import dev.patric.commonlib.api.match.DisconnectResult;
 import dev.patric.commonlib.api.match.EndReason;
 import dev.patric.commonlib.api.match.JoinResult;
@@ -83,9 +97,19 @@ import dev.patric.commonlib.api.port.noop.NoopCommandPort;
 import dev.patric.commonlib.api.port.noop.NoopGuiPort;
 import dev.patric.commonlib.api.port.noop.NoopHologramPort;
 import dev.patric.commonlib.api.port.noop.NoopNpcPort;
+import dev.patric.commonlib.api.port.noop.NoopArenaResetPort;
 import dev.patric.commonlib.api.port.noop.NoopSchematicPort;
 import dev.patric.commonlib.api.port.noop.NoopScoreboardPort;
 import dev.patric.commonlib.api.port.options.PasteOptions;
+import dev.patric.commonlib.api.team.FriendlyFirePolicy;
+import dev.patric.commonlib.api.team.PartyActionResult;
+import dev.patric.commonlib.api.team.PartyService;
+import dev.patric.commonlib.api.team.PartySnapshot;
+import dev.patric.commonlib.api.team.PartyStatus;
+import dev.patric.commonlib.api.team.TeamAssignmentResult;
+import dev.patric.commonlib.api.team.TeamDefinition;
+import dev.patric.commonlib.api.team.TeamService;
+import dev.patric.commonlib.api.team.TeamSnapshot;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.List;
@@ -146,6 +170,7 @@ class PublicApiFreezeContractTest {
                 NoopGuiPort.class,
                 NoopScoreboardPort.class,
                 NoopBossBarPort.class,
+                NoopArenaResetPort.class,
                 CommandModel.class,
                 CommandNode.class,
                 CommandExecution.class,
@@ -206,7 +231,30 @@ class PublicApiFreezeContractTest {
                 RejoinResult.class,
                 MatchCallbacks.class,
                 MatchCleanup.class,
-                MatchEngineService.class
+                MatchEngineService.class,
+                ArenaInstance.class,
+                ArenaOpenRequest.class,
+                ArenaResetContext.class,
+                ArenaResetResult.class,
+                ArenaResetStrategy.class,
+                ArenaService.class,
+                ArenaStatus.class,
+                FriendlyFirePolicy.class,
+                TeamDefinition.class,
+                TeamAssignmentResult.class,
+                TeamSnapshot.class,
+                TeamService.class,
+                PartyStatus.class,
+                PartyActionResult.class,
+                PartySnapshot.class,
+                PartyService.class,
+                PersistenceRecord.class,
+                PersistenceWriteResult.class,
+                YamlPersistencePort.class,
+                SqlPersistencePort.class,
+                SchemaMigration.class,
+                SchemaMigrationContext.class,
+                SchemaMigrationService.class
         };
 
         assertTrue(frozenTypes.length >= 48);
@@ -381,6 +429,8 @@ class PublicApiFreezeContractTest {
 
     @Test
     void frozenPluginGenericPortsAndCapabilitiesArePresent() throws Exception {
+        assertMethod(ArenaResetPort.class, "resetArena", CompletableFuture.class, String.class);
+
         assertMethod(NpcPort.class, "spawn", UUID.class, String.class, Location.class, String.class);
         assertMethod(NpcPort.class, "despawn", boolean.class, UUID.class);
         assertMethod(NpcPort.class, "updateDisplayName", boolean.class, UUID.class, String.class);
@@ -402,6 +452,55 @@ class PublicApiFreezeContractTest {
         assertMethod(CapabilityRegistry.class, "publish", void.class, CapabilityKey.class, CapabilityStatus.class);
         assertMethod(CapabilityRegistry.class, "status", Optional.class, CapabilityKey.class);
         assertMethod(CapabilityRegistry.class, "isAvailable", boolean.class, CapabilityKey.class);
+    }
+
+    @Test
+    void frozenArenaTeamAndPersistenceContractsArePresent() throws Exception {
+        assertMethod(ArenaResetStrategy.class, "key", String.class);
+        assertMethod(ArenaResetStrategy.class, "reset", CompletionStage.class, ArenaInstance.class, ArenaResetContext.class);
+        assertMethod(ArenaService.class, "registerStrategy", void.class, ArenaResetStrategy.class);
+        assertMethod(ArenaService.class, "open", ArenaInstance.class, ArenaOpenRequest.class);
+        assertMethod(ArenaService.class, "find", Optional.class, String.class);
+        assertMethod(ArenaService.class, "active", List.class);
+        assertMethod(ArenaService.class, "reset", CompletionStage.class, String.class, String.class);
+        assertMethod(ArenaService.class, "dispose", boolean.class, String.class);
+
+        assertMethod(TeamService.class, "createRoster", void.class, UUID.class, List.class, FriendlyFirePolicy.class);
+        assertMethod(TeamService.class, "assign", TeamAssignmentResult.class, UUID.class, UUID.class, String.class);
+        assertMethod(TeamService.class, "autoAssign", TeamAssignmentResult.class, UUID.class, UUID.class);
+        assertMethod(TeamService.class, "teamOf", Optional.class, UUID.class, UUID.class);
+        assertMethod(TeamService.class, "canDamage", boolean.class, UUID.class, UUID.class, UUID.class);
+        assertMethod(TeamService.class, "removePlayer", void.class, UUID.class, UUID.class);
+        assertMethod(TeamService.class, "snapshot", Optional.class, UUID.class);
+        assertMethod(TeamService.class, "clearRoster", boolean.class, UUID.class);
+
+        assertMethod(PartyService.class, "create", PartySnapshot.class, UUID.class);
+        assertMethod(PartyService.class, "invite", PartyActionResult.class, UUID.class, UUID.class, UUID.class);
+        assertMethod(PartyService.class, "acceptInvite", PartyActionResult.class, UUID.class, UUID.class);
+        assertMethod(PartyService.class, "kick", PartyActionResult.class, UUID.class, UUID.class, UUID.class);
+        assertMethod(PartyService.class, "leave", PartyActionResult.class, UUID.class, UUID.class);
+        assertMethod(PartyService.class, "disband", PartyActionResult.class, UUID.class, UUID.class);
+        assertMethod(PartyService.class, "find", Optional.class, UUID.class);
+        assertMethod(PartyService.class, "findByMember", Optional.class, UUID.class);
+
+        assertMethod(YamlPersistencePort.class, "load", Optional.class, String.class, String.class);
+        assertMethod(YamlPersistencePort.class, "save", PersistenceWriteResult.class, PersistenceRecord.class);
+        assertMethod(YamlPersistencePort.class, "delete", boolean.class, String.class, String.class);
+        assertMethod(YamlPersistencePort.class, "list", List.class, String.class);
+
+        assertMethod(SqlPersistencePort.class, "load", CompletionStage.class, String.class, String.class);
+        assertMethod(SqlPersistencePort.class, "save", CompletionStage.class, PersistenceRecord.class);
+        assertMethod(SqlPersistencePort.class, "delete", CompletionStage.class, String.class, String.class);
+        assertMethod(SqlPersistencePort.class, "list", CompletionStage.class, String.class);
+        assertMethod(SqlPersistencePort.class, "available", boolean.class);
+
+        assertMethod(SchemaMigration.class, "fromVersion", int.class);
+        assertMethod(SchemaMigration.class, "toVersion", int.class);
+        assertMethod(SchemaMigration.class, "migrate", void.class, SchemaMigrationContext.class);
+
+        assertMethod(SchemaMigrationService.class, "currentVersion", int.class, String.class);
+        assertMethod(SchemaMigrationService.class, "register", void.class, String.class, SchemaMigration.class);
+        assertMethod(SchemaMigrationService.class, "migrateToLatest", int.class, String.class);
     }
 
     private static void assertMethod(Class<?> type, String methodName, Class<?> returnType, Class<?>... parameters)

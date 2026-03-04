@@ -3,6 +3,12 @@ package dev.patric.commonlib.api;
 import dev.patric.commonlib.api.hud.BossBarService;
 import dev.patric.commonlib.api.hud.ScoreboardSessionService;
 import dev.patric.commonlib.api.match.MatchEngineService;
+import dev.patric.commonlib.api.arena.ArenaService;
+import dev.patric.commonlib.api.persistence.SchemaMigrationService;
+import dev.patric.commonlib.api.persistence.SqlPersistencePort;
+import dev.patric.commonlib.api.persistence.YamlPersistencePort;
+import dev.patric.commonlib.api.team.PartyService;
+import dev.patric.commonlib.api.team.TeamService;
 import dev.patric.commonlib.testsupport.TestPlugin;
 import java.util.ArrayList;
 import java.util.List;
@@ -69,6 +75,12 @@ class CommonRuntimeContractTest {
         assertNotNull(runtime.services().require(ScoreboardSessionService.class));
         assertNotNull(runtime.services().require(BossBarService.class));
         assertNotNull(runtime.services().require(MatchEngineService.class));
+        assertNotNull(runtime.services().require(ArenaService.class));
+        assertNotNull(runtime.services().require(TeamService.class));
+        assertNotNull(runtime.services().require(PartyService.class));
+        assertNotNull(runtime.services().require(YamlPersistencePort.class));
+        assertNotNull(runtime.services().require(SqlPersistencePort.class));
+        assertNotNull(runtime.services().require(SchemaMigrationService.class));
 
         runtime.onDisable();
 

@@ -3,6 +3,7 @@ package dev.patric.commonlib.api.port;
 import dev.patric.commonlib.api.port.noop.NoopClaimsPort;
 import dev.patric.commonlib.api.port.noop.NoopHologramPort;
 import dev.patric.commonlib.api.port.noop.NoopNpcPort;
+import dev.patric.commonlib.api.port.noop.NoopArenaResetPort;
 import dev.patric.commonlib.api.port.noop.NoopSchematicPort;
 import dev.patric.commonlib.api.port.options.PasteOptions;
 import java.util.List;
@@ -66,6 +67,13 @@ class NoopPortsBehaviorTest {
         CompletableFuture<Void> reset = assertDoesNotThrow(() -> port.resetRegion("arena_1", "template_a", options));
 
         assertNull(paste.join());
+        assertNull(reset.join());
+    }
+
+    @Test
+    void noopArenaResetPortCompletesFutureSuccessfully() {
+        NoopArenaResetPort port = new NoopArenaResetPort();
+        CompletableFuture<Void> reset = assertDoesNotThrow(() -> port.resetArena("arena-1"));
         assertNull(reset.join());
     }
 }
