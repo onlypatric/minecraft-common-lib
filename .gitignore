@@ -3,4 +3,5 @@ build/
 out/
 .idea/
 .vscode/
+bin/
 .DS_Store
