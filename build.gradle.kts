@@ -19,6 +19,43 @@ repositories {
     maven("https://repo.papermc.io/repository/maven-public/")
 }
 
+subprojects {
+    apply(plugin = "java-library")
+
+    group = rootProject.group
+    version = rootProject.version
+
+    repositories {
+        mavenCentral()
+        maven("https://repo.papermc.io/repository/maven-public/")
+        maven("https://repo.fancyinnovations.com/releases")
+    }
+
+    extensions.configure<JavaPluginExtension> {
+        toolchain {
+            languageVersion.set(JavaLanguageVersion.of(21))
+        }
+    }
+
+    tasks.withType<JavaCompile>().configureEach {
+        options.encoding = "UTF-8"
+        options.release.set(21)
+    }
+
+    tasks.withType<Test>().configureEach {
+        useJUnitPlatform()
+    }
+
+    dependencies {
+        "testImplementation"("io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT")
+        "testImplementation"(platform("org.junit:junit-bom:5.12.2"))
+        "testImplementation"("org.junit.jupiter:junit-jupiter")
+        "testImplementation"("org.mockito:mockito-core:5.18.0")
+        "testImplementation"("org.mockbukkit.mockbukkit:mockbukkit-v1.21:4.106.1")
+        "testRuntimeOnly"("org.junit.platform:junit-platform-launcher")
+    }
+}
+
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT")
 
@@ -27,6 +64,10 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.mockito:mockito-core:5.18.0")
     testImplementation("org.mockbukkit.mockbukkit:mockbukkit-v1.21:4.106.1")
+    testImplementation(project(":adapter-commandapi"))
+    testImplementation(project(":adapter-fastboard"))
+    testImplementation(project(":adapter-fancyholograms"))
+    testImplementation(project(":adapter-fancynpcs"))
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
@@ -41,6 +82,25 @@ configurations[integrationTestSourceSet.implementationConfigurationName]
     .extendsFrom(configurations.testImplementation.get())
 configurations[integrationTestSourceSet.runtimeOnlyConfigurationName]
     .extendsFrom(configurations.testRuntimeOnly.get())
+
+val adapterIntegrationTestSourceSet = sourceSets.create("adapterIntegrationTest") {
+    java.srcDir("src/adapterIntegrationTest/java")
+    resources.srcDir("src/adapterIntegrationTest/resources")
+    compileClasspath += sourceSets.main.get().output + sourceSets.test.get().output + configurations.testRuntimeClasspath.get()
+    runtimeClasspath += output + compileClasspath
+}
+
+configurations[adapterIntegrationTestSourceSet.implementationConfigurationName]
+    .extendsFrom(configurations.testImplementation.get())
+configurations[adapterIntegrationTestSourceSet.runtimeOnlyConfigurationName]
+    .extendsFrom(configurations.testRuntimeOnly.get())
+
+dependencies {
+    add(adapterIntegrationTestSourceSet.implementationConfigurationName, project(":adapter-commandapi"))
+    add(adapterIntegrationTestSourceSet.implementationConfigurationName, project(":adapter-fastboard"))
+    add(adapterIntegrationTestSourceSet.implementationConfigurationName, project(":adapter-fancyholograms"))
+    add(adapterIntegrationTestSourceSet.implementationConfigurationName, project(":adapter-fancynpcs"))
+}
 
 tasks.withType<JavaCompile>().configureEach {
     options.encoding = "UTF-8"
@@ -59,6 +119,20 @@ val integrationTest = tasks.register<Test>("integrationTest") {
     useJUnitPlatform()
     onlyIf {
         providers.gradleProperty("runIntegrationHarness")
+                .map(String::toBoolean)
+                .orElse(false)
+                .get()
+    }
+}
+
+val adapterIntegrationTest = tasks.register<Test>("adapterIntegrationTest") {
+    description = "Runs opt-in adapter integration smoke tests."
+    group = "verification"
+    testClassesDirs = adapterIntegrationTestSourceSet.output.classesDirs
+    classpath = adapterIntegrationTestSourceSet.runtimeClasspath
+    useJUnitPlatform()
+    onlyIf {
+        providers.gradleProperty("runAdapterIntegration")
                 .map(String::toBoolean)
                 .orElse(false)
                 .get()
@@ -100,6 +174,7 @@ val verifyCoreDependencyPolicy = tasks.register("verifyCoreDependencyPolicy") {
         }
 
         val guardedApiDirs = listOf(
+            file("src/main/java/dev/patric/commonlib/api/adapter"),
             file("src/main/java/dev/patric/commonlib/api/capability"),
             file("src/main/java/dev/patric/commonlib/api/match"),
             file("src/main/java/dev/patric/commonlib/api/hud"),
@@ -135,8 +210,47 @@ val verifyCoreDependencyPolicy = tasks.register("verifyCoreDependencyPolicy") {
     }
 }
 
+val verifyAdapterDependencyPolicy = tasks.register("verifyAdapterDependencyPolicy") {
+    group = "verification"
+    description = "Ensures adapter modules only depend on core and do not cross-link each other."
+
+    doLast {
+        val adapterProjects = setOf(
+            ":adapter-commandapi",
+            ":adapter-fastboard",
+            ":adapter-fancyholograms",
+            ":adapter-fancynpcs"
+        )
+
+        adapterProjects.forEach { projectPath ->
+            val adapterProject = project(projectPath)
+            val invalidProjectDeps = mutableListOf<String>()
+
+            listOf("api", "implementation", "runtimeOnly", "compileOnly").forEach { configurationName ->
+                val configuration = adapterProject.configurations.findByName(configurationName) ?: return@forEach
+                configuration.dependencies.forEach { dependency ->
+                    if (dependency is org.gradle.api.artifacts.ProjectDependency) {
+                        val target = dependency.path
+                        if (target != ":") {
+                            invalidProjectDeps += "$projectPath:$configurationName -> $target"
+                        }
+                    }
+                }
+            }
+
+            if (invalidProjectDeps.isNotEmpty()) {
+                throw GradleException(
+                    "Adapter modules may only depend on core project ':'. Invalid project dependencies: " +
+                            invalidProjectDeps.joinToString(", ")
+                )
+            }
+        }
+    }
+}
+
 tasks.check {
     dependsOn(verifyCoreDependencyPolicy)
+    dependsOn(verifyAdapterDependencyPolicy)
 }
 
 tasks.jacocoTestReport {

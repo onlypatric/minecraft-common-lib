@@ -17,6 +17,7 @@ class CoreDependencyPolicyTest {
         assertTrue(script.contains("tasks.check"));
         assertTrue(script.contains("compileOnly"));
         assertTrue(script.contains("io.papermc.paper:paper-api"));
+        assertTrue(script.contains("api/adapter"));
         assertTrue(script.contains("api/capability"));
         assertTrue(script.contains("api/match"));
         assertTrue(script.contains("api/hud"));
@@ -26,6 +27,9 @@ class CoreDependencyPolicyTest {
         assertTrue(script.contains("api/persistence"));
         assertTrue(script.contains("api/port/noop"));
         assertTrue(script.contains("integrationTest"));
+        assertTrue(script.contains("adapterIntegrationTest"));
         assertTrue(script.contains("runIntegrationHarness"));
+        assertTrue(script.contains("runAdapterIntegration"));
+        assertTrue(script.contains("verifyAdapterDependencyPolicy"));
     }
 }

@@ -4,6 +4,7 @@ import dev.patric.commonlib.api.CommonRuntime;
 import dev.patric.commonlib.api.capability.CapabilityRegistry;
 import dev.patric.commonlib.api.capability.CapabilityStatus;
 import dev.patric.commonlib.api.capability.StandardCapabilities;
+import dev.patric.commonlib.api.adapter.PortBindingService;
 import dev.patric.commonlib.api.arena.ArenaInstance;
 import dev.patric.commonlib.api.arena.ArenaOpenRequest;
 import dev.patric.commonlib.api.arena.ArenaResetContext;
@@ -122,6 +123,7 @@ class CommonLibSmokeTest {
         assertDoesNotThrow(() -> Class.forName(CapabilityRegistry.class.getName()));
         assertDoesNotThrow(() -> Class.forName(CapabilityStatus.class.getName()));
         assertDoesNotThrow(() -> Class.forName(StandardCapabilities.class.getName()));
+        assertDoesNotThrow(() -> Class.forName(PortBindingService.class.getName()));
         assertDoesNotThrow(() -> Class.forName(CommandModel.class.getName()));
         assertDoesNotThrow(() -> Class.forName(CommandRegistry.class.getName()));
         assertDoesNotThrow(() -> Class.forName(MessageRequest.class.getName()));

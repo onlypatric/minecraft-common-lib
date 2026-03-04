@@ -1,6 +1,7 @@
 package dev.patric.commonlib.api;
 
 import dev.patric.commonlib.api.bootstrap.RuntimeBootstrap;
+import dev.patric.commonlib.api.adapter.PortBindingService;
 import dev.patric.commonlib.api.capability.CapabilityKey;
 import dev.patric.commonlib.api.capability.CapabilityRegistry;
 import dev.patric.commonlib.api.capability.CapabilityStatus;
@@ -159,6 +160,7 @@ class PublicApiFreezeContractTest {
                 SchematicPort.class,
                 PasteOptions.class,
                 CapabilityRegistry.class,
+                PortBindingService.class,
                 CapabilityKey.class,
                 CapabilityStatus.class,
                 StandardCapabilities.class,
@@ -452,6 +454,25 @@ class PublicApiFreezeContractTest {
         assertMethod(CapabilityRegistry.class, "publish", void.class, CapabilityKey.class, CapabilityStatus.class);
         assertMethod(CapabilityRegistry.class, "status", Optional.class, CapabilityKey.class);
         assertMethod(CapabilityRegistry.class, "isAvailable", boolean.class, CapabilityKey.class);
+        assertMethod(PortBindingService.class, "bindCommandPort", void.class, CommandPort.class, String.class, String.class);
+        assertMethod(
+                PortBindingService.class,
+                "bindScoreboardPort",
+                void.class,
+                ScoreboardPort.class,
+                String.class,
+                String.class
+        );
+        assertMethod(
+                PortBindingService.class,
+                "bindHologramPort",
+                void.class,
+                HologramPort.class,
+                String.class,
+                String.class
+        );
+        assertMethod(PortBindingService.class, "bindNpcPort", void.class, NpcPort.class, String.class, String.class);
+        assertMethod(PortBindingService.class, "markUnavailable", void.class, CapabilityKey.class, String.class);
     }
 
     @Test

@@ -7,6 +7,7 @@ import dev.patric.commonlib.api.persistence.SqlPersistencePort;
 import dev.patric.commonlib.api.persistence.YamlPersistencePort;
 import dev.patric.commonlib.api.port.BossBarPort;
 import dev.patric.commonlib.api.port.ClaimsPort;
+import dev.patric.commonlib.api.port.CommandPort;
 import dev.patric.commonlib.api.port.GuiPort;
 import dev.patric.commonlib.api.port.HologramPort;
 import dev.patric.commonlib.api.match.MatchEngineService;
@@ -67,6 +68,7 @@ class CapabilityRegistryTest {
         assertFalse(registry.isAvailable(StandardCapabilities.CLAIMS));
         assertFalse(registry.isAvailable(StandardCapabilities.SCHEMATIC));
         assertFalse(registry.isAvailable(StandardCapabilities.GUI));
+        assertFalse(registry.isAvailable(StandardCapabilities.COMMAND));
         assertFalse(registry.isAvailable(StandardCapabilities.SCOREBOARD));
         assertFalse(registry.isAvailable(StandardCapabilities.BOSSBAR));
         assertTrue(registry.isAvailable(StandardCapabilities.MATCH_ENGINE));
@@ -77,6 +79,7 @@ class CapabilityRegistryTest {
         assertTrue(registry.isAvailable(StandardCapabilities.PARTIES));
         assertEquals("No adapter installed", registry.status(StandardCapabilities.NPC).orElseThrow().reason());
         assertEquals("No adapter installed", registry.status(StandardCapabilities.GUI).orElseThrow().reason());
+        assertEquals("No adapter installed", registry.status(StandardCapabilities.COMMAND).orElseThrow().reason());
         assertEquals("No adapter installed", registry.status(StandardCapabilities.SCOREBOARD).orElseThrow().reason());
         assertEquals("No adapter installed", registry.status(StandardCapabilities.BOSSBAR).orElseThrow().reason());
         assertEquals("core-default", registry.status(StandardCapabilities.MATCH_ENGINE).orElseThrow().metadata());
@@ -93,6 +96,7 @@ class CapabilityRegistryTest {
         runtime.services().require(HologramPort.class);
         runtime.services().require(ClaimsPort.class);
         runtime.services().require(SchematicPort.class);
+        runtime.services().require(CommandPort.class);
         runtime.services().require(GuiPort.class);
         runtime.services().require(ScoreboardPort.class);
         runtime.services().require(BossBarPort.class);
