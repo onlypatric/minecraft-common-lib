@@ -7,8 +7,8 @@ Libreria comune per ridurre boilerplate Bukkit/Paper nei plugin Minecraft del wo
 - Java: `21`
 - Modello distribuzione: embed-first (shading nei plugin consumer)
 
-## Stable status (`0.4.0`)
-- Release stabile core disponibile come `v0.4.0`.
+## Stable status (`0.5.0`)
+- Release stabile core disponibile come `v0.5.0`.
 - Public API `0.1.x` congelata in [`docs/api/API-FREEZE-0.1.0-rc.1.md`](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/api/API-FREEZE-0.1.0-rc.1.md).
 - Scope core bloccato: nessun adapter/plugin esterno nel dependency set core.
 - Release notes:
@@ -17,6 +17,7 @@ Libreria comune per ridurre boilerplate Bukkit/Paper nei plugin Minecraft del wo
   - Stable: [`docs/releases/0.2.0.md`](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/releases/0.2.0.md)
   - Stable: [`docs/releases/0.3.0.md`](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/releases/0.3.0.md)
   - Stable: [`docs/releases/0.4.0.md`](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/releases/0.4.0.md)
+  - Stable: [`docs/releases/0.5.0.md`](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/releases/0.5.0.md)
 
 ## Boundary policy
 - API pubblica principale: `dev.patric.commonlib.api`
@@ -37,8 +38,11 @@ Libreria comune per ridurre boilerplate Bukkit/Paper nei plugin Minecraft del wo
 - GUI session layer backend-agnostic:
   - `api.gui/*` (`GuiSessionService`, `GuiSession`, `GuiState`, `GuiEvent`, ...)
   - runtime service `DefaultGuiSessionService`
+- HUD primitives backend-agnostic:
+  - `api.hud/*` (`ScoreboardSessionService`, `BossBarService`, `HudUpdatePolicy`, ...)
+  - runtime services `DefaultScoreboardSessionService`, `DefaultBossBarService`
 - Plugin-generic ports (adapter-first):
-  - `CommandPort`, `GuiPort`, `ScoreboardPort`, `ArenaResetPort`
+  - `CommandPort`, `GuiPort`, `ScoreboardPort`, `BossBarPort`, `ArenaResetPort`
   - `NpcPort`, `HologramPort`, `ClaimsPort`, `SchematicPort`
 - Capability model:
   - `CapabilityRegistry`, `CapabilityKey`, `CapabilityStatus`, `StandardCapabilities`
@@ -94,7 +98,7 @@ public final class MyPlugin extends JavaPlugin {
    - `./gradlew --no-daemon test`
    - `./gradlew --no-daemon clean test javadoc build`
 7. Run the in-repo consumer validation project:
-   - `./gradlew --no-daemon -p examples/consumer-demo clean test -PcommonLibJar=../../build/libs/minecraft-common-lib-0.4.0.jar`
+   - `./gradlew --no-daemon -p examples/consumer-demo clean test -PcommonLibJar=../../build/libs/minecraft-common-lib-0.5.0.jar`
 
 ## Documentazione
 - [ADR-001](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/adr/ADR-001-embed-first-no-nms-core.md)
@@ -110,11 +114,15 @@ public final class MyPlugin extends JavaPlugin {
 - [Release Notes 0.2.0](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/releases/0.2.0.md)
 - [Release Notes 0.3.0](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/releases/0.3.0.md)
 - [Release Notes 0.4.0](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/releases/0.4.0.md)
+- [Release Notes 0.5.0](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/releases/0.5.0.md)
 - [Command Model Guide](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/guides/COMMAND-MODEL.md)
 - [I18N Advanced Guide](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/guides/I18N-ADVANCED.md)
 - [Migration Bukkit Raw Commands](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/guides/MIGRATION-BUKKIT-RAW-COMMANDS.md)
 - [GUI Session Model Guide](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/guides/GUI-SESSION-MODEL.md)
 - [GUI Adapter Mapping Guide](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/guides/GUI-ADAPTER-MAPPING.md)
+- [HUD Scoreboard Sessions](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/guides/HUD-SCOREBOARD-SESSIONS.md)
+- [BossBar Service Guide](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/guides/BOSSBAR-SERVICE.md)
+- [HUD Performance Targets](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/guides/HUD-PERFORMANCE-TARGETS.md)
 - [Adapter License Policy](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/policy/ADAPTER-LICENSE-POLICY.md)
 - [Library Design](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/LIB-DESIGN.md)
 - [External Libs Research](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/UTILS-EXTERNAL-LIBS-RESEARCH.md)

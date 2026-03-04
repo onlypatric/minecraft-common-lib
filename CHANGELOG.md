@@ -1,5 +1,32 @@
 # Changelog
 
+## [0.5.0] - 2026-03-04
+### Added
+- Nuovo package `api.hud` con primitive HUD plugin-generic:
+  - `ScoreboardSessionService`, `ScoreboardSession`, `ScoreboardSnapshot`, `HudUpdatePolicy`
+  - `BossBarService`, `BossBarSession`, `BossBarState`
+  - enum/shared models (`HudAudienceCloseReason`, `HudBarColor`, `HudBarStyle`, ...)
+- Nuova porta `BossBarPort`.
+- Nuovi no-op ufficiali:
+  - `NoopScoreboardPort`
+  - `NoopBossBarPort`
+- Nuovi servizi runtime:
+  - `DefaultScoreboardSessionService`
+  - `DefaultBossBarService`
+- Capability model esteso:
+  - `StandardCapabilities.SCOREBOARD`
+  - `StandardCapabilities.BOSSBAR`
+- Guide nuove:
+  - `docs/guides/HUD-SCOREBOARD-SESSIONS.md`
+  - `docs/guides/BOSSBAR-SERVICE.md`
+  - `docs/guides/HUD-PERFORMANCE-TARGETS.md`
+- Release notes `0.5.0`: `docs/releases/0.5.0.md`.
+
+### Changed
+- Breaking: `ScoreboardPort` ridisegnata in modello session-oriented (`open/render/close`).
+- Runtime disable cleanup esteso: chiusura HUD services (`ScoreboardSessionService`, `BossBarService`) con reason `PLUGIN_DISABLE`.
+- Policy build `verifyCoreDependencyPolicy` estesa al package `api/hud`.
+
 ## [0.4.0] - 2026-03-03
 ### Added
 - Nuovo package `api.gui` con modello session-oriented completo:

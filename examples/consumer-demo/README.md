@@ -11,7 +11,7 @@ Dalla root di `minecraft-common-lib`:
 
 ```bash
 ./gradlew --no-daemon clean build
-./gradlew --no-daemon -p examples/consumer-demo clean test -PcommonLibJar=../../build/libs/minecraft-common-lib-0.4.0.jar
+./gradlew --no-daemon -p examples/consumer-demo clean test -PcommonLibJar=../../build/libs/minecraft-common-lib-0.5.0.jar
 ```
 
 Il test carica il plugin demo con MockBukkit, verifica bootstrap runtime e conferma che i task vengano cancellati allo shutdown.
