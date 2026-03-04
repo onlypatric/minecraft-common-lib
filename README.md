@@ -7,8 +7,8 @@ Libreria comune per ridurre boilerplate Bukkit/Paper nei plugin Minecraft del wo
 - Java: `21`
 - Modello distribuzione: embed-first (shading nei plugin consumer)
 
-## Stable status (`0.8.0`)
-- Release stabile corrente disponibile come `v0.8.0`.
+## Stable status (`0.9.0`)
+- Release stabile corrente disponibile come `v0.9.0`.
 - Public API `0.1.x` congelata in [`docs/api/API-FREEZE-0.1.0-rc.1.md`](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/api/API-FREEZE-0.1.0-rc.1.md).
 - Scope core bloccato: nessun adapter/plugin esterno nel dependency set core.
 - Release notes:
@@ -21,6 +21,7 @@ Libreria comune per ridurre boilerplate Bukkit/Paper nei plugin Minecraft del wo
   - Stable: [`docs/releases/0.6.0.md`](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/releases/0.6.0.md)
   - Stable: [`docs/releases/0.7.0.md`](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/releases/0.7.0.md)
   - Stable: [`docs/releases/0.8.0.md`](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/releases/0.8.0.md)
+  - Stable: [`docs/releases/0.9.0.md`](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/releases/0.9.0.md)
 
 ## Boundary policy
 - API pubblica principale: `dev.patric.commonlib.api`
@@ -53,24 +54,40 @@ Libreria comune per ridurre boilerplate Bukkit/Paper nei plugin Minecraft del wo
   - `api.persistence/*` (`YamlPersistencePort`, `SqlPersistencePort`, `SchemaMigrationService`, ...)
 - Plugin-generic ports (adapter-first):
   - `CommandPort`, `GuiPort`, `ScoreboardPort`, `BossBarPort`, `ArenaResetPort`
-  - `NpcPort`, `HologramPort`, `ClaimsPort`, `SchematicPort`
+  - `NpcPort`, `HologramPort`, `ClaimsPort`, `SchematicPort`, `MetricsPort`, `PacketPort`
+- Packet API model:
+  - `api.packet/*` (`PacketEnvelope`, `PacketListenerOptions`, `PacketListenerHandle`, ...)
 - Capability model:
   - `CapabilityRegistry`, `CapabilityKey`, `CapabilityStatus`, `StandardCapabilities`
 - Adapter binding runtime:
   - `api.adapter.PortBindingService`
   - delegating wrappers con fallback no-op trasparente
 
-## Adapter Modules (`0.8.0` wave 1)
+## Adapter Modules (`0.8.0` wave 1 + `0.9.0` wave 2)
 - `adapter-commandapi`: `CommandApiAdapterComponent`, `CommandApiCommandPort`
 - `adapter-fastboard`: `FastBoardAdapterComponent`, `FastBoardScoreboardPort`
 - `adapter-fancyholograms`: `FancyHologramsAdapterComponent`, `FancyHologramsPort`
 - `adapter-fancynpcs`: `FancyNpcsAdapterComponent`, `FancyNpcsPort`
+- `adapter-huskclaims`: `HuskClaimsAdapterComponent`, `HuskClaimsClaimsPort`
+- `adapter-worldedit`: `WorldEditAdapterComponent`, `WorldEditSchematicPort`
+- `adapter-fawe`: `FaweAdapterComponent`, `FaweSchematicPort`
+- `adapter-bossbar-paper`: `PaperBossBarAdapterComponent`, `PaperBossBarPort`
+- `adapter-bstats`: `BStatsAdapterComponent`, `BStatsMetricsPort`
+- `adapter-protocollib`: `ProtocolLibAdapterComponent`, `ProtocolLibPacketPort`
 - Guide setup:
   - [`docs/guides/ADAPTER-WAVE1-SETUP.md`](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/guides/ADAPTER-WAVE1-SETUP.md)
   - [`docs/guides/ADAPTER-COMMANDAPI.md`](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/guides/ADAPTER-COMMANDAPI.md)
   - [`docs/guides/ADAPTER-FASTBOARD.md`](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/guides/ADAPTER-FASTBOARD.md)
   - [`docs/guides/ADAPTER-FANCYHOLOGRAMS.md`](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/guides/ADAPTER-FANCYHOLOGRAMS.md)
   - [`docs/guides/ADAPTER-FANCYNPCS.md`](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/guides/ADAPTER-FANCYNPCS.md)
+  - [`docs/guides/ADAPTER-HUSKCLAIMS.md`](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/guides/ADAPTER-HUSKCLAIMS.md)
+  - [`docs/guides/ADAPTER-WORLDEDIT.md`](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/guides/ADAPTER-WORLDEDIT.md)
+  - [`docs/guides/ADAPTER-FAWE.md`](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/guides/ADAPTER-FAWE.md)
+  - [`docs/guides/ADAPTER-BOSSBAR-PAPER.md`](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/guides/ADAPTER-BOSSBAR-PAPER.md)
+  - [`docs/guides/ADAPTER-BSTATS.md`](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/guides/ADAPTER-BSTATS.md)
+  - [`docs/guides/ADAPTER-PROTOCOLLIB.md`](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/guides/ADAPTER-PROTOCOLLIB.md)
+  - [`docs/guides/PACKETS-BACKEND-EVALUATION.md`](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/guides/PACKETS-BACKEND-EVALUATION.md)
+  - [`docs/guides/EXTERNAL-MATRIX-TESTS.md`](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/guides/EXTERNAL-MATRIX-TESTS.md)
 
 ## Build e test
 ```bash
@@ -123,7 +140,7 @@ public final class MyPlugin extends JavaPlugin {
    - `./gradlew --no-daemon test`
    - `./gradlew --no-daemon clean test javadoc build`
 7. Run the in-repo consumer validation project:
-   - `./gradlew --no-daemon -p examples/consumer-demo clean test -PcommonLibJar=../../build/libs/minecraft-common-lib-0.8.0.jar`
+   - `./gradlew --no-daemon -p examples/consumer-demo clean test -PcommonLibJar=../../build/libs/minecraft-common-lib-0.9.0.jar`
 
 ## Documentazione
 - [ADR-001](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/adr/ADR-001-embed-first-no-nms-core.md)
@@ -143,6 +160,7 @@ public final class MyPlugin extends JavaPlugin {
 - [Release Notes 0.6.0](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/releases/0.6.0.md)
 - [Release Notes 0.7.0](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/releases/0.7.0.md)
 - [Release Notes 0.8.0](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/releases/0.8.0.md)
+- [Release Notes 0.9.0](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/releases/0.9.0.md)
 - [Command Model Guide](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/guides/COMMAND-MODEL.md)
 - [I18N Advanced Guide](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/guides/I18N-ADVANCED.md)
 - [Migration Bukkit Raw Commands](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/guides/MIGRATION-BUKKIT-RAW-COMMANDS.md)
@@ -163,6 +181,14 @@ public final class MyPlugin extends JavaPlugin {
 - [Adapter FastBoard](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/guides/ADAPTER-FASTBOARD.md)
 - [Adapter FancyHolograms](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/guides/ADAPTER-FANCYHOLOGRAMS.md)
 - [Adapter FancyNpcs](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/guides/ADAPTER-FANCYNPCS.md)
+- [Adapter HuskClaims](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/guides/ADAPTER-HUSKCLAIMS.md)
+- [Adapter WorldEdit](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/guides/ADAPTER-WORLDEDIT.md)
+- [Adapter FAWE](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/guides/ADAPTER-FAWE.md)
+- [Adapter BossBar Paper](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/guides/ADAPTER-BOSSBAR-PAPER.md)
+- [Adapter bStats](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/guides/ADAPTER-BSTATS.md)
+- [Adapter ProtocolLib](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/guides/ADAPTER-PROTOCOLLIB.md)
+- [Packets Backend Evaluation](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/guides/PACKETS-BACKEND-EVALUATION.md)
+- [External Matrix Tests](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/guides/EXTERNAL-MATRIX-TESTS.md)
 - [Adapter License Policy](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/policy/ADAPTER-LICENSE-POLICY.md)
 - [Library Design](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/LIB-DESIGN.md)
 - [External Libs Research](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/UTILS-EXTERNAL-LIBS-RESEARCH.md)

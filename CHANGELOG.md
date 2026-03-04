@@ -1,5 +1,65 @@
 # Changelog
 
+## [0.9.0] - 2026-03-04
+### Added
+- Estensione API binding V2:
+  - `PortBindingService#bindClaimsPort`
+  - `PortBindingService#bindSchematicPort`
+  - `PortBindingService#bindBossBarPort`
+  - `PortBindingService#bindMetricsPort`
+  - `PortBindingService#bindPacketPort`
+- Nuova API metrics:
+  - `MetricsPort`
+  - `NoopMetricsPort`
+- Nuova API packets:
+  - `PacketPort`
+  - `NoopPacketPort`
+  - `api.packet/*` (`PacketDirection`, `PacketListenerPriority`, `PacketListenerOptions`, `PacketEnvelope`, `PacketListenerHandle`)
+- Nuovi delegating wrappers/runtime binder V2:
+  - `DelegatingClaimsPort`
+  - `DelegatingSchematicPort`
+  - `DelegatingBossBarPort`
+  - `DelegatingMetricsPort`
+  - `DelegatingPacketPort`
+  - `DefaultPortBindingService` esteso con precedence schematic (`fawe > worldedit`)
+- Nuove capability standard:
+  - `StandardCapabilities.METRICS`
+  - `StandardCapabilities.PACKETS`
+- Nuovi moduli adapter wave 2:
+  - `adapter-huskclaims`
+  - `adapter-worldedit`
+  - `adapter-fawe`
+  - `adapter-bossbar-paper`
+  - `adapter-bstats`
+  - `adapter-protocollib`
+- Nuovi adapter/component:
+  - `HuskClaimsAdapterComponent`, `HuskClaimsClaimsPort`
+  - `WorldEditAdapterComponent`, `WorldEditSchematicPort`
+  - `FaweAdapterComponent`, `FaweSchematicPort`
+  - `PaperBossBarAdapterComponent`, `PaperBossBarPort`
+  - `BStatsAdapterComponent`, `BStatsMetricsPort`
+  - `ProtocolLibAdapterComponent`, `ProtocolLibPacketPort`
+- Nuovi test wave 2:
+  - core: `PortBindingServiceV2Test`, `SchematicBindingPriorityTest`, `PacketApiContractTest`, `MetricsPortContractTest`, `AdapterCapabilityTransitionV2Test`, `AdapterFallbackNoopTransparencyV2Test`, `AdapterWave2StartupOrderingTest`
+  - adapter modules: `HuskClaimsAdapterComponentTest`, `HuskClaimsClaimsPortTest`, `WorldEditAdapterComponentTest`, `WorldEditSchematicPortTest`, `FaweAdapterComponentTest`, `FaweSchematicPortTest`, `PaperBossBarAdapterComponentTest`, `PaperBossBarPortTest`, `BStatsAdapterComponentTest`, `BStatsMetricsPortTest`, `ProtocolLibAdapterComponentTest`, `ProtocolLibPacketPortTest`, `ProtocolLibVersionFlexibilityTest`
+  - matrix/stress: `AdapterWave2NoDependencySmokeTest`, `AdapterWave2WithDependencySmokeTest`, `ExternalClaimsNpcBossPacketsMatrixTest`, `ExternalProtocolLibHandshakeTest`, `ExternalHuskClaimsHandshakeTest`, `ExternalWorldEditFaweHandshakeTest`, `EventRouterOverheadBenchmarkTest`, `ArenaResetAdapterBenchmarkHarnessTest`, `MultiMatchWithAdaptersStressTest`
+- Nuove guide/documenti:
+  - `docs/guides/ADAPTER-HUSKCLAIMS.md`
+  - `docs/guides/ADAPTER-WORLDEDIT.md`
+  - `docs/guides/ADAPTER-FAWE.md`
+  - `docs/guides/ADAPTER-BOSSBAR-PAPER.md`
+  - `docs/guides/ADAPTER-BSTATS.md`
+  - `docs/guides/ADAPTER-PROTOCOLLIB.md`
+  - `docs/guides/PACKETS-BACKEND-EVALUATION.md`
+  - `docs/guides/EXTERNAL-MATRIX-TESTS.md`
+  - `docs/releases/0.9.0.md`
+
+### Changed
+- `DefaultCommonRuntime` ora registra delegate/fallback anche per `ClaimsPort`, `SchematicPort`, `BossBarPort`, `MetricsPort`, `PacketPort`.
+- `check` ora include `verifyAdapterLicensePolicy` oltre a `verifyCoreDependencyPolicy` e `verifyAdapterDependencyPolicy`.
+- `build.gradle.kts` include source set/task opt-in `externalMatrixTest` (`-PrunExternalMatrix=true`).
+- Policy licenze adapter aggiornata con enforcement build esplicito per moduli GPL/proprietari separati.
+
 ## [0.8.0] - 2026-03-04
 ### Added
 - Nuovo package API adapter:

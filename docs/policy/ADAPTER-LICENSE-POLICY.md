@@ -26,7 +26,8 @@ Policy:
 Policy:
 - non entrare nel core.
 - adapter separato con documentazione esplicita su impatti di distribuzione.
-- preferire integrazione runtime/soft dependency senza shading nel core.
+- nessuno shading nel core.
+- nessuna dipendenza copyleft transitiva verso modulo root.
 
 ### Proprietarie / commerciali
 - plugin closed-source o con EULA commerciale.
@@ -45,6 +46,11 @@ Policy:
 - Se la licenza è non-permissiva, aggiungere nota in release notes/version docs.
 - Le capability pubbliche nel core restano neutrali rispetto al backend.
 
-## Enforcement
+## Enforcement build
 - `verifyCoreDependencyPolicy` blocca dipendenze esterne nel core.
-- `CapabilityRegistry` + porte no-op devono consentire funzionamento anche senza adapter reali.
+- `verifyAdapterDependencyPolicy` blocca cross-link non ammessi tra moduli adapter.
+- `verifyAdapterLicensePolicy` applica vincoli ai moduli con rischio licenza:
+  - `adapter-fawe`
+  - `adapter-protocollib`
+- Per questi moduli, `api`/`implementation`/`runtimeOnly` non possono dichiarare dipendenze esterne.
+- Le dipendenze esterne ammesse restano solo `compileOnly` nel modulo adapter dedicato.
