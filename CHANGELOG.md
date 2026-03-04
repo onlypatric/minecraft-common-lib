@@ -1,5 +1,40 @@
 # Changelog
 
+## [0.9.1] - 2026-03-04
+### Added
+- Nuovo package `api.dialog` con wrapper Paper Dialog API:
+  - services/registry: `DialogService`, `DialogTemplateRegistry`
+  - session/event model: `DialogOpenRequest`, `DialogSession`, `DialogEvent`, `DialogSubmission`
+  - callback/response model: `DialogCallbacks`, `DialogResponse`
+  - full template model: `DialogTemplate`, `DialogBaseSpec`, `DialogBodySpec`, `DialogInputSpec`, `DialogTypeSpec`, `DialogActionSpec`
+- Nuove implementazioni runtime dialog:
+  - `DefaultDialogService`
+  - `DefaultDialogTemplateRegistry`
+  - `DialogTemplateCompiler`
+  - `DialogTemplateValidator`
+  - `DialogPlayerLifecycleBridge`
+  - `DialogPolicyRoutedEvent`
+- Capability model esteso:
+  - `StandardCapabilities.DIALOG`
+- Nuovi test dialog:
+  - `DialogApiContractTest`
+  - `DialogTemplateCompilerTest`
+  - `DialogServiceLifecycleTest`
+  - `DialogPolicyHookCompatibilityTest`
+  - `DialogResponseExtractionTest`
+  - `DialogListResolutionTest`
+  - `DialogDisableCleanupTest`
+- Nuove guide/documentazione:
+  - `docs/guides/PAPER-DIALOG-WRAPPER.md`
+  - `docs/guides/PAPER-DIALOG-MODEL-REFERENCE.md`
+  - `docs/releases/0.9.1.md`
+
+### Changed
+- `DefaultCommonRuntime` ora registra di default `DialogService` e `DialogTemplateRegistry`.
+- `onDisable()` runtime ora chiude le sessioni dialog con reason `PLUGIN_DISABLE` prima di `scheduler.cancelAll()`.
+- `verifyCoreDependencyPolicy` estesa al package `api/dialog`.
+- Semantica degrade-safe in ambienti senza dialog registry Paper completa: compiler/runtime mantengono session tracking senza crash del plugin.
+
 ## [0.9.0] - 2026-03-04
 ### Added
 - Estensione API binding V2:

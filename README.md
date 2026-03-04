@@ -7,8 +7,8 @@ Libreria comune per ridurre boilerplate Bukkit/Paper nei plugin Minecraft del wo
 - Java: `21`
 - Modello distribuzione: embed-first (shading nei plugin consumer)
 
-## Stable status (`0.9.0`)
-- Release stabile corrente disponibile come `v0.9.0`.
+## Stable status (`0.9.1`)
+- Release stabile corrente disponibile come `v0.9.1`.
 - Public API `0.1.x` congelata in [`docs/api/API-FREEZE-0.1.0-rc.1.md`](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/api/API-FREEZE-0.1.0-rc.1.md).
 - Scope core bloccato: nessun adapter/plugin esterno nel dependency set core.
 - Release notes:
@@ -22,6 +22,7 @@ Libreria comune per ridurre boilerplate Bukkit/Paper nei plugin Minecraft del wo
   - Stable: [`docs/releases/0.7.0.md`](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/releases/0.7.0.md)
   - Stable: [`docs/releases/0.8.0.md`](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/releases/0.8.0.md)
   - Stable: [`docs/releases/0.9.0.md`](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/releases/0.9.0.md)
+  - Stable: [`docs/releases/0.9.1.md`](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/releases/0.9.1.md)
 
 ## Boundary policy
 - API pubblica principale: `dev.patric.commonlib.api`
@@ -57,6 +58,9 @@ Libreria comune per ridurre boilerplate Bukkit/Paper nei plugin Minecraft del wo
   - `NpcPort`, `HologramPort`, `ClaimsPort`, `SchematicPort`, `MetricsPort`, `PacketPort`
 - Packet API model:
   - `api.packet/*` (`PacketEnvelope`, `PacketListenerOptions`, `PacketListenerHandle`, ...)
+- Dialog wrapper core-native:
+  - `api.dialog/*` (`DialogService`, `DialogTemplateRegistry`, `DialogSession`, `DialogEvent`, `DialogResponse`, ...)
+  - runtime services `DefaultDialogService`, `DefaultDialogTemplateRegistry`
 - Capability model:
   - `CapabilityRegistry`, `CapabilityKey`, `CapabilityStatus`, `StandardCapabilities`
 - Adapter binding runtime:
@@ -140,7 +144,7 @@ public final class MyPlugin extends JavaPlugin {
    - `./gradlew --no-daemon test`
    - `./gradlew --no-daemon clean test javadoc build`
 7. Run the in-repo consumer validation project:
-   - `./gradlew --no-daemon -p examples/consumer-demo clean test -PcommonLibJar=../../build/libs/minecraft-common-lib-0.9.0.jar`
+   - `./gradlew --no-daemon -p examples/consumer-demo clean test -PcommonLibJar=../../build/libs/minecraft-common-lib-0.9.1.jar`
 
 ## Documentazione
 - [ADR-001](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/adr/ADR-001-embed-first-no-nms-core.md)
@@ -161,6 +165,7 @@ public final class MyPlugin extends JavaPlugin {
 - [Release Notes 0.7.0](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/releases/0.7.0.md)
 - [Release Notes 0.8.0](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/releases/0.8.0.md)
 - [Release Notes 0.9.0](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/releases/0.9.0.md)
+- [Release Notes 0.9.1](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/releases/0.9.1.md)
 - [Command Model Guide](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/guides/COMMAND-MODEL.md)
 - [I18N Advanced Guide](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/guides/I18N-ADVANCED.md)
 - [Migration Bukkit Raw Commands](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/guides/MIGRATION-BUKKIT-RAW-COMMANDS.md)
@@ -189,6 +194,8 @@ public final class MyPlugin extends JavaPlugin {
 - [Adapter ProtocolLib](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/guides/ADAPTER-PROTOCOLLIB.md)
 - [Packets Backend Evaluation](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/guides/PACKETS-BACKEND-EVALUATION.md)
 - [External Matrix Tests](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/guides/EXTERNAL-MATRIX-TESTS.md)
+- [Paper Dialog Wrapper](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/guides/PAPER-DIALOG-WRAPPER.md)
+- [Paper Dialog Model Reference](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/guides/PAPER-DIALOG-MODEL-REFERENCE.md)
 - [Adapter License Policy](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/policy/ADAPTER-LICENSE-POLICY.md)
 - [Library Design](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/LIB-DESIGN.md)
 - [External Libs Research](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/UTILS-EXTERNAL-LIBS-RESEARCH.md)

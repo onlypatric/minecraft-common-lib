@@ -16,6 +16,7 @@
 - `0.7.0`: foundation arena/team/persistence (`api.arena`, `api.team`, `api.persistence`) con schema migrations integer-based.
 - `0.8.0`: adapter wave 1 (`CommandAPI`, `FastBoard`, `FancyHolograms`, `FancyNpcs`) con fallback no-op trasparente.
 - `0.9.0`: adapter wave 2 (`HuskClaims`, `WorldEdit`, `FAWE`, `BossBar`, `bStats`, `ProtocolLib`) + packet model wrapper-oriented.
+- `0.9.1`: wrapper Dialog API core-native (`api.dialog`) con service/session model, policy hooks e response tipizzato.
 - Build di riferimento: `./gradlew --no-daemon clean test javadoc build`.
 
 ## Policy corrente
@@ -28,6 +29,7 @@
 - `v0.7.x` estende il core con foundation arena/team/persistence pronta per adapter wave successive.
 - `v0.8.x` introduce adapter reali opzionali in moduli separati (nessuna dipendenza hard nel core).
 - `v0.9.x` completa wave 2 adapter e hardening policy/licenze/matrix esterna mantenendo core dependency-safe.
+- `v0.9.1` aggiunge integrazione Dialog API Paper nel core senza dipendenze esterne aggiuntive.
 - Nessun supporto NMS diretto nel core.
 
 ## Prossimo target
