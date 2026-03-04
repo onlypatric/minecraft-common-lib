@@ -7,7 +7,7 @@
 
 ## 2. Aggiungi al plugin consumer (embed-first)
 - aggiungi dipendenza al jar della libreria
-- shada/reloca nel plugin consumer
+- shade/reloca nel plugin consumer
 
 ## 3. Bootstrap runtime nel tuo plugin
 ```java
@@ -54,3 +54,12 @@ MessageService messages = runtime.services().require(MessageService.class);
 
 ## 5. Thread safety
 - usa `CommonScheduler.requirePrimaryThread("operation")` prima di logica Bukkit sensibile.
+
+## 6. Breaking changes verso `1.0.0`
+API legacy rimosse:
+- `PluginLifecycle` -> usa `CommonComponent` + `CommonRuntime`
+- `Tasks` -> usa `CommonScheduler` direttamente
+- `MiniMessageService` -> usa `MessageService` (runtime default: `AdvancedMiniMessageService`)
+
+Guida completa:
+- `docs/guides/MIGRATION-0.x-TO-1.0.0.md`

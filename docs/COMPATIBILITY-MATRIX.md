@@ -1,7 +1,7 @@
 # Compatibility Matrix
 
 ## Baseline supportata
-- Minecraft server: Paper `1.21.11`
+- Minecraft server: Paper `1.21.x` (baseline build/test: `1.21.11`)
 - Java runtime/toolchain: `21`
 
 ## Stato release
@@ -32,6 +32,10 @@
 - `v0.9.1` aggiunge integrazione Dialog API Paper nel core senza dipendenze esterne aggiuntive.
 - Nessun supporto NMS diretto nel core.
 
+## Policy ufficiale `1.0.0`
+- Support scope ufficiale: Paper `1.21.x` + Java `21`.
+- Fuori scope ufficiale: minor Paper precedenti/non `1.21.x`.
+- Compatibilita' public API regolata da freeze `docs/api/API-FREEZE-1.0.0.md`.
+
 ## Prossimo target
-- Mantenere compatibilità su patch/minor `1.21.x` con verifica continua in CI locale.
-- Avanzare verso freeze API `1.0.0`.
+- Consolidare release candidate `1.0.0-rc.1` e GA `1.0.0`.

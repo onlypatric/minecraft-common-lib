@@ -3,13 +3,13 @@
 Libreria comune per ridurre boilerplate Bukkit/Paper nei plugin Minecraft del workspace.
 
 ## Baseline
-- Paper API: `1.21.11`
+- Paper API target: `1.21.x` (baseline build: `1.21.11`)
 - Java: `21`
 - Modello distribuzione: embed-first (shading nei plugin consumer)
 
 ## Stable status (`0.9.1`)
 - Release stabile corrente disponibile come `v0.9.1`.
-- Public API `0.1.x` congelata in [`docs/api/API-FREEZE-0.1.0-rc.1.md`](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/api/API-FREEZE-0.1.0-rc.1.md).
+- API freeze candidato `1.0.0` documentato in [`docs/api/API-FREEZE-1.0.0.md`](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/api/API-FREEZE-1.0.0.md).
 - Scope core bloccato: nessun adapter/plugin esterno nel dependency set core.
 - Release notes:
   - RC: [`docs/releases/0.1.0-rc.1.md`](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/releases/0.1.0-rc.1.md)
@@ -28,6 +28,15 @@ Libreria comune per ridurre boilerplate Bukkit/Paper nei plugin Minecraft del wo
 - API pubblica principale: `dev.patric.commonlib.api`
 - Package `dev.patric.commonlib.internal` non stabili e non contrattuali
 - NMS non incluso nel core (`v0.1.x`)
+
+## Breaking changes pre-`1.0.0`
+Legacy API rimosse:
+- `dev.patric.commonlib.plugin.PluginLifecycle`
+- `dev.patric.commonlib.scheduler.Tasks`
+- `dev.patric.commonlib.message.MiniMessageService`
+
+Guida migrazione:
+- [`docs/guides/MIGRATION-0.x-TO-1.0.0.md`](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/guides/MIGRATION-0.x-TO-1.0.0.md)
 
 ## Componenti core disponibili
 - Runtime composizionale: `CommonRuntime`
@@ -150,6 +159,7 @@ public final class MyPlugin extends JavaPlugin {
 - [ADR-001](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/adr/ADR-001-embed-first-no-nms-core.md)
 - [ADR-002](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/adr/ADR-002-api-boundaries.md)
 - [ADR-003](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/adr/ADR-003-versioning-changelog-policy.md)
+- [API Freeze 1.0.0](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/api/API-FREEZE-1.0.0.md)
 - [Cookbook 5 minuti](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/COOKBOOK-5-MINUTES.md)
 - [Compatibility Matrix](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/COMPATIBILITY-MATRIX.md)
 - [Adapter Backlog](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/ADAPTER-BACKLOG.md)
@@ -169,6 +179,8 @@ public final class MyPlugin extends JavaPlugin {
 - [Command Model Guide](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/guides/COMMAND-MODEL.md)
 - [I18N Advanced Guide](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/guides/I18N-ADVANCED.md)
 - [Migration Bukkit Raw Commands](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/guides/MIGRATION-BUKKIT-RAW-COMMANDS.md)
+- [Migration 0.x to 1.0.0](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/guides/MIGRATION-0.x-TO-1.0.0.md)
+- [Troubleshooting](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/guides/TROUBLESHOOTING.md)
 - [GUI Session Model Guide](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/guides/GUI-SESSION-MODEL.md)
 - [GUI Adapter Mapping Guide](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/guides/GUI-ADAPTER-MAPPING.md)
 - [HUD Scoreboard Sessions](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/guides/HUD-SCOREBOARD-SESSIONS.md)
