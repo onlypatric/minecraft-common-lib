@@ -177,6 +177,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class PublicApiFreezeContractTest {
 
@@ -650,6 +651,13 @@ class PublicApiFreezeContractTest {
         assertMethod(SchemaMigrationService.class, "currentVersion", int.class, String.class);
         assertMethod(SchemaMigrationService.class, "register", void.class, String.class, SchemaMigration.class);
         assertMethod(SchemaMigrationService.class, "migrateToLatest", int.class, String.class);
+    }
+
+    @Test
+    void legacyDeprecatedTypesWereRemovedBeforeOneZero() {
+        assertThrows(ClassNotFoundException.class, () -> Class.forName("dev.patric.commonlib.plugin.PluginLifecycle"));
+        assertThrows(ClassNotFoundException.class, () -> Class.forName("dev.patric.commonlib.scheduler.Tasks"));
+        assertThrows(ClassNotFoundException.class, () -> Class.forName("dev.patric.commonlib.message.MiniMessageService"));
     }
 
     private static void assertMethod(Class<?> type, String methodName, Class<?> returnType, Class<?>... parameters)

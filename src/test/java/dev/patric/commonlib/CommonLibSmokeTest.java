@@ -135,8 +135,6 @@ import dev.patric.commonlib.api.team.TeamAssignmentResult;
 import dev.patric.commonlib.api.team.TeamDefinition;
 import dev.patric.commonlib.api.team.TeamService;
 import dev.patric.commonlib.api.team.TeamSnapshot;
-import dev.patric.commonlib.plugin.PluginLifecycle;
-import dev.patric.commonlib.scheduler.Tasks;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -148,8 +146,6 @@ class CommonLibSmokeTest {
     void classesAreLoadableAndVersionIsPresent() {
         assertNotNull(CommonLib.version());
         assertDoesNotThrow(() -> Class.forName(CommonRuntime.class.getName()));
-        assertDoesNotThrow(() -> Class.forName(PluginLifecycle.class.getName()));
-        assertDoesNotThrow(() -> Class.forName(Tasks.class.getName()));
         assertDoesNotThrow(() -> Class.forName(CommandPort.class.getName()));
         assertDoesNotThrow(() -> Class.forName(GuiPort.class.getName()));
         assertDoesNotThrow(() -> Class.forName(ScoreboardPort.class.getName()));
