@@ -15,6 +15,10 @@ public final class StandardCapabilities {
     public static final CapabilityKey<String> SCHEMATIC = CapabilityKey.of("schematic", String.class);
     /** GUI capability key. */
     public static final CapabilityKey<String> GUI = CapabilityKey.of("gui", String.class);
+    /** Scoreboard capability key. */
+    public static final CapabilityKey<String> SCOREBOARD = CapabilityKey.of("scoreboard", String.class);
+    /** Bossbar capability key. */
+    public static final CapabilityKey<String> BOSSBAR = CapabilityKey.of("bossbar", String.class);
 
     private StandardCapabilities() {
         throw new UnsupportedOperationException("Utility class");
