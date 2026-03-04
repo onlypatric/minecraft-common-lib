@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.0.0] - 2026-03-04
+### Added
+- Release GA `1.0.0` della libreria common con freeze API formalizzato.
+- Release notes GA:
+  - `docs/releases/1.0.0.md`
+- Checklist `v1.0.0` chiusa con evidenze:
+  - `docs/checklist/13-v1.0.0.md`
+
+### Changed
+- Consolidato candidate `1.0.0-rc.1` senza regressioni aggiuntive.
+- Policy compatibilita' ufficiale confermata:
+  - Paper `1.21.x`
+  - Java `21`
+- Documentazione allineata a stato stabile `1.0.0`:
+  - `README.md`
+  - `docs/COMPATIBILITY-MATRIX.md`
+  - `docs/RELEASE-CHECKLIST.md`
+
 ## [1.0.0-rc.1] - 2026-03-04
 ### Added
 - Freeze governance ufficiale `1.0.0`:

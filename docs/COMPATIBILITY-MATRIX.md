@@ -17,6 +17,8 @@
 - `0.8.0`: adapter wave 1 (`CommandAPI`, `FastBoard`, `FancyHolograms`, `FancyNpcs`) con fallback no-op trasparente.
 - `0.9.0`: adapter wave 2 (`HuskClaims`, `WorldEdit`, `FAWE`, `BossBar`, `bStats`, `ProtocolLib`) + packet model wrapper-oriented.
 - `0.9.1`: wrapper Dialog API core-native (`api.dialog`) con service/session model, policy hooks e response tipizzato.
+- `1.0.0-rc.1`: freeze governance, cleanup legacy e hardening quality gates pre-GA.
+- `1.0.0`: GA stabile con freeze API ufficiale e policy semver post-1.0.
 - Build di riferimento: `./gradlew --no-daemon clean test javadoc build`.
 
 ## Policy corrente
@@ -30,6 +32,7 @@
 - `v0.8.x` introduce adapter reali opzionali in moduli separati (nessuna dipendenza hard nel core).
 - `v0.9.x` completa wave 2 adapter e hardening policy/licenze/matrix esterna mantenendo core dependency-safe.
 - `v0.9.1` aggiunge integrazione Dialog API Paper nel core senza dipendenze esterne aggiuntive.
+- `v1.0.0` formalizza freeze API pubblico (`api/*`, `api/port/*`) con compat policy stabile.
 - Nessun supporto NMS diretto nel core.
 
 ## Policy ufficiale `1.0.0`
@@ -38,4 +41,4 @@
 - Compatibilita' public API regolata da freeze `docs/api/API-FREEZE-1.0.0.md`.
 
 ## Prossimo target
-- Consolidare release candidate `1.0.0-rc.1` e GA `1.0.0`.
+- Ciclo patch post-GA: `1.0.1-SNAPSHOT`.

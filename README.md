@@ -7,9 +7,9 @@ Libreria comune per ridurre boilerplate Bukkit/Paper nei plugin Minecraft del wo
 - Java: `21`
 - Modello distribuzione: embed-first (shading nei plugin consumer)
 
-## Stable status (`0.9.1`)
-- Release stabile corrente disponibile come `v0.9.1`.
-- API freeze candidato `1.0.0` documentato in [`docs/api/API-FREEZE-1.0.0.md`](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/api/API-FREEZE-1.0.0.md).
+## Stable status (`1.0.0`)
+- Release stabile corrente disponibile come `v1.0.0`.
+- API freeze `1.0.0` documentato in [`docs/api/API-FREEZE-1.0.0.md`](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/api/API-FREEZE-1.0.0.md).
 - Scope core bloccato: nessun adapter/plugin esterno nel dependency set core.
 - Release notes:
   - RC: [`docs/releases/0.1.0-rc.1.md`](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/releases/0.1.0-rc.1.md)
@@ -23,6 +23,8 @@ Libreria comune per ridurre boilerplate Bukkit/Paper nei plugin Minecraft del wo
   - Stable: [`docs/releases/0.8.0.md`](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/releases/0.8.0.md)
   - Stable: [`docs/releases/0.9.0.md`](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/releases/0.9.0.md)
   - Stable: [`docs/releases/0.9.1.md`](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/releases/0.9.1.md)
+  - RC: [`docs/releases/1.0.0-rc.1.md`](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/releases/1.0.0-rc.1.md)
+  - Stable: [`docs/releases/1.0.0.md`](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/releases/1.0.0.md)
 
 ## Boundary policy
 - API pubblica principale: `dev.patric.commonlib.api`
@@ -153,7 +155,7 @@ public final class MyPlugin extends JavaPlugin {
    - `./gradlew --no-daemon test`
    - `./gradlew --no-daemon clean test javadoc build`
 7. Run the in-repo consumer validation project:
-   - `./gradlew --no-daemon -p examples/consumer-demo clean test -PcommonLibJar=../../build/libs/minecraft-common-lib-0.9.1.jar`
+   - `./gradlew --no-daemon -p examples/consumer-demo clean test -PcommonLibJar=../../build/libs/minecraft-common-lib-1.0.0.jar`
 
 ## Documentazione
 - [ADR-001](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/adr/ADR-001-embed-first-no-nms-core.md)

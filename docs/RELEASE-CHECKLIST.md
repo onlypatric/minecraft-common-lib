@@ -20,3 +20,17 @@
 - [x] Breaking changes documentate (`CHANGELOG.md`, `docs/releases/0.3.0.md`)
 - [x] Guide aggiornate (`COMMAND-MODEL`, `I18N-ADVANCED`, migrazione Bukkit raw commands)
 - [x] Checklist `docs/checklist/06-v0.3.0.md` chiusa con evidenze
+
+## RC Completed Checks (`1.0.0-rc.1`)
+- [x] Freeze API `1.0.0` pubblicato (`docs/api/API-FREEZE-1.0.0.md`)
+- [x] Legacy APIs rimosse prima del freeze (`PluginLifecycle`, `Tasks`, `MiniMessageService`)
+- [x] Javadoc quality gate fail-fast attivo (`-Werror`)
+- [x] Gate regressione completi verdi (`clean test javadoc build`, `check`, integration/matrix tasks)
+- [x] Runbook smoke reale pubblicato (`docs/releases/1.0.0-rc.1.md`)
+
+## GA Completed Checks (`1.0.0`)
+- [x] Versione stabile allineata (`build.gradle.kts`, `CommonLib.version()`)
+- [x] CHANGELOG aggiornato con sezione GA (`1.0.0`)
+- [x] Compatibility policy ufficiale confermata (`Paper 1.21.x`, `Java 21`)
+- [x] Checklist `docs/checklist/13-v1.0.0.md` chiusa con evidenze
+- [x] Tag stabile creato (`v1.0.0`)
