@@ -25,6 +25,8 @@ public final class StandardCapabilities {
     public static final CapabilityKey<String> METRICS = CapabilityKey.of("metrics", String.class);
     /** Packets capability key. */
     public static final CapabilityKey<String> PACKETS = CapabilityKey.of("packets", String.class);
+    /** Dialog capability key. */
+    public static final CapabilityKey<String> DIALOG = CapabilityKey.of("dialog", String.class);
     /** Match engine capability key. */
     public static final CapabilityKey<String> MATCH_ENGINE = CapabilityKey.of("match_engine", String.class);
     /** Arena reset capability key. */
