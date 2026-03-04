@@ -1,9 +1,13 @@
 package dev.patric.commonlib.api.port;
 
 import dev.patric.commonlib.api.gui.GuiCloseReason;
+import dev.patric.commonlib.api.gui.GuiDefinition;
 import dev.patric.commonlib.api.gui.GuiOpenRequest;
+import dev.patric.commonlib.api.gui.GuiPortFeature;
 import dev.patric.commonlib.api.gui.GuiSession;
 import dev.patric.commonlib.api.gui.GuiState;
+import dev.patric.commonlib.api.gui.render.GuiRenderModel;
+import dev.patric.commonlib.api.gui.render.GuiRenderPatch;
 import dev.patric.commonlib.api.port.noop.NoopGuiPort;
 import java.util.Map;
 import java.util.UUID;
@@ -32,7 +36,15 @@ class NoopGuiPortBehaviorTest {
 
         assertTrue(port.open(session));
         assertTrue(port.render(session.sessionId(), GuiState.withData(1L, Map.of("page", "2"))));
+        assertTrue(port.open(new GuiRenderModel(
+                session.sessionId(),
+                session.playerId(),
+                GuiDefinition.chest("menu.main", 6, "Main"),
+                session.state()
+        )));
+        assertTrue(port.render(session.sessionId(), new GuiRenderPatch(session.sessionId(), GuiState.empty())));
         assertTrue(port.close(session.sessionId(), GuiCloseReason.USER_CLOSE));
         assertFalse(port.supportsPortableEvents());
+        assertFalse(port.supports(GuiPortFeature.CLICK));
     }
 }

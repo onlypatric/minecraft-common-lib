@@ -42,5 +42,6 @@ class CoreDependencyPolicyTest {
         assertTrue(script.contains(":adapter-bossbar-paper"));
         assertTrue(script.contains(":adapter-bstats"));
         assertTrue(script.contains(":adapter-protocollib"));
+        assertTrue(script.contains(":adapter-invui"));
     }
 }

@@ -27,6 +27,7 @@ import dev.patric.commonlib.api.port.BossBarPort;
 import dev.patric.commonlib.api.port.ClaimsPort;
 import dev.patric.commonlib.api.port.CommandPort;
 import dev.patric.commonlib.api.port.HologramPort;
+import dev.patric.commonlib.api.port.GuiPort;
 import dev.patric.commonlib.api.port.MetricsPort;
 import dev.patric.commonlib.api.port.NpcPort;
 import dev.patric.commonlib.api.port.PacketPort;
@@ -36,6 +37,7 @@ import dev.patric.commonlib.api.port.noop.NoopBossBarPort;
 import dev.patric.commonlib.api.port.noop.NoopClaimsPort;
 import dev.patric.commonlib.api.port.noop.NoopCommandPort;
 import dev.patric.commonlib.api.port.noop.NoopHologramPort;
+import dev.patric.commonlib.api.port.noop.NoopGuiPort;
 import dev.patric.commonlib.api.port.noop.NoopMetricsPort;
 import dev.patric.commonlib.api.port.noop.NoopNpcPort;
 import dev.patric.commonlib.api.port.noop.NoopPacketPort;
@@ -47,6 +49,7 @@ import dev.patric.commonlib.runtime.adapter.DelegatingBossBarPort;
 import dev.patric.commonlib.runtime.adapter.DelegatingClaimsPort;
 import dev.patric.commonlib.runtime.adapter.DelegatingCommandPort;
 import dev.patric.commonlib.runtime.adapter.DelegatingHologramPort;
+import dev.patric.commonlib.runtime.adapter.DelegatingGuiPort;
 import dev.patric.commonlib.runtime.adapter.DelegatingMetricsPort;
 import dev.patric.commonlib.runtime.adapter.DelegatingNpcPort;
 import dev.patric.commonlib.runtime.adapter.DelegatingPacketPort;
@@ -74,6 +77,7 @@ class PortBindingServiceTest {
         DelegatingScoreboardPort scoreboardPort = new DelegatingScoreboardPort(new NoopScoreboardPort());
         DelegatingHologramPort hologramPort = new DelegatingHologramPort(new NoopHologramPort());
         DelegatingNpcPort npcPort = new DelegatingNpcPort(new NoopNpcPort());
+        DelegatingGuiPort guiPort = new DelegatingGuiPort(new NoopGuiPort());
         DelegatingClaimsPort claimsPort = new DelegatingClaimsPort(new NoopClaimsPort());
         DelegatingSchematicPort schematicPort = new DelegatingSchematicPort(new NoopSchematicPort());
         DelegatingBossBarPort bossBarPort = new DelegatingBossBarPort(new NoopBossBarPort());
@@ -86,6 +90,7 @@ class PortBindingServiceTest {
                 scoreboardPort,
                 hologramPort,
                 npcPort,
+                guiPort,
                 claimsPort,
                 schematicPort,
                 bossBarPort,
@@ -178,6 +183,38 @@ class PortBindingServiceTest {
         assertEquals(new UUID(0L, 99L), npcPort.spawn("villager", new Location(null, 0, 0, 0), "Trader"));
         bindingService.markUnavailable(StandardCapabilities.NPC, "missing-plugin:FancyNpcs");
         assertFalse(npcPort.despawn(new UUID(0L, 99L)));
+
+        GuiPort customGuiPort = new GuiPort() {
+            @Override
+            public boolean open(dev.patric.commonlib.api.gui.render.GuiRenderModel renderModel) {
+                return false;
+            }
+
+            @Override
+            public boolean render(UUID sessionId, dev.patric.commonlib.api.gui.render.GuiRenderPatch patch) {
+                return false;
+            }
+
+            @Override
+            public boolean close(UUID sessionId, dev.patric.commonlib.api.gui.GuiCloseReason reason) {
+                return false;
+            }
+
+            @Override
+            public boolean supports(dev.patric.commonlib.api.gui.GuiPortFeature feature) {
+                return true;
+            }
+        };
+        bindingService.bindGuiPort(customGuiPort, "invui", "unknown");
+        assertTrue(capabilityRegistry.isAvailable(StandardCapabilities.GUI));
+        assertFalse(guiPort.open(new dev.patric.commonlib.api.gui.render.GuiRenderModel(
+                UUID.randomUUID(),
+                UUID.randomUUID(),
+                dev.patric.commonlib.api.gui.GuiDefinition.chest("gui.main", 6, "Main"),
+                dev.patric.commonlib.api.gui.GuiState.empty()
+        )));
+        bindingService.markUnavailable(StandardCapabilities.GUI, "missing-plugin:InvUI");
+        assertFalse(capabilityRegistry.isAvailable(StandardCapabilities.GUI));
 
         ClaimsPort claimsImpl = new ClaimsPort() {
             @Override

@@ -4,6 +4,7 @@ import dev.patric.commonlib.api.capability.CapabilityKey;
 import dev.patric.commonlib.api.port.BossBarPort;
 import dev.patric.commonlib.api.port.ClaimsPort;
 import dev.patric.commonlib.api.port.CommandPort;
+import dev.patric.commonlib.api.port.GuiPort;
 import dev.patric.commonlib.api.port.HologramPort;
 import dev.patric.commonlib.api.port.MetricsPort;
 import dev.patric.commonlib.api.port.NpcPort;
@@ -51,6 +52,15 @@ public interface PortBindingService {
      * @param backendVersion backend version.
      */
     void bindNpcPort(NpcPort port, String backendId, String backendVersion);
+
+    /**
+     * Binds GUI backend implementation.
+     *
+     * @param port gui backend.
+     * @param backendId backend identifier.
+     * @param backendVersion backend version.
+     */
+    void bindGuiPort(GuiPort port, String backendId, String backendVersion);
 
     /**
      * Binds claims backend implementation.

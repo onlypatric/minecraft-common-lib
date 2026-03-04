@@ -23,6 +23,7 @@ import dev.patric.commonlib.api.hud.BossBarService;
 import dev.patric.commonlib.api.hud.HudAudienceCloseReason;
 import dev.patric.commonlib.api.hud.ScoreboardSessionService;
 import dev.patric.commonlib.api.gui.GuiCloseReason;
+import dev.patric.commonlib.api.gui.GuiDefinitionRegistry;
 import dev.patric.commonlib.api.gui.GuiSessionService;
 import dev.patric.commonlib.api.match.EndReason;
 import dev.patric.commonlib.api.match.MatchEngineService;
@@ -70,6 +71,7 @@ import dev.patric.commonlib.runtime.adapter.DelegatingCommandPort;
 import dev.patric.commonlib.runtime.adapter.DelegatingClaimsPort;
 import dev.patric.commonlib.runtime.adapter.DelegatingBossBarPort;
 import dev.patric.commonlib.runtime.adapter.DelegatingHologramPort;
+import dev.patric.commonlib.runtime.adapter.DelegatingGuiPort;
 import dev.patric.commonlib.runtime.adapter.DelegatingMetricsPort;
 import dev.patric.commonlib.runtime.adapter.DelegatingNpcPort;
 import dev.patric.commonlib.runtime.adapter.DelegatingPacketPort;
@@ -100,6 +102,7 @@ public final class DefaultCommonRuntime implements CommonRuntime {
     private final AtomicBoolean enabled;
     private MatchPlayerLifecycleBridge matchPlayerLifecycleBridge;
     private DialogPlayerLifecycleBridge dialogPlayerLifecycleBridge;
+    private GuiPlayerInventoryBridge guiPlayerInventoryBridge;
 
     /**
      * Creates the default runtime with optional built-in components.
@@ -135,6 +138,7 @@ public final class DefaultCommonRuntime implements CommonRuntime {
         this.enabled = new AtomicBoolean(false);
         this.matchPlayerLifecycleBridge = null;
         this.dialogPlayerLifecycleBridge = null;
+        this.guiPlayerInventoryBridge = null;
 
         serviceRegistry.register(ServiceRegistry.class, serviceRegistry);
         serviceRegistry.register(RuntimeLogger.class, runtimeLogger);
@@ -180,7 +184,8 @@ public final class DefaultCommonRuntime implements CommonRuntime {
         DelegatingSchematicPort schematicPort = new DelegatingSchematicPort(fallbackSchematicPort);
         CommandPort fallbackCommandPort = new NoopCommandPort();
         DelegatingCommandPort commandPort = new DelegatingCommandPort(fallbackCommandPort);
-        GuiPort guiPort = new NoopGuiPort();
+        GuiPort fallbackGuiPort = new NoopGuiPort();
+        DelegatingGuiPort guiPort = new DelegatingGuiPort(fallbackGuiPort);
         ScoreboardPort fallbackScoreboardPort = new NoopScoreboardPort();
         DelegatingScoreboardPort scoreboardPort = new DelegatingScoreboardPort(fallbackScoreboardPort);
         BossBarPort fallbackBossBarPort = new NoopBossBarPort();
@@ -221,9 +226,10 @@ public final class DefaultCommonRuntime implements CommonRuntime {
         serviceRegistry.register(SqlPersistencePort.class, sqlPersistencePort);
         serviceRegistry.register(SchemaMigrationService.class, schemaMigrationService);
         serviceRegistry.register(ArenaService.class, arenaService);
+        serviceRegistry.register(GuiDefinitionRegistry.class, new DefaultGuiDefinitionRegistry());
         serviceRegistry.register(
                 GuiSessionService.class,
-                new DefaultGuiSessionService(scheduler, eventRouter, runtimeLogger, guiPort)
+                new DefaultGuiSessionService(scheduler, eventRouter, runtimeLogger, guiPort, serviceRegistry)
         );
         serviceRegistry.register(
                 ScoreboardSessionService.class,
@@ -256,6 +262,7 @@ public final class DefaultCommonRuntime implements CommonRuntime {
                 scoreboardPort,
                 hologramPort,
                 npcPort,
+                guiPort,
                 claimsPort,
                 schematicPort,
                 bossBarPort,
@@ -315,12 +322,14 @@ public final class DefaultCommonRuntime implements CommonRuntime {
                 component.onEnable(context);
                 enabledComponents.add(component);
             }
+            installGuiLifecycleBridge();
             installMatchLifecycleBridge();
             installDialogLifecycleBridge();
         } catch (RuntimeException ex) {
             runtimeLogger.error("enable failed, running rollback", ex);
             uninstallDialogLifecycleBridge();
             uninstallMatchLifecycleBridge();
+            uninstallGuiLifecycleBridge();
             rollbackEnabledComponents();
             enabled.set(false);
             throw ex;
@@ -332,6 +341,7 @@ public final class DefaultCommonRuntime implements CommonRuntime {
         rollbackEnabledComponents();
         uninstallDialogLifecycleBridge();
         uninstallMatchLifecycleBridge();
+        uninstallGuiLifecycleBridge();
         serviceRegistry.find(MatchEngineService.class).ifPresent(service -> service.closeAll(EndReason.PLUGIN_DISABLE));
         serviceRegistry.find(ScoreboardSessionService.class)
                 .ifPresent(service -> service.closeAll(HudAudienceCloseReason.PLUGIN_DISABLE));
@@ -360,6 +370,26 @@ public final class DefaultCommonRuntime implements CommonRuntime {
             context.plugin().getServer().getPluginManager().registerEvents(bridge, context.plugin());
             matchPlayerLifecycleBridge = bridge;
         });
+    }
+
+    private void installGuiLifecycleBridge() {
+        if (guiPlayerInventoryBridge != null) {
+            return;
+        }
+
+        serviceRegistry.find(GuiSessionService.class).ifPresent(guiService -> {
+            GuiPlayerInventoryBridge bridge = new GuiPlayerInventoryBridge(guiService);
+            context.plugin().getServer().getPluginManager().registerEvents(bridge, context.plugin());
+            guiPlayerInventoryBridge = bridge;
+        });
+    }
+
+    private void uninstallGuiLifecycleBridge() {
+        if (guiPlayerInventoryBridge == null) {
+            return;
+        }
+        HandlerList.unregisterAll(guiPlayerInventoryBridge);
+        guiPlayerInventoryBridge = null;
     }
 
     private void uninstallMatchLifecycleBridge() {

@@ -8,6 +8,7 @@ import dev.patric.commonlib.api.capability.StandardCapabilities;
 import dev.patric.commonlib.api.port.BossBarPort;
 import dev.patric.commonlib.api.port.ClaimsPort;
 import dev.patric.commonlib.api.port.CommandPort;
+import dev.patric.commonlib.api.port.GuiPort;
 import dev.patric.commonlib.api.port.HologramPort;
 import dev.patric.commonlib.api.port.MetricsPort;
 import dev.patric.commonlib.api.port.NpcPort;
@@ -27,6 +28,7 @@ public final class DefaultPortBindingService implements PortBindingService {
     private final DelegatingScoreboardPort scoreboardPort;
     private final DelegatingHologramPort hologramPort;
     private final DelegatingNpcPort npcPort;
+    private final DelegatingGuiPort guiPort;
     private final DelegatingClaimsPort claimsPort;
     private final DelegatingSchematicPort schematicPort;
     private final DelegatingBossBarPort bossBarPort;
@@ -42,6 +44,7 @@ public final class DefaultPortBindingService implements PortBindingService {
      * @param scoreboardPort delegating scoreboard port.
      * @param hologramPort delegating hologram port.
      * @param npcPort delegating npc port.
+     * @param guiPort delegating gui port.
      * @param claimsPort delegating claims port.
      * @param schematicPort delegating schematic port.
      * @param bossBarPort delegating bossbar port.
@@ -54,6 +57,7 @@ public final class DefaultPortBindingService implements PortBindingService {
             DelegatingScoreboardPort scoreboardPort,
             DelegatingHologramPort hologramPort,
             DelegatingNpcPort npcPort,
+            DelegatingGuiPort guiPort,
             DelegatingClaimsPort claimsPort,
             DelegatingSchematicPort schematicPort,
             DelegatingBossBarPort bossBarPort,
@@ -65,6 +69,7 @@ public final class DefaultPortBindingService implements PortBindingService {
         this.scoreboardPort = Objects.requireNonNull(scoreboardPort, "scoreboardPort");
         this.hologramPort = Objects.requireNonNull(hologramPort, "hologramPort");
         this.npcPort = Objects.requireNonNull(npcPort, "npcPort");
+        this.guiPort = Objects.requireNonNull(guiPort, "guiPort");
         this.claimsPort = Objects.requireNonNull(claimsPort, "claimsPort");
         this.schematicPort = Objects.requireNonNull(schematicPort, "schematicPort");
         this.bossBarPort = Objects.requireNonNull(bossBarPort, "bossBarPort");
@@ -106,6 +111,15 @@ public final class DefaultPortBindingService implements PortBindingService {
         npcPort.bind(Objects.requireNonNull(port, "port"));
         capabilityRegistry.publish(
                 StandardCapabilities.NPC,
+                CapabilityStatus.available(capabilityMetadata(backendId, backendVersion))
+        );
+    }
+
+    @Override
+    public void bindGuiPort(GuiPort port, String backendId, String backendVersion) {
+        guiPort.bind(Objects.requireNonNull(port, "port"));
+        capabilityRegistry.publish(
+                StandardCapabilities.GUI,
                 CapabilityStatus.available(capabilityMetadata(backendId, backendVersion))
         );
     }
@@ -178,6 +192,8 @@ public final class DefaultPortBindingService implements PortBindingService {
             npcPort.resetToFallback();
         } else if (key.equals(StandardCapabilities.CLAIMS)) {
             claimsPort.resetToFallback();
+        } else if (key.equals(StandardCapabilities.GUI)) {
+            guiPort.resetToFallback();
         } else if (key.equals(StandardCapabilities.SCHEMATIC)) {
             schematicPort.resetToFallback();
             schematicPriority.set(0);

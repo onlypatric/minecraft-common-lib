@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "dev.patric"
-version = "1.0.1-SNAPSHOT"
+version = "2.0.0"
 
 java {
     toolchain {
@@ -19,6 +19,7 @@ repositories {
     maven("https://repo.papermc.io/repository/maven-public/")
     maven("https://repo.fancyinnovations.com/releases")
     maven("https://repo.dmulloy2.net/repository/public/")
+    maven("https://repo.xenondevs.xyz/releases")
 }
 
 subprojects {
@@ -32,6 +33,7 @@ subprojects {
         maven("https://repo.papermc.io/repository/maven-public/")
         maven("https://repo.fancyinnovations.com/releases")
         maven("https://repo.dmulloy2.net/repository/public/")
+        maven("https://repo.xenondevs.xyz/releases")
     }
 
     extensions.configure<JavaPluginExtension> {
@@ -85,6 +87,7 @@ dependencies {
     testImplementation(project(":adapter-bossbar-paper"))
     testImplementation(project(":adapter-bstats"))
     testImplementation(project(":adapter-protocollib"))
+    testImplementation(project(":adapter-invui"))
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
@@ -135,7 +138,8 @@ dependencies {
         ":adapter-fawe",
         ":adapter-bossbar-paper",
         ":adapter-bstats",
-        ":adapter-protocollib"
+        ":adapter-protocollib",
+        ":adapter-invui"
     )
 
     waveProjects.forEach { adapterProject ->
@@ -298,7 +302,8 @@ val verifyAdapterDependencyPolicy = tasks.register("verifyAdapterDependencyPolic
             ":adapter-fawe",
             ":adapter-bossbar-paper",
             ":adapter-bstats",
-            ":adapter-protocollib"
+            ":adapter-protocollib",
+            ":adapter-invui"
         )
 
         adapterProjects.forEach { projectPath ->

@@ -1,8 +1,9 @@
 package dev.patric.commonlib.api.port.noop;
 
 import dev.patric.commonlib.api.gui.GuiCloseReason;
-import dev.patric.commonlib.api.gui.GuiSession;
-import dev.patric.commonlib.api.gui.GuiState;
+import dev.patric.commonlib.api.gui.GuiPortFeature;
+import dev.patric.commonlib.api.gui.render.GuiRenderModel;
+import dev.patric.commonlib.api.gui.render.GuiRenderPatch;
 import dev.patric.commonlib.api.port.GuiPort;
 import java.util.Objects;
 import java.util.UUID;
@@ -13,15 +14,15 @@ import java.util.UUID;
 public final class NoopGuiPort implements GuiPort {
 
     @Override
-    public boolean open(GuiSession session) {
-        Objects.requireNonNull(session, "session");
+    public boolean open(GuiRenderModel renderModel) {
+        Objects.requireNonNull(renderModel, "renderModel");
         return true;
     }
 
     @Override
-    public boolean render(UUID sessionId, GuiState state) {
+    public boolean render(UUID sessionId, GuiRenderPatch patch) {
         Objects.requireNonNull(sessionId, "sessionId");
-        Objects.requireNonNull(state, "state");
+        Objects.requireNonNull(patch, "patch");
         return true;
     }
 
@@ -33,7 +34,8 @@ public final class NoopGuiPort implements GuiPort {
     }
 
     @Override
-    public boolean supportsPortableEvents() {
+    public boolean supports(GuiPortFeature feature) {
+        Objects.requireNonNull(feature, "feature");
         return false;
     }
 }

@@ -10,5 +10,6 @@ include(
     ":adapter-fawe",
     ":adapter-bossbar-paper",
     ":adapter-bstats",
-    ":adapter-protocollib"
+    ":adapter-protocollib",
+    ":adapter-invui"
 )

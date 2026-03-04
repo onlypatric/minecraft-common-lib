@@ -45,18 +45,32 @@ import dev.patric.commonlib.api.hud.ScoreboardSessionStatus;
 import dev.patric.commonlib.api.hud.ScoreboardSnapshot;
 import dev.patric.commonlib.api.hud.ScoreboardUpdateResult;
 import dev.patric.commonlib.api.gui.ClickAction;
+import dev.patric.commonlib.api.gui.BackMenuAction;
+import dev.patric.commonlib.api.gui.DialogResponseBinding;
+import dev.patric.commonlib.api.gui.GuiDefinition;
+import dev.patric.commonlib.api.gui.GuiDefinitionRegistry;
+import dev.patric.commonlib.api.gui.GuiDsl;
 import dev.patric.commonlib.api.gui.GuiCloseEvent;
 import dev.patric.commonlib.api.gui.GuiCloseReason;
 import dev.patric.commonlib.api.gui.GuiDisconnectEvent;
 import dev.patric.commonlib.api.gui.GuiEvent;
 import dev.patric.commonlib.api.gui.GuiEventResult;
+import dev.patric.commonlib.api.gui.GuiInteractionEvent;
+import dev.patric.commonlib.api.gui.GuiInteractionResult;
 import dev.patric.commonlib.api.gui.GuiOpenRequest;
+import dev.patric.commonlib.api.gui.GuiOpenOptions;
+import dev.patric.commonlib.api.gui.GuiBehaviorPolicy;
 import dev.patric.commonlib.api.gui.GuiSession;
 import dev.patric.commonlib.api.gui.GuiSessionService;
 import dev.patric.commonlib.api.gui.GuiSessionStatus;
 import dev.patric.commonlib.api.gui.GuiState;
 import dev.patric.commonlib.api.gui.GuiTimeoutEvent;
 import dev.patric.commonlib.api.gui.GuiUpdateResult;
+import dev.patric.commonlib.api.gui.OpenSubMenuAction;
+import dev.patric.commonlib.api.gui.ToggleStateAction;
+import dev.patric.commonlib.api.gui.GuiPortFeature;
+import dev.patric.commonlib.api.gui.render.GuiRenderModel;
+import dev.patric.commonlib.api.gui.render.GuiRenderPatch;
 import dev.patric.commonlib.api.dialog.BooleanInputSpec;
 import dev.patric.commonlib.api.dialog.CommandTemplateActionSpec;
 import dev.patric.commonlib.api.dialog.ConfirmationTypeSpec;
@@ -248,6 +262,17 @@ class PublicApiFreezeContractTest {
                 FallbackChain.class,
                 PluralRules.class,
                 GuiState.class,
+                GuiDefinition.class,
+                GuiDefinitionRegistry.class,
+                GuiDsl.class,
+                GuiOpenOptions.class,
+                GuiBehaviorPolicy.class,
+                ToggleStateAction.class,
+                OpenSubMenuAction.class,
+                BackMenuAction.class,
+                DialogResponseBinding.class,
+                GuiInteractionEvent.class,
+                GuiInteractionResult.class,
                 GuiCloseReason.class,
                 GuiSessionStatus.class,
                 ClickAction.class,
@@ -435,6 +460,9 @@ class PublicApiFreezeContractTest {
         assertMethod(CommandPort.class, "register", void.class, CommandModel.class);
         assertMethod(CommandPort.class, "unregister", void.class, String.class);
         assertMethod(CommandPort.class, "supportsSuggestions", boolean.class);
+        assertMethod(GuiPort.class, "open", boolean.class, GuiRenderModel.class);
+        assertMethod(GuiPort.class, "render", boolean.class, UUID.class, GuiRenderPatch.class);
+        assertMethod(GuiPort.class, "supports", boolean.class, GuiPortFeature.class);
         assertMethod(GuiPort.class, "open", boolean.class, GuiSession.class);
         assertMethod(GuiPort.class, "render", boolean.class, UUID.class, GuiState.class);
         assertMethod(GuiPort.class, "close", boolean.class, UUID.class, GuiCloseReason.class);
@@ -521,14 +549,21 @@ class PublicApiFreezeContractTest {
 
     @Test
     void frozenGuiSessionModelIsPresent() throws Exception {
+        assertMethod(GuiSessionService.class, "open", GuiSession.class, GuiDefinition.class, UUID.class, GuiOpenOptions.class);
         assertMethod(GuiSessionService.class, "open", GuiSession.class, GuiOpenRequest.class);
         assertMethod(GuiSessionService.class, "find", Optional.class, UUID.class);
         assertMethod(GuiSessionService.class, "activeByPlayer", List.class, UUID.class);
         assertMethod(GuiSessionService.class, "update", GuiUpdateResult.class, UUID.class, GuiState.class, long.class);
+        assertMethod(GuiSessionService.class, "interact", GuiInteractionResult.class, GuiInteractionEvent.class);
         assertMethod(GuiSessionService.class, "publish", GuiEventResult.class, GuiEvent.class);
         assertMethod(GuiSessionService.class, "close", boolean.class, UUID.class, GuiCloseReason.class);
         assertMethod(GuiSessionService.class, "closeAllByPlayer", int.class, UUID.class, GuiCloseReason.class);
         assertMethod(GuiSessionService.class, "closeAll", int.class, GuiCloseReason.class);
+
+        assertMethod(GuiDefinitionRegistry.class, "register", void.class, GuiDefinition.class);
+        assertMethod(GuiDefinitionRegistry.class, "find", Optional.class, String.class);
+        assertMethod(GuiDefinitionRegistry.class, "all", List.class);
+        assertMethod(GuiDefinitionRegistry.class, "unregister", boolean.class, String.class);
     }
 
     @Test

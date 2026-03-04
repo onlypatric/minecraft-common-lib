@@ -6,6 +6,7 @@ import dev.patric.commonlib.api.port.SchematicPort;
 import dev.patric.commonlib.api.port.noop.NoopBossBarPort;
 import dev.patric.commonlib.api.port.noop.NoopClaimsPort;
 import dev.patric.commonlib.api.port.noop.NoopCommandPort;
+import dev.patric.commonlib.api.port.noop.NoopGuiPort;
 import dev.patric.commonlib.api.port.noop.NoopHologramPort;
 import dev.patric.commonlib.api.port.noop.NoopMetricsPort;
 import dev.patric.commonlib.api.port.noop.NoopNpcPort;
@@ -18,6 +19,7 @@ import dev.patric.commonlib.runtime.adapter.DelegatingBossBarPort;
 import dev.patric.commonlib.runtime.adapter.DelegatingClaimsPort;
 import dev.patric.commonlib.runtime.adapter.DelegatingCommandPort;
 import dev.patric.commonlib.runtime.adapter.DelegatingHologramPort;
+import dev.patric.commonlib.runtime.adapter.DelegatingGuiPort;
 import dev.patric.commonlib.runtime.adapter.DelegatingMetricsPort;
 import dev.patric.commonlib.runtime.adapter.DelegatingNpcPort;
 import dev.patric.commonlib.runtime.adapter.DelegatingPacketPort;
@@ -43,6 +45,7 @@ class SchematicBindingPriorityTest {
                 new DelegatingScoreboardPort(new NoopScoreboardPort()),
                 new DelegatingHologramPort(new NoopHologramPort()),
                 new DelegatingNpcPort(new NoopNpcPort()),
+                new DelegatingGuiPort(new NoopGuiPort()),
                 new DelegatingClaimsPort(new NoopClaimsPort()),
                 schematicPort,
                 new DelegatingBossBarPort(new NoopBossBarPort()),

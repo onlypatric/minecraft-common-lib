@@ -14,12 +14,14 @@ import dev.patric.commonlib.api.packet.PacketListenerOptions;
 import dev.patric.commonlib.api.packet.PacketListenerPriority;
 import dev.patric.commonlib.api.port.BossBarPort;
 import dev.patric.commonlib.api.port.ClaimsPort;
+import dev.patric.commonlib.api.port.GuiPort;
 import dev.patric.commonlib.api.port.MetricsPort;
 import dev.patric.commonlib.api.port.PacketPort;
 import dev.patric.commonlib.api.port.SchematicPort;
 import dev.patric.commonlib.api.port.noop.NoopBossBarPort;
 import dev.patric.commonlib.api.port.noop.NoopClaimsPort;
 import dev.patric.commonlib.api.port.noop.NoopCommandPort;
+import dev.patric.commonlib.api.port.noop.NoopGuiPort;
 import dev.patric.commonlib.api.port.noop.NoopHologramPort;
 import dev.patric.commonlib.api.port.noop.NoopMetricsPort;
 import dev.patric.commonlib.api.port.noop.NoopNpcPort;
@@ -32,6 +34,7 @@ import dev.patric.commonlib.runtime.adapter.DelegatingBossBarPort;
 import dev.patric.commonlib.runtime.adapter.DelegatingClaimsPort;
 import dev.patric.commonlib.runtime.adapter.DelegatingCommandPort;
 import dev.patric.commonlib.runtime.adapter.DelegatingHologramPort;
+import dev.patric.commonlib.runtime.adapter.DelegatingGuiPort;
 import dev.patric.commonlib.runtime.adapter.DelegatingMetricsPort;
 import dev.patric.commonlib.runtime.adapter.DelegatingNpcPort;
 import dev.patric.commonlib.runtime.adapter.DelegatingPacketPort;
@@ -54,6 +57,7 @@ class PortBindingServiceV2Test {
     @Test
     void v2BindingsUpdateCapabilitiesAndFallbackDeterministically() {
         DelegatingClaimsPort claimsPort = new DelegatingClaimsPort(new NoopClaimsPort());
+        DelegatingGuiPort guiPort = new DelegatingGuiPort(new NoopGuiPort());
         DelegatingSchematicPort schematicPort = new DelegatingSchematicPort(new NoopSchematicPort());
         DelegatingBossBarPort bossBarPort = new DelegatingBossBarPort(new NoopBossBarPort());
         DelegatingMetricsPort metricsPort = new DelegatingMetricsPort(new NoopMetricsPort());
@@ -65,6 +69,7 @@ class PortBindingServiceV2Test {
                 new DelegatingScoreboardPort(new NoopScoreboardPort()),
                 new DelegatingHologramPort(new NoopHologramPort()),
                 new DelegatingNpcPort(new NoopNpcPort()),
+                guiPort,
                 claimsPort,
                 schematicPort,
                 bossBarPort,
@@ -98,6 +103,29 @@ class PortBindingServiceV2Test {
         assertTrue(claimsPort.isInsideClaim(UUID.randomUUID(), new Location(null, 0, 0, 0)));
         assertTrue(capabilityRegistry.isAvailable(StandardCapabilities.CLAIMS));
         assertEquals("huskclaims:4.7.1", capabilityRegistry.status(StandardCapabilities.CLAIMS).orElseThrow().metadata());
+
+        bindingService.bindGuiPort(new GuiPort() {
+            @Override
+            public boolean open(dev.patric.commonlib.api.gui.render.GuiRenderModel renderModel) {
+                return false;
+            }
+
+            @Override
+            public boolean render(UUID sessionId, dev.patric.commonlib.api.gui.render.GuiRenderPatch patch) {
+                return false;
+            }
+
+            @Override
+            public boolean close(UUID sessionId, dev.patric.commonlib.api.gui.GuiCloseReason reason) {
+                return false;
+            }
+
+            @Override
+            public boolean supports(dev.patric.commonlib.api.gui.GuiPortFeature feature) {
+                return true;
+            }
+        }, "invui", "unknown");
+        assertTrue(capabilityRegistry.isAvailable(StandardCapabilities.GUI));
 
         bindingService.bindSchematicPort(new SchematicPort() {
             @Override
