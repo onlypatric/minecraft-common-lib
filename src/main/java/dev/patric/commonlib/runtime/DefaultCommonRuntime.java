@@ -9,6 +9,7 @@ import dev.patric.commonlib.api.EventRouter;
 import dev.patric.commonlib.api.MessageService;
 import dev.patric.commonlib.api.RuntimeLogger;
 import dev.patric.commonlib.api.ServiceRegistry;
+import dev.patric.commonlib.api.adapter.PortBindingService;
 import dev.patric.commonlib.api.command.CommandRegistry;
 import dev.patric.commonlib.api.command.CommandValidator;
 import dev.patric.commonlib.api.capability.CapabilityRegistry;
@@ -57,6 +58,11 @@ import dev.patric.commonlib.scheduler.BukkitCommonScheduler;
 import dev.patric.commonlib.runtime.persistence.DefaultSchemaMigrationService;
 import dev.patric.commonlib.runtime.persistence.DefaultYamlPersistencePort;
 import dev.patric.commonlib.runtime.persistence.NoopSqlPersistencePort;
+import dev.patric.commonlib.runtime.adapter.DefaultPortBindingService;
+import dev.patric.commonlib.runtime.adapter.DelegatingCommandPort;
+import dev.patric.commonlib.runtime.adapter.DelegatingHologramPort;
+import dev.patric.commonlib.runtime.adapter.DelegatingNpcPort;
+import dev.patric.commonlib.runtime.adapter.DelegatingScoreboardPort;
 import dev.patric.commonlib.services.DefaultCapabilityRegistry;
 import dev.patric.commonlib.services.DefaultServiceRegistry;
 import java.util.ArrayList;
@@ -150,13 +156,17 @@ public final class DefaultCommonRuntime implements CommonRuntime {
     }
 
     private void registerDefaultPortsAndCapabilities(EventRouter eventRouter) {
-        NpcPort npcPort = new NoopNpcPort();
-        HologramPort hologramPort = new NoopHologramPort();
+        NpcPort fallbackNpcPort = new NoopNpcPort();
+        DelegatingNpcPort npcPort = new DelegatingNpcPort(fallbackNpcPort);
+        HologramPort fallbackHologramPort = new NoopHologramPort();
+        DelegatingHologramPort hologramPort = new DelegatingHologramPort(fallbackHologramPort);
         ClaimsPort claimsPort = new NoopClaimsPort();
         SchematicPort schematicPort = new NoopSchematicPort();
-        CommandPort commandPort = new NoopCommandPort();
+        CommandPort fallbackCommandPort = new NoopCommandPort();
+        DelegatingCommandPort commandPort = new DelegatingCommandPort(fallbackCommandPort);
         GuiPort guiPort = new NoopGuiPort();
-        ScoreboardPort scoreboardPort = new NoopScoreboardPort();
+        ScoreboardPort fallbackScoreboardPort = new NoopScoreboardPort();
+        DelegatingScoreboardPort scoreboardPort = new DelegatingScoreboardPort(fallbackScoreboardPort);
         BossBarPort bossBarPort = new NoopBossBarPort();
         ArenaResetPort arenaResetPort = new NoopArenaResetPort();
 
@@ -206,11 +216,19 @@ public final class DefaultCommonRuntime implements CommonRuntime {
         );
 
         CapabilityRegistry capabilityRegistry = new DefaultCapabilityRegistry();
+        PortBindingService portBindingService = new DefaultPortBindingService(
+                commandPort,
+                scoreboardPort,
+                hologramPort,
+                npcPort,
+                capabilityRegistry
+        );
         capabilityRegistry.publish(StandardCapabilities.NPC, CapabilityStatus.unavailable("No adapter installed"));
         capabilityRegistry.publish(StandardCapabilities.HOLOGRAM, CapabilityStatus.unavailable("No adapter installed"));
         capabilityRegistry.publish(StandardCapabilities.CLAIMS, CapabilityStatus.unavailable("No adapter installed"));
         capabilityRegistry.publish(StandardCapabilities.SCHEMATIC, CapabilityStatus.unavailable("No adapter installed"));
         capabilityRegistry.publish(StandardCapabilities.GUI, CapabilityStatus.unavailable("No adapter installed"));
+        capabilityRegistry.publish(StandardCapabilities.COMMAND, CapabilityStatus.unavailable("No adapter installed"));
         capabilityRegistry.publish(StandardCapabilities.SCOREBOARD, CapabilityStatus.unavailable("No adapter installed"));
         capabilityRegistry.publish(StandardCapabilities.BOSSBAR, CapabilityStatus.unavailable("No adapter installed"));
         capabilityRegistry.publish(StandardCapabilities.MATCH_ENGINE, CapabilityStatus.available("core-default"));
@@ -224,6 +242,7 @@ public final class DefaultCommonRuntime implements CommonRuntime {
         capabilityRegistry.publish(StandardCapabilities.PARTIES, CapabilityStatus.available("core-default"));
 
         serviceRegistry.register(CapabilityRegistry.class, capabilityRegistry);
+        serviceRegistry.register(PortBindingService.class, portBindingService);
     }
 
     @Override
