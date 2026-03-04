@@ -19,6 +19,7 @@ class CoreDependencyPolicyTest {
         assertTrue(script.contains("io.papermc.paper:paper-api"));
         assertTrue(script.contains("api/adapter"));
         assertTrue(script.contains("api/capability"));
+        assertTrue(script.contains("api/dialog"));
         assertTrue(script.contains("api/packet"));
         assertTrue(script.contains("api/match"));
         assertTrue(script.contains("api/hud"));

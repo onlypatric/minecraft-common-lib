@@ -5,6 +5,8 @@ import dev.patric.commonlib.api.hud.ScoreboardSessionService;
 import dev.patric.commonlib.api.match.MatchEngineService;
 import dev.patric.commonlib.api.adapter.PortBindingService;
 import dev.patric.commonlib.api.arena.ArenaService;
+import dev.patric.commonlib.api.dialog.DialogService;
+import dev.patric.commonlib.api.dialog.DialogTemplateRegistry;
 import dev.patric.commonlib.api.persistence.SchemaMigrationService;
 import dev.patric.commonlib.api.persistence.SqlPersistencePort;
 import dev.patric.commonlib.api.persistence.YamlPersistencePort;
@@ -78,6 +80,8 @@ class CommonRuntimeContractTest {
         assertNotNull(runtime.services().require(RuntimeLogger.class));
         assertNotNull(runtime.services().require(ScoreboardSessionService.class));
         assertNotNull(runtime.services().require(BossBarService.class));
+        assertNotNull(runtime.services().require(DialogService.class));
+        assertNotNull(runtime.services().require(DialogTemplateRegistry.class));
         assertNotNull(runtime.services().require(MatchEngineService.class));
         assertNotNull(runtime.services().require(CommandPort.class));
         assertNotNull(runtime.services().require(MetricsPort.class));

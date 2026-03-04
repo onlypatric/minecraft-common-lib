@@ -57,6 +57,44 @@ import dev.patric.commonlib.api.gui.GuiSessionStatus;
 import dev.patric.commonlib.api.gui.GuiState;
 import dev.patric.commonlib.api.gui.GuiTimeoutEvent;
 import dev.patric.commonlib.api.gui.GuiUpdateResult;
+import dev.patric.commonlib.api.dialog.BooleanInputSpec;
+import dev.patric.commonlib.api.dialog.CommandTemplateActionSpec;
+import dev.patric.commonlib.api.dialog.ConfirmationTypeSpec;
+import dev.patric.commonlib.api.dialog.CustomActionSpec;
+import dev.patric.commonlib.api.dialog.DialogActionSpec;
+import dev.patric.commonlib.api.dialog.DialogAfterAction;
+import dev.patric.commonlib.api.dialog.DialogBaseSpec;
+import dev.patric.commonlib.api.dialog.DialogBodySpec;
+import dev.patric.commonlib.api.dialog.DialogButtonSpec;
+import dev.patric.commonlib.api.dialog.DialogCallbacks;
+import dev.patric.commonlib.api.dialog.DialogCloseEvent;
+import dev.patric.commonlib.api.dialog.DialogCloseReason;
+import dev.patric.commonlib.api.dialog.DialogEvent;
+import dev.patric.commonlib.api.dialog.DialogEventResult;
+import dev.patric.commonlib.api.dialog.DialogInputSpec;
+import dev.patric.commonlib.api.dialog.DialogListTypeSpec;
+import dev.patric.commonlib.api.dialog.DialogOpenRequest;
+import dev.patric.commonlib.api.dialog.DialogResponse;
+import dev.patric.commonlib.api.dialog.DialogService;
+import dev.patric.commonlib.api.dialog.DialogSession;
+import dev.patric.commonlib.api.dialog.DialogSessionStatus;
+import dev.patric.commonlib.api.dialog.DialogSubmission;
+import dev.patric.commonlib.api.dialog.DialogSubmitEvent;
+import dev.patric.commonlib.api.dialog.DialogTemplate;
+import dev.patric.commonlib.api.dialog.DialogTemplateRegistry;
+import dev.patric.commonlib.api.dialog.DialogTimeoutEvent;
+import dev.patric.commonlib.api.dialog.DialogTypeSpec;
+import dev.patric.commonlib.api.dialog.ItemBodySpec;
+import dev.patric.commonlib.api.dialog.MultiActionTypeSpec;
+import dev.patric.commonlib.api.dialog.NoticeTypeSpec;
+import dev.patric.commonlib.api.dialog.NumberRangeInputSpec;
+import dev.patric.commonlib.api.dialog.PlainMessageBodySpec;
+import dev.patric.commonlib.api.dialog.ServerLinksTypeSpec;
+import dev.patric.commonlib.api.dialog.SingleOptionEntrySpec;
+import dev.patric.commonlib.api.dialog.SingleOptionInputSpec;
+import dev.patric.commonlib.api.dialog.StaticClickActionKind;
+import dev.patric.commonlib.api.dialog.StaticClickActionSpec;
+import dev.patric.commonlib.api.dialog.TextInputSpec;
 import dev.patric.commonlib.api.message.FallbackChain;
 import dev.patric.commonlib.api.message.MessageRequest;
 import dev.patric.commonlib.api.message.PlaceholderResolver;
@@ -221,6 +259,44 @@ class PublicApiFreezeContractTest {
                 GuiTimeoutEvent.class,
                 GuiDisconnectEvent.class,
                 GuiSessionService.class,
+                DialogService.class,
+                DialogTemplateRegistry.class,
+                DialogResponse.class,
+                DialogCallbacks.class,
+                DialogOpenRequest.class,
+                DialogSession.class,
+                DialogSessionStatus.class,
+                DialogCloseReason.class,
+                DialogEventResult.class,
+                DialogEvent.class,
+                DialogSubmitEvent.class,
+                DialogTimeoutEvent.class,
+                DialogCloseEvent.class,
+                DialogSubmission.class,
+                DialogTemplate.class,
+                DialogBaseSpec.class,
+                DialogAfterAction.class,
+                DialogBodySpec.class,
+                PlainMessageBodySpec.class,
+                ItemBodySpec.class,
+                DialogInputSpec.class,
+                TextInputSpec.class,
+                BooleanInputSpec.class,
+                NumberRangeInputSpec.class,
+                SingleOptionInputSpec.class,
+                SingleOptionEntrySpec.class,
+                DialogTypeSpec.class,
+                ConfirmationTypeSpec.class,
+                NoticeTypeSpec.class,
+                MultiActionTypeSpec.class,
+                DialogListTypeSpec.class,
+                ServerLinksTypeSpec.class,
+                DialogButtonSpec.class,
+                DialogActionSpec.class,
+                CommandTemplateActionSpec.class,
+                StaticClickActionKind.class,
+                StaticClickActionSpec.class,
+                CustomActionSpec.class,
                 HudAudienceCloseReason.class,
                 HudUpdatePolicy.class,
                 ScoreboardSnapshot.class,
@@ -452,6 +528,28 @@ class PublicApiFreezeContractTest {
         assertMethod(GuiSessionService.class, "close", boolean.class, UUID.class, GuiCloseReason.class);
         assertMethod(GuiSessionService.class, "closeAllByPlayer", int.class, UUID.class, GuiCloseReason.class);
         assertMethod(GuiSessionService.class, "closeAll", int.class, GuiCloseReason.class);
+    }
+
+    @Test
+    void frozenDialogModelIsPresent() throws Exception {
+        assertMethod(DialogService.class, "open", DialogSession.class, DialogOpenRequest.class);
+        assertMethod(DialogService.class, "find", Optional.class, UUID.class);
+        assertMethod(DialogService.class, "activeByPlayer", List.class, UUID.class);
+        assertMethod(DialogService.class, "publish", DialogEventResult.class, DialogEvent.class);
+        assertMethod(DialogService.class, "close", boolean.class, UUID.class, DialogCloseReason.class);
+        assertMethod(DialogService.class, "closeAllByPlayer", int.class, UUID.class, DialogCloseReason.class);
+        assertMethod(DialogService.class, "closeAll", int.class, DialogCloseReason.class);
+
+        assertMethod(DialogTemplateRegistry.class, "register", void.class, DialogTemplate.class);
+        assertMethod(DialogTemplateRegistry.class, "find", Optional.class, String.class);
+        assertMethod(DialogTemplateRegistry.class, "all", List.class);
+        assertMethod(DialogTemplateRegistry.class, "unregister", boolean.class, String.class);
+
+        assertMethod(DialogResponse.class, "text", Optional.class, String.class);
+        assertMethod(DialogResponse.class, "bool", Optional.class, String.class);
+        assertMethod(DialogResponse.class, "number", Optional.class, String.class);
+        assertMethod(DialogResponse.class, "rawPayload", String.class);
+        assertMethod(DialogResponse.class, "asMap", Map.class);
     }
 
     @Test

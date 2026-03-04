@@ -2,6 +2,8 @@ package dev.patric.commonlib.api.capability;
 
 import dev.patric.commonlib.api.CommonRuntime;
 import dev.patric.commonlib.api.arena.ArenaService;
+import dev.patric.commonlib.api.dialog.DialogService;
+import dev.patric.commonlib.api.dialog.DialogTemplateRegistry;
 import dev.patric.commonlib.api.persistence.SchemaMigrationService;
 import dev.patric.commonlib.api.persistence.SqlPersistencePort;
 import dev.patric.commonlib.api.persistence.YamlPersistencePort;
@@ -75,6 +77,7 @@ class CapabilityRegistryTest {
         assertFalse(registry.isAvailable(StandardCapabilities.BOSSBAR));
         assertFalse(registry.isAvailable(StandardCapabilities.METRICS));
         assertFalse(registry.isAvailable(StandardCapabilities.PACKETS));
+        assertTrue(registry.isAvailable(StandardCapabilities.DIALOG));
         assertTrue(registry.isAvailable(StandardCapabilities.MATCH_ENGINE));
         assertFalse(registry.isAvailable(StandardCapabilities.ARENA_RESET));
         assertTrue(registry.isAvailable(StandardCapabilities.PERSISTENCE_YAML));
@@ -88,6 +91,7 @@ class CapabilityRegistryTest {
         assertEquals("No adapter installed", registry.status(StandardCapabilities.BOSSBAR).orElseThrow().reason());
         assertEquals("No adapter installed", registry.status(StandardCapabilities.METRICS).orElseThrow().reason());
         assertEquals("No adapter installed", registry.status(StandardCapabilities.PACKETS).orElseThrow().reason());
+        assertEquals("core-default", registry.status(StandardCapabilities.DIALOG).orElseThrow().metadata());
         assertEquals("core-default", registry.status(StandardCapabilities.MATCH_ENGINE).orElseThrow().metadata());
         assertEquals("No adapter installed", registry.status(StandardCapabilities.ARENA_RESET).orElseThrow().reason());
         assertEquals("core-default", registry.status(StandardCapabilities.PERSISTENCE_YAML).orElseThrow().metadata());
@@ -108,6 +112,8 @@ class CapabilityRegistryTest {
         runtime.services().require(BossBarPort.class);
         runtime.services().require(MetricsPort.class);
         runtime.services().require(PacketPort.class);
+        runtime.services().require(DialogService.class);
+        runtime.services().require(DialogTemplateRegistry.class);
         runtime.services().require(MatchEngineService.class);
         runtime.services().require(ArenaService.class);
         runtime.services().require(TeamService.class);
