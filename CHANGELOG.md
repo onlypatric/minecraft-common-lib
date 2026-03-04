@@ -1,5 +1,33 @@
 # Changelog
 
+## [0.6.0] - 2026-03-04
+### Added
+- Nuovo package `api.match` con match/state engine plugin-generic:
+  - lifecycle model: `MatchState`, `MatchSessionStatus`, `EndReason`
+  - policy model: `MatchTimingPolicy`, `RejoinPolicy`, `MatchPolicy`
+  - session model: `MatchOpenRequest`, `MatchSession`
+  - operation results: `MatchTransitionResult`, `JoinResult`, `DisconnectResult`, `RejoinResult`
+  - hooks/contracts: `MatchCallbacks`, `MatchCleanup`, `MatchEngineService`
+- Nuovo servizio runtime `DefaultMatchEngineService` con:
+  - loop deterministico single-engine
+  - startup lazy e idle shutdown automatico
+  - transizioni timer-driven (`COUNTDOWN -> RUNNING`, `RUNNING -> ENDING`, `ENDING -> RESET`)
+  - cleanup terminale idempotente
+- Bridge built-in player lifecycle:
+  - `PlayerQuitEvent` -> `MatchEngineService#onPlayerQuit`
+  - `PlayerChangedWorldEvent` -> `MatchEngineService#onPlayerWorldChange`
+- Capability model esteso:
+  - `StandardCapabilities.MATCH_ENGINE` (`available(\"core-default\")`)
+- Guide nuove:
+  - `docs/guides/MATCH-STATE-ENGINE.md`
+  - `docs/guides/MATCH-REJOIN-TIMEOUT-POLICY.md`
+- Release notes `0.6.0`: `docs/releases/0.6.0.md`.
+
+### Changed
+- Runtime wiring esteso con registrazione default `MatchEngineService`.
+- Runtime disable cleanup esteso con `matchEngine.closeAll(PLUGIN_DISABLE)` prima di `scheduler.cancelAll()`.
+- Policy build `verifyCoreDependencyPolicy` estesa al package `api/match`.
+
 ## [0.5.0] - 2026-03-04
 ### Added
 - Nuovo package `api.hud` con primitive HUD plugin-generic:

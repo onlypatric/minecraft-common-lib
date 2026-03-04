@@ -24,3 +24,4 @@
 - Tutti gli adapter restano opzionali e separati dal core.
 - Nessuna dipendenza adapter entra nel core `minecraft-common-lib`.
 - Capability detection (`CapabilityRegistry`) governa availability a runtime.
+- `v0.6.0` introduce il match/state engine core-only: arena/team/persistence restano pianificati per `v0.7.0` prima delle wave adapter successive.
