@@ -1,5 +1,35 @@
 # Changelog
 
+## [1.0.0-rc.1] - 2026-03-04
+### Added
+- Freeze governance ufficiale `1.0.0`:
+  - `docs/api/API-FREEZE-1.0.0.md`
+  - update policy in `docs/policy/PACKAGE-STABILITY-POLICY.md`
+  - update ADR boundaries/versioning:
+    - `docs/adr/ADR-002-api-boundaries.md`
+    - `docs/adr/ADR-003-versioning-changelog-policy.md`
+- Documentazione migrazione/troubleshooting pre-GA:
+  - `docs/guides/MIGRATION-0.x-TO-1.0.0.md`
+  - `docs/guides/TROUBLESHOOTING.md`
+- Regressione pre-GA aggiunta:
+  - `HudServiceBootstrapSafetyTest` per garantire che HUD services non schedulino task in constructor (`onLoad`-safe).
+- Runbook RC:
+  - `docs/releases/1.0.0-rc.1.md`
+
+### Changed
+- Rimosse API legacy deprecate prima del freeze `1.0.0`:
+  - `dev.patric.commonlib.plugin.PluginLifecycle`
+  - `dev.patric.commonlib.scheduler.Tasks`
+  - `dev.patric.commonlib.message.MiniMessageService`
+- Contract test API aggiornati per assert espliciti di assenza classi legacy.
+- Javadoc quality gate hardening:
+  - build configurata con `-Werror` (warning zero richiesto su root + subprojects).
+- HUD services runtime hardening:
+  - `DefaultScoreboardSessionService` e `DefaultBossBarService` avviano il flush loop in modo lazy, evitando scheduling in `onLoad`.
+- Consumer demo hardening:
+  - jar demo ora embedd-a la common-lib passata via `-PcommonLibJar` (embed-first reale).
+  - `DemoConsumerPlugin` gestisce in modo esplicito il caso runtime non costruito.
+
 ## [0.9.1] - 2026-03-04
 ### Added
 - Nuovo package `api.dialog` con wrapper Paper Dialog API:

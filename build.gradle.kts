@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "dev.patric"
-version = "0.9.1"
+version = "1.0.0-rc.1"
 
 java {
     toolchain {
