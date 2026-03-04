@@ -1,18 +1,19 @@
 # Package Stability Policy
 
-Questa policy definisce stabilità e naming dei package in `minecraft-common-lib`.
+Questa policy definisce stabilita', support lifecycle e regole di compatibilita' post-`1.0.0`.
 
-## Livelli di stabilità
+## Livelli di stabilita'
 
-### Stable API
+### Stable API (contractual)
 - `dev.patric.commonlib.api`
 - `dev.patric.commonlib.api.port`
 
 Regole:
-- backward compatibility best-effort in `0.1.x`.
-- breaking change solo con changelog e nota migrazione.
+- SemVer standard dopo `1.0.0`.
+- Breaking changes solo in major (`2.0.0+`).
+- Patch/minor non devono rompere firme o semantiche pubbliche documentate.
 
-### Runtime Stable (soft)
+### Supported but non-contractual runtime
 - `dev.patric.commonlib.runtime`
 - `dev.patric.commonlib.scheduler`
 - `dev.patric.commonlib.services`
@@ -22,21 +23,33 @@ Regole:
 - `dev.patric.commonlib.lifecycle`
 
 Regole:
-- usabili dai consumer avanzati, ma con maggiore probabilità di refactor.
-- ogni modifica significativa va documentata.
+- Usabili dai consumer avanzati ma senza garanzia di stabilita' binaria/firmata.
+- Refactor consentiti in patch/minor se non violano API contractual.
+- Ogni cambiamento significativo deve essere tracciato in changelog.
 
-### Internal (unstable)
+### Internal / implementation detail
 - `dev.patric.commonlib.internal`
+- `dev.patric.commonlib.runtime.adapter`
+- classi concrete nei moduli `adapter-*`
 
 Regole:
-- nessuna garanzia di compatibilità.
-- uso esterno sconsigliato.
+- Nessuna garanzia di compatibilita'.
+- Cambiamenti liberi in patch/minor.
 
 ## Naming conventions
-- API pubbliche: nomi descrittivi e neutrali rispetto al backend.
-- Implementazioni default: prefisso/suffisso `Default*` nel package runtime.
-- Helper: package dedicati (`api.bootstrap`, `api.error`) con classi final utility/POJO.
+- API pubbliche: nomi descrittivi, backend-agnostic.
+- Implementazioni default: `Default*` nei package runtime.
+- No-op pubblici: `api.port.noop.*` (contrattuali come utility stabili).
+- Helper bootstrap/error: `api.bootstrap`, `api.error`.
+
+## Compatibilita' ufficiale
+- Baseline runtime: Paper `1.21.x`, Java `21`.
+- Fuori scope ufficiale: minor Paper precedenti/non `1.21.x`.
 
 ## Enforcement operativo
-- Ogni nuova classe deve dichiarare package target coerente con questa policy.
-- PR che spostano classi tra livelli devono aggiornare changelog + ADR-002.
+- Freeze ufficiale: `docs/api/API-FREEZE-1.0.0.md`.
+- Contratto verificato da `PublicApiFreezeContractTest`.
+- Policy dependency guard verificata da:
+  - `verifyCoreDependencyPolicy`
+  - `verifyAdapterDependencyPolicy`
+  - `verifyAdapterLicensePolicy`
