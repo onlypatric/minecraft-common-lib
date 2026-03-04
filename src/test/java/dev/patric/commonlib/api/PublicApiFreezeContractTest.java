@@ -21,6 +21,21 @@ import dev.patric.commonlib.api.command.ValidationIssue;
 import dev.patric.commonlib.api.error.ErrorCodes;
 import dev.patric.commonlib.api.error.OperationError;
 import dev.patric.commonlib.api.error.OperationResult;
+import dev.patric.commonlib.api.hud.BossBarOpenRequest;
+import dev.patric.commonlib.api.hud.BossBarService;
+import dev.patric.commonlib.api.hud.BossBarSession;
+import dev.patric.commonlib.api.hud.BossBarState;
+import dev.patric.commonlib.api.hud.BossBarUpdateResult;
+import dev.patric.commonlib.api.hud.HudAudienceCloseReason;
+import dev.patric.commonlib.api.hud.HudBarColor;
+import dev.patric.commonlib.api.hud.HudBarStyle;
+import dev.patric.commonlib.api.hud.HudUpdatePolicy;
+import dev.patric.commonlib.api.hud.ScoreboardOpenRequest;
+import dev.patric.commonlib.api.hud.ScoreboardSession;
+import dev.patric.commonlib.api.hud.ScoreboardSessionService;
+import dev.patric.commonlib.api.hud.ScoreboardSessionStatus;
+import dev.patric.commonlib.api.hud.ScoreboardSnapshot;
+import dev.patric.commonlib.api.hud.ScoreboardUpdateResult;
 import dev.patric.commonlib.api.gui.ClickAction;
 import dev.patric.commonlib.api.gui.GuiCloseEvent;
 import dev.patric.commonlib.api.gui.GuiCloseReason;
@@ -39,6 +54,7 @@ import dev.patric.commonlib.api.message.MessageRequest;
 import dev.patric.commonlib.api.message.PlaceholderResolver;
 import dev.patric.commonlib.api.message.PluralRules;
 import dev.patric.commonlib.api.port.ArenaResetPort;
+import dev.patric.commonlib.api.port.BossBarPort;
 import dev.patric.commonlib.api.port.ClaimsPort;
 import dev.patric.commonlib.api.port.CommandPort;
 import dev.patric.commonlib.api.port.GuiPort;
@@ -47,11 +63,13 @@ import dev.patric.commonlib.api.port.NpcPort;
 import dev.patric.commonlib.api.port.SchematicPort;
 import dev.patric.commonlib.api.port.ScoreboardPort;
 import dev.patric.commonlib.api.port.noop.NoopClaimsPort;
+import dev.patric.commonlib.api.port.noop.NoopBossBarPort;
 import dev.patric.commonlib.api.port.noop.NoopCommandPort;
 import dev.patric.commonlib.api.port.noop.NoopGuiPort;
 import dev.patric.commonlib.api.port.noop.NoopHologramPort;
 import dev.patric.commonlib.api.port.noop.NoopNpcPort;
 import dev.patric.commonlib.api.port.noop.NoopSchematicPort;
+import dev.patric.commonlib.api.port.noop.NoopScoreboardPort;
 import dev.patric.commonlib.api.port.options.PasteOptions;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -111,6 +129,8 @@ class PublicApiFreezeContractTest {
                 NoopSchematicPort.class,
                 NoopCommandPort.class,
                 NoopGuiPort.class,
+                NoopScoreboardPort.class,
+                NoopBossBarPort.class,
                 CommandModel.class,
                 CommandNode.class,
                 CommandExecution.class,
@@ -140,7 +160,23 @@ class PublicApiFreezeContractTest {
                 GuiCloseEvent.class,
                 GuiTimeoutEvent.class,
                 GuiDisconnectEvent.class,
-                GuiSessionService.class
+                GuiSessionService.class,
+                HudAudienceCloseReason.class,
+                HudUpdatePolicy.class,
+                ScoreboardSnapshot.class,
+                ScoreboardSessionStatus.class,
+                ScoreboardOpenRequest.class,
+                ScoreboardUpdateResult.class,
+                ScoreboardSession.class,
+                ScoreboardSessionService.class,
+                HudBarColor.class,
+                HudBarStyle.class,
+                BossBarState.class,
+                BossBarOpenRequest.class,
+                BossBarUpdateResult.class,
+                BossBarSession.class,
+                BossBarService.class,
+                BossBarPort.class
         };
 
         assertTrue(frozenTypes.length >= 48);
@@ -228,6 +264,12 @@ class PublicApiFreezeContractTest {
         assertMethod(GuiPort.class, "render", boolean.class, UUID.class, GuiState.class);
         assertMethod(GuiPort.class, "close", boolean.class, UUID.class, GuiCloseReason.class);
         assertMethod(GuiPort.class, "supportsPortableEvents", boolean.class);
+        assertMethod(ScoreboardPort.class, "open", boolean.class, ScoreboardSession.class);
+        assertMethod(ScoreboardPort.class, "render", boolean.class, UUID.class, ScoreboardSnapshot.class);
+        assertMethod(ScoreboardPort.class, "close", boolean.class, UUID.class, HudAudienceCloseReason.class);
+        assertMethod(BossBarPort.class, "open", boolean.class, BossBarSession.class);
+        assertMethod(BossBarPort.class, "render", boolean.class, UUID.class, BossBarState.class);
+        assertMethod(BossBarPort.class, "close", boolean.class, UUID.class, HudAudienceCloseReason.class);
 
         assertMethod(CommandModel.class, "root", String.class);
         assertMethod(CommandModel.class, "nodes", List.class);
@@ -246,6 +288,31 @@ class PublicApiFreezeContractTest {
         assertMethod(CommandResult.class, "success", CommandResult.class);
         assertMethod(CommandResult.class, "failure", CommandResult.class, String.class, String.class);
         assertMethod(CommandResult.class, "validationFailure", CommandResult.class, String.class, String.class);
+    }
+
+    @Test
+    void frozenHudServiceModelIsPresent() throws Exception {
+        assertMethod(ScoreboardSessionService.class, "open", ScoreboardSession.class, ScoreboardOpenRequest.class);
+        assertMethod(ScoreboardSessionService.class, "find", Optional.class, UUID.class);
+        assertMethod(ScoreboardSessionService.class, "activeByPlayer", List.class, UUID.class);
+        assertMethod(ScoreboardSessionService.class, "update", ScoreboardUpdateResult.class, UUID.class, ScoreboardSnapshot.class);
+        assertMethod(ScoreboardSessionService.class, "close", boolean.class, UUID.class, HudAudienceCloseReason.class);
+        assertMethod(ScoreboardSessionService.class, "closeAllByPlayer", int.class, UUID.class, HudAudienceCloseReason.class);
+        assertMethod(ScoreboardSessionService.class, "closeAll", int.class, HudAudienceCloseReason.class);
+        assertMethod(ScoreboardSessionService.class, "onPlayerQuit", void.class, UUID.class);
+        assertMethod(ScoreboardSessionService.class, "onPlayerWorldChange", void.class, UUID.class);
+        assertMethod(ScoreboardSessionService.class, "policy", HudUpdatePolicy.class);
+
+        assertMethod(BossBarService.class, "open", BossBarSession.class, BossBarOpenRequest.class);
+        assertMethod(BossBarService.class, "find", Optional.class, UUID.class);
+        assertMethod(BossBarService.class, "activeByPlayer", List.class, UUID.class);
+        assertMethod(BossBarService.class, "update", BossBarUpdateResult.class, UUID.class, BossBarState.class);
+        assertMethod(BossBarService.class, "close", boolean.class, UUID.class, HudAudienceCloseReason.class);
+        assertMethod(BossBarService.class, "closeAllByPlayer", int.class, UUID.class, HudAudienceCloseReason.class);
+        assertMethod(BossBarService.class, "closeAll", int.class, HudAudienceCloseReason.class);
+        assertMethod(BossBarService.class, "onPlayerQuit", void.class, UUID.class);
+        assertMethod(BossBarService.class, "onPlayerWorldChange", void.class, UUID.class);
+        assertMethod(BossBarService.class, "policy", HudUpdatePolicy.class);
     }
 
     @Test

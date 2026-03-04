@@ -1,5 +1,7 @@
 package dev.patric.commonlib.api;
 
+import dev.patric.commonlib.api.hud.BossBarService;
+import dev.patric.commonlib.api.hud.ScoreboardSessionService;
 import dev.patric.commonlib.testsupport.TestPlugin;
 import java.util.ArrayList;
 import java.util.List;
@@ -63,6 +65,8 @@ class CommonRuntimeContractTest {
         assertNotNull(runtime.services().require(CommonScheduler.class));
         assertNotNull(runtime.services().require(EventRouter.class));
         assertNotNull(runtime.services().require(RuntimeLogger.class));
+        assertNotNull(runtime.services().require(ScoreboardSessionService.class));
+        assertNotNull(runtime.services().require(BossBarService.class));
 
         runtime.onDisable();
 

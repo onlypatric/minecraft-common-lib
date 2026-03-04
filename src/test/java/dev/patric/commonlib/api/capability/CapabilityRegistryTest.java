@@ -1,10 +1,12 @@
 package dev.patric.commonlib.api.capability;
 
 import dev.patric.commonlib.api.CommonRuntime;
+import dev.patric.commonlib.api.port.BossBarPort;
 import dev.patric.commonlib.api.port.ClaimsPort;
 import dev.patric.commonlib.api.port.GuiPort;
 import dev.patric.commonlib.api.port.HologramPort;
 import dev.patric.commonlib.api.port.NpcPort;
+import dev.patric.commonlib.api.port.ScoreboardPort;
 import dev.patric.commonlib.api.port.SchematicPort;
 import dev.patric.commonlib.services.DefaultCapabilityRegistry;
 import dev.patric.commonlib.testsupport.TestPlugin;
@@ -58,13 +60,19 @@ class CapabilityRegistryTest {
         assertFalse(registry.isAvailable(StandardCapabilities.CLAIMS));
         assertFalse(registry.isAvailable(StandardCapabilities.SCHEMATIC));
         assertFalse(registry.isAvailable(StandardCapabilities.GUI));
+        assertFalse(registry.isAvailable(StandardCapabilities.SCOREBOARD));
+        assertFalse(registry.isAvailable(StandardCapabilities.BOSSBAR));
         assertEquals("No adapter installed", registry.status(StandardCapabilities.NPC).orElseThrow().reason());
         assertEquals("No adapter installed", registry.status(StandardCapabilities.GUI).orElseThrow().reason());
+        assertEquals("No adapter installed", registry.status(StandardCapabilities.SCOREBOARD).orElseThrow().reason());
+        assertEquals("No adapter installed", registry.status(StandardCapabilities.BOSSBAR).orElseThrow().reason());
 
         runtime.services().require(NpcPort.class);
         runtime.services().require(HologramPort.class);
         runtime.services().require(ClaimsPort.class);
         runtime.services().require(SchematicPort.class);
         runtime.services().require(GuiPort.class);
+        runtime.services().require(ScoreboardPort.class);
+        runtime.services().require(BossBarPort.class);
     }
 }
