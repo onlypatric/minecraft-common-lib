@@ -19,6 +19,8 @@ public final class StandardCapabilities {
     public static final CapabilityKey<String> SCOREBOARD = CapabilityKey.of("scoreboard", String.class);
     /** Bossbar capability key. */
     public static final CapabilityKey<String> BOSSBAR = CapabilityKey.of("bossbar", String.class);
+    /** Match engine capability key. */
+    public static final CapabilityKey<String> MATCH_ENGINE = CapabilityKey.of("match_engine", String.class);
 
     private StandardCapabilities() {
         throw new UnsupportedOperationException("Utility class");

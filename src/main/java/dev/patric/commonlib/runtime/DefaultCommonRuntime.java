@@ -19,6 +19,8 @@ import dev.patric.commonlib.api.hud.HudAudienceCloseReason;
 import dev.patric.commonlib.api.hud.ScoreboardSessionService;
 import dev.patric.commonlib.api.gui.GuiCloseReason;
 import dev.patric.commonlib.api.gui.GuiSessionService;
+import dev.patric.commonlib.api.match.EndReason;
+import dev.patric.commonlib.api.match.MatchEngineService;
 import dev.patric.commonlib.api.message.FallbackChain;
 import dev.patric.commonlib.api.message.PluralRules;
 import dev.patric.commonlib.api.port.BossBarPort;
@@ -51,6 +53,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
+import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
@@ -66,6 +69,7 @@ public final class DefaultCommonRuntime implements CommonRuntime {
     private final List<CommonComponent> enabledComponents;
     private final AtomicBoolean loaded;
     private final AtomicBoolean enabled;
+    private MatchPlayerLifecycleBridge matchPlayerLifecycleBridge;
 
     /**
      * Creates the default runtime with optional built-in components.
@@ -99,6 +103,7 @@ public final class DefaultCommonRuntime implements CommonRuntime {
         this.enabledComponents = new ArrayList<>();
         this.loaded = new AtomicBoolean(false);
         this.enabled = new AtomicBoolean(false);
+        this.matchPlayerLifecycleBridge = null;
 
         serviceRegistry.register(ServiceRegistry.class, serviceRegistry);
         serviceRegistry.register(RuntimeLogger.class, runtimeLogger);
@@ -163,6 +168,10 @@ public final class DefaultCommonRuntime implements CommonRuntime {
                 BossBarService.class,
                 new DefaultBossBarService(scheduler, runtimeLogger, bossBarPort)
         );
+        serviceRegistry.register(
+                MatchEngineService.class,
+                new DefaultMatchEngineService(scheduler, runtimeLogger, serviceRegistry)
+        );
 
         CapabilityRegistry capabilityRegistry = new DefaultCapabilityRegistry();
         capabilityRegistry.publish(StandardCapabilities.NPC, CapabilityStatus.unavailable("No adapter installed"));
@@ -172,6 +181,7 @@ public final class DefaultCommonRuntime implements CommonRuntime {
         capabilityRegistry.publish(StandardCapabilities.GUI, CapabilityStatus.unavailable("No adapter installed"));
         capabilityRegistry.publish(StandardCapabilities.SCOREBOARD, CapabilityStatus.unavailable("No adapter installed"));
         capabilityRegistry.publish(StandardCapabilities.BOSSBAR, CapabilityStatus.unavailable("No adapter installed"));
+        capabilityRegistry.publish(StandardCapabilities.MATCH_ENGINE, CapabilityStatus.available("core-default"));
 
         serviceRegistry.register(CapabilityRegistry.class, capabilityRegistry);
     }
@@ -203,8 +213,10 @@ public final class DefaultCommonRuntime implements CommonRuntime {
                 component.onEnable(context);
                 enabledComponents.add(component);
             }
+            installMatchLifecycleBridge();
         } catch (RuntimeException ex) {
             runtimeLogger.error("enable failed, running rollback", ex);
+            uninstallMatchLifecycleBridge();
             rollbackEnabledComponents();
             enabled.set(false);
             throw ex;
@@ -218,6 +230,8 @@ public final class DefaultCommonRuntime implements CommonRuntime {
         }
 
         rollbackEnabledComponents();
+        uninstallMatchLifecycleBridge();
+        serviceRegistry.find(MatchEngineService.class).ifPresent(service -> service.closeAll(EndReason.PLUGIN_DISABLE));
         serviceRegistry.find(ScoreboardSessionService.class)
                 .ifPresent(service -> service.closeAll(HudAudienceCloseReason.PLUGIN_DISABLE));
         serviceRegistry.find(BossBarService.class)
@@ -230,6 +244,26 @@ public final class DefaultCommonRuntime implements CommonRuntime {
     @Override
     public ServiceRegistry services() {
         return serviceRegistry;
+    }
+
+    private void installMatchLifecycleBridge() {
+        if (matchPlayerLifecycleBridge != null) {
+            return;
+        }
+
+        serviceRegistry.find(MatchEngineService.class).ifPresent(matchEngine -> {
+            MatchPlayerLifecycleBridge bridge = new MatchPlayerLifecycleBridge(matchEngine);
+            context.plugin().getServer().getPluginManager().registerEvents(bridge, context.plugin());
+            matchPlayerLifecycleBridge = bridge;
+        });
+    }
+
+    private void uninstallMatchLifecycleBridge() {
+        if (matchPlayerLifecycleBridge == null) {
+            return;
+        }
+        HandlerList.unregisterAll(matchPlayerLifecycleBridge);
+        matchPlayerLifecycleBridge = null;
     }
 
     private void rollbackEnabledComponents() {
