@@ -1,0 +1,8 @@
+name: ModulePlayground
+version: 1.0.0
+main: dev.patric.commonlib.examples.module.ModulePlaygroundPlugin
+api-version: '1.21'
+commands:
+  clibmodule:
+    description: Dump module system status
+    usage: /clibmodule dump
