@@ -3,6 +3,7 @@ package dev.patric.commonlib.api;
 import dev.patric.commonlib.api.hud.BossBarService;
 import dev.patric.commonlib.api.hud.ScoreboardSessionService;
 import dev.patric.commonlib.api.match.MatchEngineService;
+import dev.patric.commonlib.api.module.ModuleRegistry;
 import dev.patric.commonlib.api.adapter.PortBindingService;
 import dev.patric.commonlib.api.arena.ArenaService;
 import dev.patric.commonlib.api.dialog.DialogService;
@@ -84,6 +85,7 @@ class CommonRuntimeContractTest {
         assertNotNull(runtime.services().require(DialogService.class));
         assertNotNull(runtime.services().require(DialogTemplateRegistry.class));
         assertNotNull(runtime.services().require(GuiDefinitionRegistry.class));
+        assertNotNull(runtime.services().require(ModuleRegistry.class));
         assertNotNull(runtime.services().require(MatchEngineService.class));
         assertNotNull(runtime.services().require(CommandPort.class));
         assertNotNull(runtime.services().require(MetricsPort.class));

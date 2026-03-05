@@ -22,6 +22,7 @@ class CoreDependencyPolicyTest {
         assertTrue(script.contains("api/dialog"));
         assertTrue(script.contains("api/packet"));
         assertTrue(script.contains("api/match"));
+        assertTrue(script.contains("api/module"));
         assertTrue(script.contains("api/hud"));
         assertTrue(script.contains("api/gui"));
         assertTrue(script.contains("api/arena"));

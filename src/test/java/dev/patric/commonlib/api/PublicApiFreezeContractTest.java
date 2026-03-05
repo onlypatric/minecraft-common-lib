@@ -113,6 +113,11 @@ import dev.patric.commonlib.api.message.FallbackChain;
 import dev.patric.commonlib.api.message.MessageRequest;
 import dev.patric.commonlib.api.message.PlaceholderResolver;
 import dev.patric.commonlib.api.message.PluralRules;
+import dev.patric.commonlib.api.module.CommonModule;
+import dev.patric.commonlib.api.module.ModulePlanResult;
+import dev.patric.commonlib.api.module.ModuleRegistry;
+import dev.patric.commonlib.api.module.ModuleState;
+import dev.patric.commonlib.api.module.ModuleStatus;
 import dev.patric.commonlib.api.persistence.PersistenceRecord;
 import dev.patric.commonlib.api.persistence.PersistenceWriteResult;
 import dev.patric.commonlib.api.persistence.SchemaMigration;
@@ -178,6 +183,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -376,7 +382,12 @@ class PublicApiFreezeContractTest {
                 SqlPersistencePort.class,
                 SchemaMigration.class,
                 SchemaMigrationContext.class,
-                SchemaMigrationService.class
+                SchemaMigrationService.class,
+                CommonModule.class,
+                ModuleState.class,
+                ModuleStatus.class,
+                ModuleRegistry.class,
+                ModulePlanResult.class
         };
 
         assertTrue(frozenTypes.length >= 48);
@@ -395,6 +406,11 @@ class PublicApiFreezeContractTest {
         Method builder = CommonRuntime.class.getMethod("builder", JavaPlugin.class);
         assertEquals(CommonRuntime.Builder.class, builder.getReturnType());
         assertTrue(Modifier.isStatic(builder.getModifiers()));
+        assertMethod(CommonRuntime.Builder.class, "component", CommonRuntime.Builder.class, CommonComponent.class);
+        assertMethod(CommonRuntime.Builder.class, "components", CommonRuntime.Builder.class, java.util.Collection.class);
+        assertMethod(CommonRuntime.Builder.class, "module", CommonRuntime.Builder.class, CommonModule.class);
+        assertMethod(CommonRuntime.Builder.class, "modules", CommonRuntime.Builder.class, java.util.Collection.class);
+        assertMethod(CommonRuntime.Builder.class, "enableModuleDiagnostics", CommonRuntime.Builder.class, boolean.class);
 
         assertMethod(CommonComponent.class, "id", String.class);
         assertMethod(CommonComponent.class, "onLoad", void.class, CommonContext.class);
@@ -439,6 +455,7 @@ class PublicApiFreezeContractTest {
     void frozenBootstrapAndErrorHelpersArePresent() throws Exception {
         assertMethod(RuntimeBootstrap.class, "build", OperationResult.class, JavaPlugin.class, java.util.function.Consumer.class);
         assertMethod(RuntimeBootstrap.class, "build", OperationResult.class, JavaPlugin.class, CommonComponent[].class);
+        assertMethod(RuntimeBootstrap.class, "build", OperationResult.class, JavaPlugin.class, java.util.Collection.class);
         assertMethod(RuntimeBootstrap.class, "safeLoad", OperationResult.class, CommonRuntime.class);
         assertMethod(RuntimeBootstrap.class, "safeEnable", OperationResult.class, CommonRuntime.class);
         assertMethod(RuntimeBootstrap.class, "safeDisable", OperationResult.class, CommonRuntime.class);
@@ -545,6 +562,30 @@ class PublicApiFreezeContractTest {
         assertMethod(MatchEngineService.class, "onPlayerQuit", void.class, UUID.class);
         assertMethod(MatchEngineService.class, "onPlayerWorldChange", void.class, UUID.class);
         assertMethod(MatchEngineService.class, "isIdle", boolean.class);
+    }
+
+    @Test
+    void frozenModuleSystemModelIsPresent() throws Exception {
+        assertMethod(CommonModule.class, "id", String.class);
+        assertMethod(CommonModule.class, "dependsOn", Set.class);
+        assertMethod(CommonModule.class, "onLoad", void.class, CommonContext.class);
+        assertMethod(CommonModule.class, "onEnable", void.class, CommonContext.class);
+        assertMethod(CommonModule.class, "onDisable", void.class, CommonContext.class);
+        assertMethod(CommonModule.class, "description", String.class);
+
+        assertMethod(ModuleRegistry.class, "find", Optional.class, String.class);
+        assertMethod(ModuleRegistry.class, "all", List.class);
+        assertMethod(ModuleRegistry.class, "isEnabled", boolean.class, String.class);
+
+        assertMethod(ModulePlanResult.class, "sortedOrder", List.class);
+        assertMethod(ModulePlanResult.class, "initialStatuses", List.class);
+        assertMethod(ModulePlanResult.class, "hasCycles", boolean.class);
+
+        assertMethod(ModuleStatus.class, "id", String.class);
+        assertMethod(ModuleStatus.class, "state", ModuleState.class);
+        assertMethod(ModuleStatus.class, "reason", String.class);
+        assertMethod(ModuleStatus.class, "dependsOn", Set.class);
+        assertMethod(ModuleStatus.class, "updatedAtEpochMilli", long.class);
     }
 
     @Test
