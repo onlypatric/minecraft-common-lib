@@ -30,6 +30,6 @@ public final class CommonLib {
     public static String version() {
         Package pkg = CommonLib.class.getPackage();
         String implementationVersion = pkg == null ? null : pkg.getImplementationVersion();
-        return implementationVersion == null ? "2.0.0" : implementationVersion;
+        return implementationVersion == null ? "2.1.0" : implementationVersion;
     }
 }

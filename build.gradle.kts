@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "dev.patric"
-version = "2.0.0"
+version = "2.1.0"
 
 java {
     toolchain {
@@ -247,6 +247,7 @@ val verifyCoreDependencyPolicy = tasks.register("verifyCoreDependencyPolicy") {
             file("src/main/java/dev/patric/commonlib/api/dialog"),
             file("src/main/java/dev/patric/commonlib/api/packet"),
             file("src/main/java/dev/patric/commonlib/api/match"),
+            file("src/main/java/dev/patric/commonlib/api/module"),
             file("src/main/java/dev/patric/commonlib/api/hud"),
             file("src/main/java/dev/patric/commonlib/api/gui"),
             file("src/main/java/dev/patric/commonlib/api/arena"),

@@ -2,6 +2,7 @@ package dev.patric.commonlib.runtime;
 
 import dev.patric.commonlib.api.CommonComponent;
 import dev.patric.commonlib.api.CommonRuntime;
+import dev.patric.commonlib.api.module.CommonModule;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -16,10 +17,12 @@ public final class CommonRuntimeBuilder implements CommonRuntime.Builder {
 
     private final JavaPlugin plugin;
     private final List<CommonComponent> components = new ArrayList<>();
+    private final List<CommonModule> modules = new ArrayList<>();
     private String mainConfigPath = "config.yml";
     private String messagesConfigPath = "messages.yml";
     private Locale defaultLocale = Locale.ENGLISH;
     private boolean includeDefaultCoreComponents = true;
+    private boolean moduleDiagnostics = true;
 
     /**
      * Creates a runtime builder bound to a plugin.
@@ -42,6 +45,27 @@ public final class CommonRuntimeBuilder implements CommonRuntime.Builder {
         for (CommonComponent component : components) {
             component(component);
         }
+        return this;
+    }
+
+    @Override
+    public CommonRuntime.Builder module(CommonModule module) {
+        modules.add(Objects.requireNonNull(module, "module"));
+        return this;
+    }
+
+    @Override
+    public CommonRuntime.Builder modules(Collection<? extends CommonModule> modules) {
+        Objects.requireNonNull(modules, "modules");
+        for (CommonModule module : modules) {
+            module(module);
+        }
+        return this;
+    }
+
+    @Override
+    public CommonRuntime.Builder enableModuleDiagnostics(boolean enabled) {
+        this.moduleDiagnostics = enabled;
         return this;
     }
 
@@ -74,10 +98,12 @@ public final class CommonRuntimeBuilder implements CommonRuntime.Builder {
         return new DefaultCommonRuntime(
                 plugin,
                 List.copyOf(components),
+                List.copyOf(modules),
                 mainConfigPath,
                 messagesConfigPath,
                 defaultLocale,
-                includeDefaultCoreComponents
+                includeDefaultCoreComponents,
+                moduleDiagnostics
         );
     }
 }

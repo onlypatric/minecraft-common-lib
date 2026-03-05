@@ -29,6 +29,9 @@ import dev.patric.commonlib.api.match.EndReason;
 import dev.patric.commonlib.api.match.MatchEngineService;
 import dev.patric.commonlib.api.message.FallbackChain;
 import dev.patric.commonlib.api.message.PluralRules;
+import dev.patric.commonlib.api.module.CommonModule;
+import dev.patric.commonlib.api.module.ModulePlanResult;
+import dev.patric.commonlib.api.module.ModuleRegistry;
 import dev.patric.commonlib.api.persistence.SchemaMigrationService;
 import dev.patric.commonlib.api.persistence.SqlPersistencePort;
 import dev.patric.commonlib.api.persistence.YamlPersistencePort;
@@ -77,6 +80,8 @@ import dev.patric.commonlib.runtime.adapter.DelegatingNpcPort;
 import dev.patric.commonlib.runtime.adapter.DelegatingPacketPort;
 import dev.patric.commonlib.runtime.adapter.DelegatingSchematicPort;
 import dev.patric.commonlib.runtime.adapter.DelegatingScoreboardPort;
+import dev.patric.commonlib.runtime.module.DefaultModuleRegistry;
+import dev.patric.commonlib.runtime.module.ModuleLifecycleOrchestrator;
 import dev.patric.commonlib.services.DefaultCapabilityRegistry;
 import dev.patric.commonlib.services.DefaultServiceRegistry;
 import java.util.ArrayList;
@@ -98,6 +103,8 @@ public final class DefaultCommonRuntime implements CommonRuntime {
     private final BukkitCommonScheduler scheduler;
     private final List<CommonComponent> components;
     private final List<CommonComponent> enabledComponents;
+    private final DefaultModuleRegistry moduleRegistry;
+    private final ModuleLifecycleOrchestrator moduleOrchestrator;
     private final AtomicBoolean loaded;
     private final AtomicBoolean enabled;
     private MatchPlayerLifecycleBridge matchPlayerLifecycleBridge;
@@ -109,21 +116,26 @@ public final class DefaultCommonRuntime implements CommonRuntime {
      *
      * @param plugin owning plugin.
      * @param customComponents extra components to install.
+     * @param customModules extra modules to install.
      * @param mainConfigPath relative path to main config.
      * @param messagesConfigPath relative path to messages config.
      * @param defaultLocale default locale used by message service.
      * @param includeDefaultCoreComponents whether to include config and message components.
+     * @param moduleDiagnosticsEnabled whether module status diagnostics should be logged.
      */
     public DefaultCommonRuntime(
             JavaPlugin plugin,
             List<CommonComponent> customComponents,
+            List<CommonModule> customModules,
             String mainConfigPath,
             String messagesConfigPath,
             Locale defaultLocale,
-            boolean includeDefaultCoreComponents
+            boolean includeDefaultCoreComponents,
+            boolean moduleDiagnosticsEnabled
     ) {
         Objects.requireNonNull(plugin, "plugin");
         Objects.requireNonNull(customComponents, "customComponents");
+        Objects.requireNonNull(customModules, "customModules");
         Objects.requireNonNull(mainConfigPath, "mainConfigPath");
         Objects.requireNonNull(messagesConfigPath, "messagesConfigPath");
         Objects.requireNonNull(defaultLocale, "defaultLocale");
@@ -134,6 +146,13 @@ public final class DefaultCommonRuntime implements CommonRuntime {
         this.context = new DefaultCommonContext(plugin, plugin.getLogger(), scheduler, serviceRegistry);
         this.components = new ArrayList<>();
         this.enabledComponents = new ArrayList<>();
+        this.moduleRegistry = new DefaultModuleRegistry();
+        this.moduleOrchestrator = new ModuleLifecycleOrchestrator(
+                context,
+                runtimeLogger,
+                moduleRegistry,
+                moduleDiagnosticsEnabled
+        );
         this.loaded = new AtomicBoolean(false);
         this.enabled = new AtomicBoolean(false);
         this.matchPlayerLifecycleBridge = null;
@@ -143,11 +162,15 @@ public final class DefaultCommonRuntime implements CommonRuntime {
         serviceRegistry.register(ServiceRegistry.class, serviceRegistry);
         serviceRegistry.register(RuntimeLogger.class, runtimeLogger);
         serviceRegistry.register(CommonScheduler.class, scheduler);
+        serviceRegistry.register(ModuleRegistry.class, moduleRegistry);
         EventRouter eventRouter = new SimpleEventRouter();
         serviceRegistry.register(EventRouter.class, eventRouter);
         serviceRegistry.register(CommandRegistry.class, new DefaultCommandRegistry());
         serviceRegistry.register(CommandValidator.class, new DefaultCommandValidator());
         registerDefaultPortsAndCapabilities(eventRouter);
+
+        ModulePlanResult modulePlanResult = moduleOrchestrator.initialize(customModules);
+        serviceRegistry.register(ModulePlanResult.class, modulePlanResult);
 
         if (includeDefaultCoreComponents) {
             YamlConfigService configService = new YamlConfigService(plugin, mainConfigPath, List.of(messagesConfigPath));
@@ -301,6 +324,7 @@ public final class DefaultCommonRuntime implements CommonRuntime {
             return;
         }
 
+        moduleOrchestrator.onLoad();
         for (CommonComponent component : components) {
             runtimeLogger.lifecycleEvent("onLoad", component.id());
             component.onLoad(context);
@@ -317,6 +341,7 @@ public final class DefaultCommonRuntime implements CommonRuntime {
         }
 
         try {
+            moduleOrchestrator.onEnable();
             for (CommonComponent component : components) {
                 runtimeLogger.lifecycleEvent("onEnable", component.id());
                 component.onEnable(context);
@@ -331,6 +356,7 @@ public final class DefaultCommonRuntime implements CommonRuntime {
             uninstallMatchLifecycleBridge();
             uninstallGuiLifecycleBridge();
             rollbackEnabledComponents();
+            moduleOrchestrator.onDisable();
             enabled.set(false);
             throw ex;
         }
@@ -339,6 +365,7 @@ public final class DefaultCommonRuntime implements CommonRuntime {
     @Override
     public void onDisable() {
         rollbackEnabledComponents();
+        moduleOrchestrator.onDisable();
         uninstallDialogLifecycleBridge();
         uninstallMatchLifecycleBridge();
         uninstallGuiLifecycleBridge();

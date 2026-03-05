@@ -5,7 +5,9 @@ import dev.patric.commonlib.api.CommonRuntime;
 import dev.patric.commonlib.api.error.ErrorCodes;
 import dev.patric.commonlib.api.error.OperationError;
 import dev.patric.commonlib.api.error.OperationResult;
+import dev.patric.commonlib.api.module.CommonModule;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Objects;
 import java.util.function.Consumer;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -48,6 +50,21 @@ public final class RuntimeBootstrap {
      */
     public static OperationResult<CommonRuntime> build(JavaPlugin plugin, CommonComponent... components) {
         return build(plugin, builder -> builder.components(Arrays.asList(components)));
+    }
+
+    /**
+     * Builds a runtime with provided modules.
+     *
+     * @param plugin owning plugin.
+     * @param modules modules.
+     * @return operation result containing runtime or error.
+     */
+    public static OperationResult<CommonRuntime> build(
+            JavaPlugin plugin,
+            Collection<? extends CommonModule> modules
+    ) {
+        Objects.requireNonNull(modules, "modules");
+        return build(plugin, builder -> builder.modules(modules));
     }
 
     /**

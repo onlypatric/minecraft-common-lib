@@ -3,6 +3,7 @@ package dev.patric.commonlib.api;
 import dev.patric.commonlib.runtime.CommonRuntimeBuilder;
 import java.util.Collection;
 import java.util.Locale;
+import dev.patric.commonlib.api.module.CommonModule;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
@@ -62,6 +63,30 @@ public interface CommonRuntime {
          * @return same builder.
          */
         Builder components(Collection<? extends CommonComponent> components);
+
+        /**
+         * Registers a runtime module.
+         *
+         * @param module module to add.
+         * @return same builder.
+         */
+        Builder module(CommonModule module);
+
+        /**
+         * Registers runtime modules in declaration order.
+         *
+         * @param modules modules to add.
+         * @return same builder.
+         */
+        Builder modules(Collection<? extends CommonModule> modules);
+
+        /**
+         * Enables or disables per-module diagnostics logs.
+         *
+         * @param enabled true to emit module transition logs.
+         * @return same builder.
+         */
+        Builder enableModuleDiagnostics(boolean enabled);
 
         /**
          * Sets path used for the main config file.
