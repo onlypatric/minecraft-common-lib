@@ -34,3 +34,11 @@
 - [x] Compatibility policy ufficiale confermata (`Paper 1.21.x`, `Java 21`)
 - [x] Checklist `docs/checklist/13-v1.0.0.md` chiusa con evidenze
 - [x] Tag stabile creato (`v1.0.0`)
+- [x] Smoke reale condiviso documentato (`docs/guides/SERVER-TEST-RUNBOOK.md`, cartella `SERVER-TEST`)
+
+## Stable Completed Checks (`2.1.0`)
+- [x] Module System pubblico aggiunto (`api.module`)
+- [x] Runtime soft-disable orchestration attiva (`ModuleLifecycleOrchestrator`)
+- [x] Compatibilita' componenti legacy preservata (`components(...)` invariato)
+- [x] Testing ground interno disponibile (`examples/module-playground`)
+- [x] SERVER-TEST esteso con report moduli (`CLIB_SMOKE_MODULES`, `modules.csv`)

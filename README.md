@@ -7,8 +7,8 @@ Libreria comune per ridurre boilerplate Bukkit/Paper nei plugin Minecraft del wo
 - Java: `21`
 - Modello distribuzione: embed-first (shading nei plugin consumer)
 
-## Stable status (`2.0.0`)
-- Release stabile corrente disponibile come `v2.0.0`.
+## Stable status (`2.1.0`)
+- Release stabile corrente disponibile come `v2.1.0`.
 - API freeze `1.0.0` documentato in [`docs/api/API-FREEZE-1.0.0.md`](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/api/API-FREEZE-1.0.0.md).
 - Scope core bloccato: nessun adapter/plugin esterno nel dependency set core.
 - Release notes:
@@ -27,14 +27,20 @@ Libreria comune per ridurre boilerplate Bukkit/Paper nei plugin Minecraft del wo
   - Stable: [`docs/releases/1.0.0.md`](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/releases/1.0.0.md)
   - RC: [`docs/releases/2.0.0-rc.1.md`](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/releases/2.0.0-rc.1.md)
   - Stable: [`docs/releases/2.0.0.md`](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/releases/2.0.0.md)
+  - Stable: [`docs/releases/2.1.0.md`](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/releases/2.1.0.md)
 
-## Current focus (`2.0.0`)
-- GUI major power-up completed:
+## Current focus (`2.1.0`)
+- GUI major power-up completed (`2.0.0`):
   - nuovo model tipizzato `api.gui`
   - `GuiDsl` fluente per chest GUI
   - slot policies (`BUTTON_ONLY`, `INPUT_DIALOG`, `TAKE_ONLY`, `DEPOSIT_ONLY`, `TAKE_DEPOSIT`, `LOCKED`)
   - bridge Bukkit inventory/player integrato
   - modulo `adapter-invui` con backend InvUI reale + fallback no-op trasparente
+- Module System first-class (`2.1.0`):
+  - `api.module` (`CommonModule`, `ModuleRegistry`, `ModuleStatus`, `ModulePlanResult`)
+  - dependency graph planner + lifecycle soft-disable
+  - coesistenza moduli + `CommonComponent`
+  - testing ground `examples/module-playground`
 
 ## Boundary policy
 - API pubblica principale: `dev.patric.commonlib.api`
@@ -53,6 +59,7 @@ Guida migrazione:
 ## Componenti core disponibili
 - Runtime composizionale: `CommonRuntime`
 - Component lifecycle: `CommonComponent`
+- Module lifecycle: `CommonModule`, `ModuleRegistry`
 - Service registry: `ServiceRegistry`
 - Scheduler facade: `CommonScheduler`
 - Config service YAML: `ConfigService`
@@ -169,12 +176,15 @@ public final class MyPlugin extends JavaPlugin {
    - `./gradlew --no-daemon test`
    - `./gradlew --no-daemon clean test javadoc build`
 7. Run the in-repo consumer validation project:
-   - `./gradlew --no-daemon -p examples/consumer-demo clean test -PcommonLibJar=../../build/libs/minecraft-common-lib-2.0.0.jar`
+   - `./gradlew --no-daemon -p examples/consumer-demo clean test -PcommonLibJar=../../build/libs/minecraft-common-lib-2.1.0.jar`
+   - `./gradlew --no-daemon -p examples/module-playground clean build -PcommonLibJar=../../build/libs/minecraft-common-lib-2.1.0.jar`
 
 ## Documentazione
 - [ADR-001](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/adr/ADR-001-embed-first-no-nms-core.md)
 - [ADR-002](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/adr/ADR-002-api-boundaries.md)
 - [ADR-003](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/adr/ADR-003-versioning-changelog-policy.md)
+- [ADR-004](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/adr/ADR-004-gui2-fluent-dsl-and-slot-policy.md)
+- [ADR-005](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/adr/ADR-005-module-system-fluent-soft-disable.md)
 - [API Freeze 1.0.0](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/api/API-FREEZE-1.0.0.md)
 - [Cookbook 5 minuti](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/COOKBOOK-5-MINUTES.md)
 - [Compatibility Matrix](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/COMPATIBILITY-MATRIX.md)
@@ -229,6 +239,7 @@ public final class MyPlugin extends JavaPlugin {
 - [GUI Dialog Integration](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/guides/GUI-DIALOG-INTEGRATION.md)
 - [Adapter InvUI](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/guides/ADAPTER-INVUI.md)
 - [Migration GUI 1.x to 2.0](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/guides/MIGRATION-GUI-1.x-TO-2.0.md)
+- [Module System Guide](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/guides/MODULE-SYSTEM.md)
 - [Adapter License Policy](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/policy/ADAPTER-LICENSE-POLICY.md)
 - [Library Design](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/LIB-DESIGN.md)
 - [External Libs Research](/Users/patric/Documents/Minecraft/minecraft-common-lib/docs/UTILS-EXTERNAL-LIBS-RESEARCH.md)

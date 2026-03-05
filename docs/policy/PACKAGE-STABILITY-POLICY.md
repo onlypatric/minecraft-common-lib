@@ -7,6 +7,7 @@ Questa policy definisce stabilita', support lifecycle e regole di compatibilita'
 ### Stable API (contractual)
 - `dev.patric.commonlib.api`
 - `dev.patric.commonlib.api.port`
+- `dev.patric.commonlib.api.module`
 
 Regole:
 - SemVer standard dopo `1.0.0`.

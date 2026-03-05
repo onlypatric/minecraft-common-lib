@@ -1,5 +1,32 @@
 # Changelog
 
+## [2.1.0] - 2026-03-04
+### Added
+- Nuovo Module System pubblico in `api.module`:
+  - `CommonModule`, `ModuleState`, `ModuleStatus`, `ModuleRegistry`, `ModulePlanResult`
+- Estensioni runtime builder non-breaking:
+  - `CommonRuntime.Builder#module(...)`
+  - `CommonRuntime.Builder#modules(...)`
+  - `CommonRuntime.Builder#enableModuleDiagnostics(...)`
+- Nuovo overload bootstrap:
+  - `RuntimeBootstrap.build(JavaPlugin, Collection<? extends CommonModule>)`
+- Nuova orchestrazione runtime moduli:
+  - `DefaultModuleRegistry`
+  - `ModuleGraphPlanner`
+  - `ModuleLifecycleOrchestrator`
+  - `ComponentModuleAdapter`
+- Nuovo testing ground:
+  - `examples/module-playground`
+- `SERVER-TEST` esteso con diagnostica moduli:
+  - comando smoke `clibsmoke dumpmodules`
+  - parsing `CLIB_SMOKE_MODULES`
+  - report `modules.csv` + sezione module status in `report.md/report.json`
+
+### Changed
+- `DefaultCommonRuntime` ora esegue lifecycle moduli prima dei componenti in load/enable e dopo i componenti in disable.
+- `ServiceRegistry` espone `ModuleRegistry` e `ModulePlanResult`.
+- `verifyCoreDependencyPolicy` estesa a `api/module`.
+
 ## [2.0.0] - 2026-03-04
 ### Added
 - GUI v2 foundation (`api.gui`) con model tipizzato:

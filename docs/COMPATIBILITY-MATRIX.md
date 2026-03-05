@@ -20,6 +20,7 @@
 - `1.0.0-rc.1`: freeze governance, cleanup legacy e hardening quality gates pre-GA.
 - `1.0.0`: GA stabile con freeze API ufficiale e policy semver post-1.0.
 - `2.0.0`: GUI power-up major con API v2, policy slot first-class e adapter InvUI backend reale.
+- `2.1.0`: Module System first-class (`api.module`) con dependency planner deterministico e lifecycle soft-disable.
 - Build di riferimento: `./gradlew --no-daemon clean test javadoc build`.
 
 ## Policy corrente
@@ -35,6 +36,7 @@
 - `v0.9.1` aggiunge integrazione Dialog API Paper nel core senza dipendenze esterne aggiuntive.
 - `v1.0.0` formalizza freeze API pubblico (`api/*`, `api/port/*`) con compat policy stabile.
 - `v2.0.0` stabilizza il redesign GUI major con adapter InvUI in modulo separato.
+- `v2.1.0` aggiunge orchestration modulare nativa mantenendo compatibilita' con `CommonComponent`.
 - Nessun supporto NMS diretto nel core.
 
 ## Policy ufficiale `1.0.0`
@@ -43,4 +45,4 @@
 - Compatibilita' public API regolata da freeze `docs/api/API-FREEZE-1.0.0.md`.
 
 ## Prossimo target
-- Stabilizzazione post-major (`2.0.1+`) e wave GUI successiva (`inventory-framework`).
+- Stabilizzazione `2.1.x` + preparazione wave GUI successiva (`inventory-framework`) e hardening module ecosystem.

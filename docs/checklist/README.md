@@ -1,6 +1,6 @@
-# Checklist di Versione (fino a 1.0)
+# Checklist di Versione
 
-Questa cartella contiene la roadmap operativa in formato checklist per ogni versione della libreria `minecraft-common-lib`, dalla baseline attuale fino alla `1.0.0`.
+Questa cartella contiene la roadmap operativa in formato checklist per ogni versione della libreria `minecraft-common-lib`.
 
 ## Ordine di esecuzione
 1. [v0.1.0-alpha.2](./01-v0.1.0-alpha.2.md)
@@ -16,6 +16,8 @@ Questa cartella contiene la roadmap operativa in formato checklist per ogni vers
 11. [v0.8.0](./11-v0.8.0.md)
 12. [v0.9.0](./12-v0.9.0.md)
 13. [v1.0.0](./13-v1.0.0.md)
+14. [v2.0.0 GUI](./14-v2.0.0-gui.md)
+15. [v2.1.0 Module System](./15-v2.1.0-module-system.md)
 
 ## Regole comuni
 - Core sempre plugin-generic first, adapter esterni opzionali.
